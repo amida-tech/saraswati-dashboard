@@ -1,3 +1,5 @@
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import {
     signInAndGetToken,
     azRedirect,
@@ -8,6 +10,8 @@ import {
     mockDefaultTestAuthenticationResult,
     mockAzureSignInResponse
 } from 'test/resources/constants/AuthServiceConstants';
+import Login from 'views/auth/Login';
+import { mockAccessToken } from 'test/resources/constants/AuthServiceConstants';
 
 // Mock the PCA Constructor and it's methods
 jest.mock('@azure/msal-browser', () => {
@@ -49,7 +53,7 @@ afterAll(() => {
 afterEach(() => {
     // Clear all mocks
     jest.clearAllMocks();
-})
+});
 
 describe('AuthService.js', () => {
     it('returns the correct response from signInAndGetToken', async () => {
@@ -71,6 +75,20 @@ describe('AuthService.js', () => {
         azLogout();
         // Assert logoutRedirect & logoutPopup were called
         expect(msalInstance.logoutRedirect).toHaveBeenCalled();
-        expect(msalInstance.logoutPopup).toHaveBeenCalled()
+        expect(msalInstance.logoutPopup).toHaveBeenCalled();
+    });
+
+    it('handleLoginAz from Login.js functions as expected', async () => {
+        render(<Login />);
+        // Identify the msftLoginBtn
+        const msftLoginBtn = screen.getByText(/Sign in with Microsoft/i);
+        // Click the msftLoginBtn
+        await waitFor(() => {
+            fireEvent.click(msftLoginBtn);
+        });
+        // Get the 'azToken' item from local storage
+        const token = localStorage.getItem('azToken');
+        // Assert the correct token is in place
+        expect(token).toBe(mockAccessToken);
     });
 });

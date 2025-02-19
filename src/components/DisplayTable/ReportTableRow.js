@@ -7,7 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultRounded';
 import PropTypes from 'prop-types';
 
-function TextRowGenerator(text) {
+export function TextRowGenerator(text) {
   return (
     <Grid className="report-table-row__text-cell">
       {text}
@@ -15,7 +15,7 @@ function TextRowGenerator(text) {
   )
 }
 
-function IconRowGenerator(result, extraInfo) {
+export function IconRowGenerator(result, extraInfo) {
   if (result === true) {
     return (
       <Grid className="report-table-row__icon-cell report-table-row__icon-cell--matched">
@@ -32,7 +32,7 @@ function IconRowGenerator(result, extraInfo) {
   )
 }
 
-function ArrayRowGenerator(info, extraInfo) {
+export function ArrayRowGenerator(info, extraInfo) {
   return (
     <Grid className="report-table-row__array-cell">
       {extraInfo && <CheckCircleIcon className="report-table-row__condition-icon report-table-row__condition-icon--good" />}
@@ -41,7 +41,7 @@ function ArrayRowGenerator(info, extraInfo) {
   )
 }
 
-function rowSelector(rowDataItem, fieldInfo) {
+export function rowSelector(rowDataItem, fieldInfo) {
   if (fieldInfo.rowType === 'text') {
     return (TextRowGenerator(rowDataItem[fieldInfo.key]));
   }
@@ -51,7 +51,7 @@ function rowSelector(rowDataItem, fieldInfo) {
   return (ArrayRowGenerator(rowDataItem[fieldInfo.key], fieldInfo.extraInfo));
 }
 
-function ReportTableRow({
+export function ReportTableRow({
   rowDataItem, headerInfo,
 }) {
   return (

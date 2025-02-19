@@ -39,7 +39,7 @@ export function filterByTimeline(timelineDisplayData, timeline) {
       (result) => new Date(result.date) > dayLimit,
     );
   }
-  // JF-TODO: Verify this is unreachable code & remove
+
   return timelineDisplayData;
 }
 
@@ -87,15 +87,12 @@ export const createLabel = (measure, info) => {
   if (info[measure]) {
     return `${info[measure].displayLabel} - ${info[measure].title}`;
   }
-  // JF-TODO: I think this code is no longer use, remove if that is the case.
-  // See the mockInfo object in ChartContainerConstants.js and how it is consumed.
   if (measure === 'composite') {
     return 'Composite';
   }
   if (measure.length > 3 && measure.charAt(3) === 'e') {
     return `${measure.slice(0, 3).toUpperCase()}-E`;
   }
-  console.log(measure.toUpperCase());
   return measure.toUpperCase();
 };
 

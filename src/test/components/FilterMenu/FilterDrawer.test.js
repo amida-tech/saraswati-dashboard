@@ -19,7 +19,6 @@ const mockToggleFilterDrawer = jest.fn(() => false);
 
 const givenPropsTest = async (getByText) => {
     expect(getByText('Apply Filters')).toBeTruthy();
-    screen.debug(undefined, 40000)
     expect(screen.getByDisplayValue('EOC').checked).toBe(false);
     expect(screen.getByDisplayValue('ECDS').checked).toBe(false);
     expect(screen.getByDisplayValue('1').checked).toBe(false);
