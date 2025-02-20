@@ -45,23 +45,42 @@ describe('ReportTableRow.js ->', () => {
     it('ArrayRowGenerator(info, false) functions correctly', () => {
         render(<>{ArrayRowGenerator(text, false)}</>);
         assertText(text);
-        screen.debug();
     });
 
-    // JF-TODO: Continue working on tests for Report table row
+    it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
+        render(<>{rowSelector(rowDataItem, fieldInfo('text'))}</>);
+        assertText(text);
+    });
 
-    // it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
-    //     render(<>{rowSelector(rowDataItem(text), fieldInfo)}</>);
+    it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
+        render(<>{rowSelector(rowDataItem, fieldInfo('icon'))}</>);
+        assertIconByTestId('DisabledByDefaultRoundedIcon');
+        assertNotCompliant();
+    });
 
-    //     screen.debug();
-    // });
+    it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
+        render(<>{rowSelector(rowDataItem, fieldInfo('array'))}</>);
+        assertText(text);
+    });
+
+    it('ReportTableRow({ rowDataItem, headerInfo }) functions correctly', () => {
+        render(<>{ReportTableRow(rowDataItem, headerInfo)}</>);
+        const mainDiv = document.body.firstChild
+        const childDiv = mainDiv.firstChild;
+        expect(childDiv).toHaveClass('report-table-row MuiBox-root css-0')
+    });
 });
-const fieldInfo = () => {
-    return { key: 'value' };
+
+const fieldInfo = (rowType) => {
+    return { key: 0, extraInfo: true, rowType: rowType, flexBasis: '100px' };
 };
-const rowDataItem = (input) => {
-    value: input;
-};
+
+const headerInfo = [fieldInfo('text'), fieldInfo('icon')];
+
+const text = 'textz';
+
+const rowDataItem = [text, text, text];
+
 function assertText(text) {
     const renderedText = screen.getByText(text);
     expect(renderedText).toBeInTheDocument();
@@ -81,15 +100,3 @@ function assertIconByTestId(testId) {
     const icon = screen.getByTestId(testId);
     expect(icon).toBeInTheDocument();
 }
-
-function assertCheckBoxIcon() {
-    const checkboxIcon = screen.getByTestId('CheckBoxIcon');
-    expect(checkboxIcon).toBeInTheDocument();
-}
-
-function assertDisabledIcon() {
-    const disabledIcon = screen.getByTestId('DisabledByDefaultRoundedIcon');
-    expect(disabledIcon).toBeInTheDocument;
-}
-
-const text = 'textz';
