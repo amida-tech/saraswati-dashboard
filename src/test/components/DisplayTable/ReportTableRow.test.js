@@ -9,14 +9,16 @@ import {
 import '@testing-library/jest-dom';
 
 describe('ReportTableRow.js ->', () => {
+    // TextRowGenerator function tests
     it('TextRowGenerator(text) functions correctly', () => {
         render(<>{TextRowGenerator(text)}</>);
         assertText(text);
     });
 
+    // IconRowGenerator function tests
     it('IconRowGenerator(true, extraInfo) functions correctly', () => {
         render(<>{IconRowGenerator(true, true)}</>);
-        assertCompliant();
+        assertText('Compliant')
         assertIconByTestId('CheckBoxIcon');
     });
 
@@ -27,7 +29,8 @@ describe('ReportTableRow.js ->', () => {
 
     it('IconRowGenerator(false, extraInfo) functions correctly', () => {
         render(<>{IconRowGenerator(false, true)}</>);
-        assertNotCompliant();
+        
+        assertText('Not Compliant')
         assertIconByTestId('DisabledByDefaultRoundedIcon');
     });
 
@@ -36,6 +39,7 @@ describe('ReportTableRow.js ->', () => {
         assertIconByTestId('DisabledByDefaultRoundedIcon');
     });
 
+    // ArrayRowGenerator function tests
     it('ArrayRowGenerator(info, true) functions correctly', () => {
         render(<>{ArrayRowGenerator(text, true)}</>);
         assertText(text);
@@ -47,6 +51,7 @@ describe('ReportTableRow.js ->', () => {
         assertText(text);
     });
 
+    // rowSelector function tests
     it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
         render(<>{rowSelector(rowDataItem, fieldInfo('text'))}</>);
         assertText(text);
@@ -55,7 +60,7 @@ describe('ReportTableRow.js ->', () => {
     it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
         render(<>{rowSelector(rowDataItem, fieldInfo('icon'))}</>);
         assertIconByTestId('DisabledByDefaultRoundedIcon');
-        assertNotCompliant();
+        assertText('Not Compliant')
     });
 
     it('rowSelector(rowDataItem, fieldInfo) functions correctly', () => {
@@ -63,6 +68,7 @@ describe('ReportTableRow.js ->', () => {
         assertText(text);
     });
 
+    // ReportTableRow function tests
     it('ReportTableRow({ rowDataItem, headerInfo }) functions correctly', () => {
         render(<>{ReportTableRow(rowDataItem, headerInfo)}</>);
         const mainDiv = document.body.firstChild
@@ -71,31 +77,27 @@ describe('ReportTableRow.js ->', () => {
     });
 });
 
+// Field info object
 const fieldInfo = (rowType) => {
     return { key: 0, extraInfo: true, rowType: rowType, flexBasis: '100px' };
 };
 
+// Header info array
 const headerInfo = [fieldInfo('text'), fieldInfo('icon')];
 
+// Mock text
 const text = 'textz';
 
+// Mock rowDataItem array
 const rowDataItem = [text, text, text];
 
+// Assert the given text appears in the document
 function assertText(text) {
     const renderedText = screen.getByText(text);
     expect(renderedText).toBeInTheDocument();
 }
 
-function assertCompliant() {
-    const compliant = screen.getByText('Compliant');
-    expect(compliant).toBeInTheDocument();
-}
-
-function assertNotCompliant() {
-    const compliant = screen.getByText('Not Compliant');
-    expect(compliant).toBeInTheDocument();
-}
-
+// Assert the given icon appears in the document
 function assertIconByTestId(testId) {
     const icon = screen.getByTestId(testId);
     expect(icon).toBeInTheDocument();
