@@ -46,8 +46,8 @@ const subMeasures = {
 const payors = (payor) => ({
   name: 'Payors (Payers)',
   tip: 'The providers of the services recieved in the context of member data.',
-  options: payor.map((payer) => payer.payor),
-  values: payor.map((payer) => payer.payor),
+  options: payor?.map((payer) => payer.payor),
+  values: payor?.map((payer) => payer.payor),
 })
 
 // TODO: When adding functionality, change this to an object returned by a function that assembles
@@ -57,8 +57,8 @@ const payors = (payor) => ({
 const healthcareProviders = (healthcareProvider) => ({
   name: 'Healthcare Providers',
   tip: 'The coverage plan types covering the relevant member data.',
-  options: healthcareProvider.map((provider) => provider.provider),
-  values: healthcareProvider.map((provider) => provider.provider),
+  options: healthcareProvider?.map((provider) => provider.provider),
+  values: healthcareProvider?.map((provider) => provider.provider),
 })
 // TODO: When adding functionality, change this to an object returned by a function that assembles
 // the options and values arrays from the ingested data from HERA.
@@ -67,8 +67,8 @@ const healthcareProviders = (healthcareProvider) => ({
 const healthcareCoverages = (healthcareCoverage) => ({
   name: 'Healthcare Coverages',
   tip: 'The providers of the services recieved in the context of member data.',
-  options: healthcareCoverage.map((coverage) => coverage.coverage),
-  values: healthcareCoverage.map((coverage) => coverage.coverage),
+  options: healthcareCoverage?.map((coverage) => coverage.coverage),
+  values: healthcareCoverage?.map((coverage) => coverage.coverage),
 })
 
 // TODO: When adding functionality, change this to an object returned by a function that assembles
@@ -78,8 +78,8 @@ const healthcareCoverages = (healthcareCoverage) => ({
 const healthcarePractitioners = (practitioner) => ({
   name: 'Healthcare Practitioners',
   tip: 'The coverage plan types covering the relevant member data.',
-  options: practitioner.map((prac) => prac.practitioner),
-  values: practitioner.map((prac) => prac.practitioner),
+  options: practitioner?.map((prac) => prac.practitioner),
+  values: practitioner?.map((prac) => prac.practitioner),
 })
 
 const percentMarks = [

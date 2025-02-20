@@ -60,8 +60,8 @@ function MeasureTableRow({
                       <Typography variant="caption" className="measure-table-row__data">
                         <Tooltip
                           title={
-                            measureInfo[rowDataItem.value].tooltip
-                            || measureInfo[rowDataItem.value].title
+                            measureInfo?.[rowDataItem?.value]?.tooltip
+                            || measureInfo?.[rowDataItem?.value]?.title
                           }
                           arrow
                         >

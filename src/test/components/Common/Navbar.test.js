@@ -13,6 +13,18 @@ jest.mock('views/auth/AuthService', () => {
 // Mock @azure/msal-browser
 jest.mock('@azure/msal-browser');
 
+function assertNav() {
+    const navMenu = screen.getByTestId('AccountCircleOutlinedIcon');
+    act(() => {
+        fireEvent.click(navMenu);
+    });
+    const logout = screen.getByText(/Logout/i);
+    act(() => {
+        fireEvent.click(logout);
+    });
+    expect(navMenu && logout).toBeInTheDocument();
+}
+
 describe('Navbar.js', () => {
     it('can open the navMenu & logout', () => {
         // Render the Navbar
@@ -21,37 +33,19 @@ describe('Navbar.js', () => {
                 <Navbar />
             </BrowserRouter>
         );
-        // Identify the navMenu
-        const navMenu = screen.getByTestId('AccountCircleOutlinedIcon');
-        // Open the navMenu
-        act(() => {
-            fireEvent.click(navMenu);
-        });
-        // Identify the logout option
-        const logout = screen.getByText(/Logout/i);
-        // Click logout
-        act(() => {
-            fireEvent.click(logout);
-        });
-        // Assert navMenu & logout are in the document
-        expect(navMenu && logout).toBeInTheDocument();
+        assertNav();
     });
 
     it('can perform azLogout when azToken is set in local storage', () => {
+        // Set the localStorage item azToken
         localStorage.setItem('azToken', 'mock-token');
+        
+        // Render the Navbar
         render(
             <BrowserRouter>
                 <Navbar />
             </BrowserRouter>
         );
-        const navMenu = screen.getByTestId('AccountCircleOutlinedIcon');
-        act(() => {
-            fireEvent.click(navMenu);
-        });
-        const logout = screen.getByText(/Logout/i);
-        act(() => {
-            fireEvent.click(logout);
-        });
-        expect(navMenu && logout).toBeInTheDocument();
+        assertNav();
     });
 });

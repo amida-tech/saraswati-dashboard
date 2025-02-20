@@ -262,7 +262,7 @@ function oauthSignIn() {
 }
 
 // Handle OAuth login with Azure AD
-const handleLoginAz = async () => {
+export const handleLoginAz = async () => {
   try {
     const result = await signInAndGetToken();
     // Sets azToken in local storage

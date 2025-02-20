@@ -1,3 +1,6 @@
+// Set the dev data env variable to populate app with data
+process.env.REACT_APP_DEV_DATA = true;
+
 // Set logic to replace crypto getRandomValues (needed for @azure/msal-browser)
 Object.defineProperty(global.self, 'crypto', {
     value: {
@@ -10,16 +13,7 @@ Object.defineProperty(global.self, 'crypto', {
     }
 });
 
-// before each test, set REACT_APP_DEV_DATA to true;
-beforeEach(() => {
-    process.env.REACT_APP_DEV_DATA = true;
-});
-
-// after each test, reset REACT_APP_DEV_DATA to false
-afterEach(() => {
-    delete process.env.NODE_ENV; // Restore original value
-});
-
+// Extend the timeout value
 jest.setTimeout(70000);
 
 // Set the global structrued clone

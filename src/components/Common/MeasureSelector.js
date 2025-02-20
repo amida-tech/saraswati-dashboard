@@ -15,6 +15,7 @@ function MeasureSelector({
         label="Select Measure"
         name="Select Measure"
         onChange={handleMeasureChange}
+        data-testid= "select-measure"
         sx={{ color: 'black.light' }}
       >
         {currentResults.map((result) => (
@@ -23,6 +24,7 @@ function MeasureSelector({
             key={`by-line-menu-item-selector-${result.measure}`}
             value={result.measure}
             name="Select Measure"
+            data-testid={`option-${result.measure}`}
           >
             {result.label}
           </MenuItem>
