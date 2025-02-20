@@ -8,10 +8,10 @@ import {
 } from 'views/auth/AuthService';
 import {
     mockDefaultTestAuthenticationResult,
+    mockAccessToken,
     mockAzureSignInResponse
 } from 'test/resources/constants/AuthServiceConstants';
 import Login from 'views/auth/Login';
-import { mockAccessToken } from 'test/resources/constants/AuthServiceConstants';
 
 // Mock the PCA Constructor and it's methods
 jest.mock('@azure/msal-browser', () => {

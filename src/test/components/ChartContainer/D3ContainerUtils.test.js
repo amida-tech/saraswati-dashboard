@@ -4,7 +4,6 @@ import {
     getSubMeasureCurrentResults,
     getSubMeasureCurrentResultsPerMeasure,
     createLabel,
-    createSubMeasureLabel
 } from 'components/ChartContainer/D3ContainerUtils';
 import { mockInfo } from 'test/resources/constants/ChartContainerConstants';
 import { mockMeasure } from 'test/resources/constants/ChartContainerConstants';
