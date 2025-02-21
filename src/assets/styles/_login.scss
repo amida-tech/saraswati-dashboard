@@ -15,8 +15,7 @@ $block-class: 'login';
           background-color: $default-white;
           border-radius: 2rem;
           padding: 2rem;
-          float: right;
-          margin-right: 6rem;
+          margin: auto;
           width: 600px; //we need to discuss breakpoints at some point
         }
     }
