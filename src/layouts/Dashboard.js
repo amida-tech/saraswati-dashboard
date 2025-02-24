@@ -572,7 +572,7 @@ export default function Dashboard() {
             >
               No results found. Please click button to reset the data to the
               initial results.
-              <div
+              {/* <div
                 style={{
                   fontSize: '2rem',
                   width: '100%',
@@ -581,7 +581,7 @@ export default function Dashboard() {
                 }}
               >
                 (^-^)
-              </div>
+              </div> */}
             </Alert>
             {/* All Measures Graph */}
             <Grid item xs={12}>
