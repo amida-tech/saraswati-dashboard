@@ -176,7 +176,7 @@ export default function Login() {
           spacing={0}
           sx={{ mb: '.5rem', mt: '24px' }}
         >
-          <Grid item xs={5.75}>
+          {/* <Grid item xs={5.75}> */}
             {/* GOOGLE LOGIN BUTTON */}
             <Button
               fullWidth
@@ -195,11 +195,11 @@ export default function Login() {
             >
               Sign in with Google
             </Button>
-          </Grid>
+          {/* </Grid> */}
           {/* BLANK GRID FOR SPACING BETWEEN BUTTONS W/O AUTO TOP PADDING */}
           <Grid item xs={0.5}></Grid>
           {/* MS LOGIN BUTTON */}
-          <Grid item xs={5.75}>
+          {/* <Grid item xs={5.75}>
             <Button
               fullWidth
               variant='contained'
@@ -217,7 +217,7 @@ export default function Login() {
             >
               Sign in with Microsoft
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Paper>
     </Container>
@@ -261,15 +261,15 @@ function oauthSignIn() {
   form.submit();
 }
 
-// Handle OAuth login with Azure AD
-export const handleLoginAz = async () => {
-  try {
-    const result = await signInAndGetToken();
-    // Sets azToken in local storage
-    localStorage.setItem('azToken', result.token);
-    // Redirect after login
-    azRedirect();
-  } catch (error) {
-    console.error('Login failed', error);
-  }
-};
+// // Handle OAuth login with Azure AD
+// export const handleLoginAz = async () => {
+//   try {
+//     const result = await signInAndGetToken();
+//     // Sets azToken in local storage
+//     localStorage.setItem('azToken', result.token);
+//     // Redirect after login
+//     azRedirect();
+//   } catch (error) {
+//     console.error('Login failed', error);
+//   }
+// };

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import { MsalProvider } from '@azure/msal-react';
+// import { MsalProvider } from '@azure/msal-react';
 import { ThemeProvider } from '@emotion/react';
 import { validateAccessToken } from './components/Common/Controller';
 import theme from './assets/styles/AppTheme';
 import Auth from './layouts/Auth';
 import ProtectedRoutes from './ProtectedRoutes';
-import { msalInstance } from 'views/auth/AuthService';
+// import { msalInstance } from 'views/auth/AuthService';
 
 function MainContent() {
     // State for whether user is authenticated or not
@@ -89,8 +89,8 @@ function MainContent() {
 export default function App() {
     return (
         // AZ AUTH PROVIDER
-        <MsalProvider instance={msalInstance}>
+        // <MsalProvider instance={msalInstance}>
             <MainContent />
-        </MsalProvider>
+        // </MsalProvider>
     );
 }
