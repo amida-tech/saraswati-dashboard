@@ -5,11 +5,25 @@ $block-class: 'banner';
     .#{$block-class} {
         text-align: left;
         margin: 0 1rem 1rem 0;
+        width: 97%;
+
+        & &__header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
 
         & &__header {
-            margin-bottom: 0.5rem;
             font-size: 3rem;
             font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        & &__year-selector {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
         }
 
         & &__update-box {
