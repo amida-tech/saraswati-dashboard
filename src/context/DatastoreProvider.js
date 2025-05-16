@@ -13,10 +13,10 @@ import { DatastoreReducer, initialState } from './DatastoreReducer';
 import env from '../env';
 
 const useLegacyResults = env.REACT_APP_LEGACY_RESULTS;
-const searchUrl = useLegacyResults === 'true'
-  ? new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/searchResults`)
-  : new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/dailyMeasureResults`);
-const trendUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/trends?legacyResults=${useLegacyResults}`);
+const baseSearchUrl = useLegacyResults === 'true'
+  ? `${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/searchResults`
+  : `${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/dailyMeasureResults`;
+const baseTrendUrl = `${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/trends`;
 const infoUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/info`);
 const payorsUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}payors`);
 const healthcareProvidersUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}healthcareproviders`);
@@ -29,6 +29,7 @@ export const DatastoreContext = createContext(initialState);
 
 export default function DatastoreProvider({ children }) {
   const [datastore, dispatch] = useReducer(DatastoreReducer, initialState);
+  const { measurementYear } = datastore;
 
   const datastoreActions = useMemo(() => ({
     setResults: (results, info) => dispatch({
@@ -72,7 +73,19 @@ export default function DatastoreProvider({ children }) {
       payload: status,
     }),
 
+    setMeasurementYear: (year) => dispatch({
+      type: 'SET_MEASUREMENT_YEAR',
+      payload: year,
+    }),
+
   }), [dispatch]);
+
+  const searchUrl = new URL(baseSearchUrl);
+  searchUrl.searchParams.append('measurementYear', measurementYear);
+
+  const trendUrl = new URL(baseTrendUrl);
+  trendUrl.searchParams.append('measurementYear', measurementYear);
+  trendUrl.searchParams.append('legacyResults', useLegacyResults);
 
   useEffect(() => {
     if (devData === 'true') {
@@ -82,6 +95,7 @@ export default function DatastoreProvider({ children }) {
       datastoreActions.setIsLoading(false);
       datastoreActions.setStatus('200')
     } else {
+      datastoreActions.setIsLoading(true);
       const trendPromise = axios.get(trendUrl);
       const searchPromise = axios.get(searchUrl);
       const infoPromise = axios.get(infoUrl);
@@ -120,7 +134,7 @@ export default function DatastoreProvider({ children }) {
         datastoreActions.setStatus(error.request.status)
       });
     }
-  }, [datastoreActions]);
+  }, [datastoreActions, measurementYear]);
 
   const reducerValue = useMemo(() => ({
     datastore, datastoreActions,
