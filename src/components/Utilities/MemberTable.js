@@ -93,7 +93,10 @@ const formatData = (memberResults, activeMeasure, storeInfo, tableFilter) => {
       } else {
         formattedResult[subMeasures[0]] = allValuesEqual(memberResultArray).toString();
         for (let k = 1; k < subMeasures.length; k += 1) {
-          formattedResult[subMeasures[k]] = memberResultArray[k - 1].value.toString();
+          const memberFoundResult = memberResultArray[k - 1];
+          if (memberFoundResult) {
+            formattedResult[subMeasures[k]] = memberFoundResult.value.toString();
+          }
         }
       }
 
