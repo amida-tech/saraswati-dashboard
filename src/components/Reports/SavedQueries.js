@@ -1,14 +1,20 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import theme from '../../assets/styles/AppTheme';
+import env from '../../env';
 
 const Queries = [
   { name: 'Yearly Comparison' },
   { name: 'Composite Report' },
   { name: 'Current Snapshot Report' },
-  { name: '60 Day Camparison' },
+  { name: '60 Day Comparison' },
 ];
 
 export default function SavedQueries() {
+  const placeholder = (query) => `${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/exportCsv?reportType=${query.name
+    .split('')
+    .map((l) => (l !== ' ' ? l.toLocaleLowerCase() : '-'))
+    .join('')}`;
+
   return (
     <Box
       sx={{
@@ -23,10 +29,10 @@ export default function SavedQueries() {
       </Typography>
       <ul className="saved-queries__past-search">
         {Queries.map((query) => (
-          <li className="saved-queries__past-search-item">
-            <a href="#/">
+          <li key={query.name} className="saved-queries__past-search-item">
+            <Link target="_blank" rel="noreferrer" href={placeholder(query)}>
               {query.name}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

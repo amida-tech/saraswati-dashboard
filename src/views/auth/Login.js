@@ -92,7 +92,7 @@ export default function Login() {
         <Paper
           sx={{
             backdropFilter: 'blur(1px)',
-            backgroundColor: theme.palette?.primary.transparent,
+            backgroundColor: theme.palette?.transparent.primary,
             borderRadius: 10,
             padding: '2rem',
             float: 'right',

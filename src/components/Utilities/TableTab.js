@@ -16,14 +16,14 @@ export const TableTab = styled((props) => <Tab {...props} />)(({ theme }) => ({
 
   '&:hover': {
     color: theme.palette?.primary.light,
-    backgroundColor: theme.palette?.primary.transparent,
+    backgroundColor: theme.palette?.transparent.primary,
     borderRadius: '0.5rem',
     transition: '200ms',
   },
 
   '&:focus': {
     color: theme.palette?.primary.light,
-    backgroundColor: theme.palette?.primary.transparent,
+    backgroundColor: theme.palette?.transparent.primary,
     borderRadius: '0.5rem',
     transition: '200ms',
   },

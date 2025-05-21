@@ -5,11 +5,10 @@ $block-class: 'report-builder';
     .#{$block-class} {
         display: flex;
         flex-direction: column;
-        margin-top: 0.5rem;
-        margin-left: 2rem;
-        margin-bottom: 0.5rem;
-        height: 50vh;
+        height: inherit;
         width: 40%;
+        gap: 2rem;
+        margin: 0 2rem;
 
         & &__h2-header {
             font-weight: 600;
@@ -19,17 +18,14 @@ $block-class: 'report-builder';
         }
 
         & &__text {
-            margin-top: 1rem;
         }
 
         & &__selector-panel {
-            margin-top: 2rem;
         }
 
         &__download-link {
             display: flex;
             justify-content: center;
-            margin: 2rem !important;
             width: 16rem;
             padding: 0.8rem;
             border-radius: 3px;
