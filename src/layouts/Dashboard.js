@@ -18,7 +18,7 @@ import RatingTrends from '../components/Summary/RatingTrends';
 import ColorMapping from '../components/Utilities/ColorMapping';
 import { headerData } from '../components/Utilities/MeasureTable';
 import MemberTable from '../components/Utilities/MemberTable';
-import Notification from '../components/Common/Notification'
+import Notification from '../components/Common/Notification';
 
 // scrolly is a navigate function wrapped with scrollToTop
 import { scrolly, scrollTop } from '../components/Utilities/ScrollNavigate';
@@ -396,11 +396,13 @@ export default function Dashboard() {
     if (direction === 'GO BACK') {
       searchResults = await filterSearch(
         false,
+        datastore.measurementYear,
         filters,
       );
     } else {
       searchResults = await filterSearch(
         currentMeasureResolver,
+        datastore.measurementYear,
         filters,
       );
     }

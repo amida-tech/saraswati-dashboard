@@ -49,10 +49,11 @@ export async function validateAccessToken(accessToken) {
 }
 
 // Filter Search
-export async function filterSearch(searchMeasure, searchArray, isComposite) {
+export async function filterSearch(searchMeasure, searchYear, searchArray, isComposite) {
   try {
     const searchObject = {
       submeasure: isComposite ? false : searchMeasure,
+      measurementYear: searchYear,
       filters: searchArray,
       isComposite,
     };
