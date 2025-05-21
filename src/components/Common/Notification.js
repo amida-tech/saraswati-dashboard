@@ -31,8 +31,8 @@ export default function Notification({ status }) {
         rel: 'noopener noreferrer',
         pathto: '',
       }}
-      noResultsALERT
-      forwardBtn="refresh"
+      noResultsAlert
+      buttonText="refresh"
       handleResetData={() => handleRefreshPage()}
     >
       An error occurred while fetching member data. If the error persists, please contact your system administrator.

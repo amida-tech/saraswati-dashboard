@@ -124,7 +124,7 @@ function MeasureTableRow({
                     setOpenAlert={setOpenAlert}
                     title={alertTitle}
                     options={alertPath(rowDataItem.value)}
-                    noResultsALERT={false}
+                    noResultsAlert={false}
                   >
                     You are now leaving Saraswati and entering a site hosted by
                     a different Federal agency or company. If you are not

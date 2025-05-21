@@ -71,9 +71,9 @@ export default function Login() {
           openAlert={logginError}
           setOpenAlert={setLogginError}
           title="Failed to Login"
-          noResultsALERT
+          noResultsAlert
           handleResetData={handleReset}
-          forwardBtn="retry"
+          buttonText="retry"
         >
           There was an error logging in.
         </Alert>
