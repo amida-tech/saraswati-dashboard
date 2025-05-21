@@ -64,14 +64,14 @@ export default function App() {
       />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/welcome" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
             path="*"
             element={
               authenticated
                 ? <ProtectedRoutes authenticated={authenticated} />
-                : <Navigate to="/login" replace />
+                : <Navigate to="/welcome" replace />
             }
           />
         </Routes>
