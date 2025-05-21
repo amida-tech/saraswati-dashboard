@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   Box, Grid, Typography,
 } from '@mui/material';
+import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
 import { storeProps } from '../Utilities/PropTypes';
 import MeasureSelector from '../Common/MeasureSelector';
@@ -9,6 +10,7 @@ import env from '../../env';
 
 function ReportBuilder({ store }) {
   const [measure, setMeasure] = useState('');
+  const { datastore } = useContext(DatastoreContext);
 
   useEffect(() => {
     if (store.currentResults !== undefined) {
@@ -43,7 +45,7 @@ function ReportBuilder({ store }) {
         && (
         <a
           className="report-builder__download-link"
-          href={`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/exportCsv?measurementType=${measure}`}
+          href={`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/exportCsv?measurementType=${measure}&measurementYear=${datastore.measurementYear}`}
           target="_blank"
           rel="noreferrer"
         >
