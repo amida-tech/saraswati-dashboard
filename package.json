@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "1.1.1": "^1.0.0",
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.26.10",
     "@babel/plugin-syntax-flow": "^7.22.5",
     "@babel/plugin-transform-react-jsx": "^7.22.15",
     "@babel/preset-env": "^7.23.2",
@@ -19,7 +19,7 @@
     "@mui/x-data-grid": "^6.16.3",
     "@popperjs/core": "2.11.8",
     "apexcharts": "^3.44.0",
-    "axios": "1.5.1",
+    "axios": "1.8.3",
     "chart.js": "4.4.0",
     "d3": "^7.8.5",
     "gapi-script": "^1.2.0",
@@ -34,8 +34,8 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
     "react-google-login": "^5.2.2",
-    "react-router": "6.17.0",
-    "react-router-dom": "6.18.0",
+    "react-router": "6.18.0",
+    "react-router-dom": "6.17.0",
     "react-scripts": "^5.0.1",
     "sass": "^1.69.4",
     "tinycolor2": "^1.6.0"

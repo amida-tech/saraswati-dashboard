@@ -99,7 +99,7 @@ export function percentDisplayValue(trends, preferences, activeMeasure, measureC
   } else {
     percentValue = trends.find(
       (trend) => trend.measure === preferences.measure.toLowerCase(),
-    ).percentChange;
+    )?.percentChange || 0;
   }
 
   let percentColor = theme.palette?.text.disabled;
@@ -122,7 +122,7 @@ export function percentDisplayValue(trends, preferences, activeMeasure, measureC
 export function starDisplayValue(currentResults, preferences) {
   const starValue = currentResults.find(
     (trend) => trend.measure === preferences.measure.toLowerCase(),
-  ).starRating;
+  )?.starRating || 0;
   return (
     <div aria-label={preferences.measure}>
       <Rating

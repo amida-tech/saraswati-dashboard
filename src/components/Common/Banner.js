@@ -2,24 +2,30 @@ import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import theme from '../../assets/styles/AppTheme';
+import MeasurementYearSelector from './MeasurmentYearSelector';
 
 function Banner({ headerText, lastUpdated }) {
   return (
     <Box className="banner">
-      <Typography variant="h1" color={theme.palette?.bluegray.D2} className="banner__header">
-        { headerText }
-      </Typography>
-      { lastUpdated && (
-      <Box className="banner__update-box">
-        <Typography color={theme.palette?.bluegray.D1} className="banner__update-label">
-          Last Updated:
+      <Box className="banner__header-container">
+        <Typography variant="h1" color={theme.palette?.bluegray.D2} className="banner__header">
+          {headerText}
         </Typography>
-        <Typography color={theme.palette?.bluegray.L1} className="banner__update-time">
-          {' '}
-          {lastUpdated}
-        </Typography>
+        <Box className="banner__year-selector">
+          <MeasurementYearSelector />
+        </Box>
       </Box>
-      ) }
+      {lastUpdated && (
+        <Box className="banner__update-box">
+          <Typography color={theme.palette?.bluegray.D1} className="banner__update-label">
+            Last Updated:
+          </Typography>
+          <Typography color={theme.palette?.bluegray.L1} className="banner__update-time">
+            {' '}
+            {lastUpdated}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 }

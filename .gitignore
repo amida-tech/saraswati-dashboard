@@ -22,6 +22,8 @@
 .cache
 .config
 .bash_history
+.ash_history
+.dotnet/
 
 #yarn
 npm-debug.log*
@@ -39,3 +41,8 @@ yarn-error.log*
 
 # log files
 *.log
+
+# Devcontainer files
+.devcontainer/.updateContentCommandMarker
+.devcontainer/.postCreateCommandMarker
+.devcontainer/.onCreateCommandMarker
