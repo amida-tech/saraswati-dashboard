@@ -34,7 +34,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
     "react-google-login": "^5.2.2",
-    "react-router": "6.17.0",
+    "react-router": "6.18.0",
     "react-router-dom": "6.17.0",
     "react-scripts": "^5.0.1",
     "sass": "^1.69.4",
