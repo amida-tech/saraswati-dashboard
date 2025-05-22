@@ -1,19 +1,9 @@
 import { ReactComponent as GoogleSvg } from '../../assets/img/google.svg';
 import { ReactComponent as GithubSvg } from '../../assets/img/github.svg';
-import image from '../../assets/img/loginbg.jpg';
 
 export default function Register() {
   return (
-    <main
-      style={{
-        backgroundImage:
-        `url(${image})`,
-        height:
-        '100vh',
-        padding:
-        '2rem',
-      }}
-    >
+    <main style={{ backgroundImage: 'grey' }}>
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-6/12 px-4">

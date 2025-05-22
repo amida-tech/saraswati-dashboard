@@ -9,13 +9,13 @@ import {
 import { useEffect, useState } from 'react';
 import { gapi } from 'gapi-script';
 import axios from 'axios';
+import Logo from '../../assets/img/saraswati-logo.png';
 import Alert from '../../components/Utilities/Alert';
 import theme from '../../assets/styles/AppTheme';
-import image from '../../assets/img/loginbg.jpg';
 import env from '../../env';
 
 export default function Login() {
-  const [logginError, setLogginError] = useState(false);
+  const [loginError, setLoginError] = useState(false);
   const navigate = useNavigate();
   const clientId = env.REACT_APP_GOOGLE_CLIENT_ID;
   /*
@@ -31,16 +31,16 @@ export default function Login() {
         });
         if (loginPromise.data.status === 'Success') {
           localStorage.setItem('token', response.accessToken);
-          setLogginError(false);
+          setLoginError(false);
           navigate('/');
           window.location.reload();
         }
       } catch (error) {
         navigate('/welcome');
-        setLogginError(true);
+        setLoginError(true);
       }
     } else {
-      setLogginError(true);
+      setLoginError(true);
     }
   };
   useEffect(() => {
@@ -53,23 +53,21 @@ export default function Login() {
     gapi.load('client:auth2', start);
   });
   const handleReset = () => {
-    setLogginError(false);
+    setLoginError(false);
   };
   return (
     <main
       style={{
-        backgroundImage: `url(${image})`,
+        background: theme.palette?.bluegray.L4,
         height: '100vh',
         padding: '2rem',
         marginBottom: '-1rem',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
       }}
     >
-      {logginError && (
+      {loginError && (
         <Alert
-          openAlert={logginError}
-          setOpenAlert={setLogginError}
+          openAlert={loginError}
+          setOpenAlert={setLoginError}
           title="Failed to Login"
           noResultsAlert
           handleResetData={handleReset}
@@ -80,40 +78,30 @@ export default function Login() {
       )}
 
       <Container maxWidth={false} sx={{ padding: '1rem' }}>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-          }}
-        >
-          SARASWATI
-        </Typography>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <img style={{ height: '3rem' }} src={Logo} alt="Saraswati logo" />
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
+            SARASWATI
+          </Typography>
+        </div>
 
         <Paper
           sx={{
-            backdropFilter: 'blur(1px)',
-            backgroundColor: theme.palette?.transparent.primary,
-            borderRadius: 10,
+            backgroundColor: theme.palette?.background.main,
+            borderRadius: '3px',
             padding: '2rem',
-            float: 'right',
-            marginRight: '6rem',
-            width: '600px',
+            minWidth: '50%',
+            marginTop: '2rem',
+            placeSelf: 'center',
           }}
         >
           <Grid container spacing={2}>
             <Grid item xs={6} md={9}>
-              <Typography variant="h5">
-                Welcome to
-                <Typography
-                  component="span"
-                  variant="h5"
-                  display="inline"
-                  sx={{ color: theme.palette.bluegray?.D2, fontWeight: 700 }}
-                >
-                  {' '}
-                  SARASWATI
-                </Typography>
-              </Typography>
 
               <Typography variant="h3" sx={{ fontWeight: 500, mb: '1rem' }}>
                 Sign in
