@@ -17,6 +17,12 @@ function MeasurementYearSelector() {
     if (storedYear && availableYears.includes(Number(storedYear))) {
       datastoreActions.setMeasurementYear(Number(storedYear));
     }
+    if (!storedYear && !measurementYear) {
+      // If no year is stored, set the default to the first available year
+      const defaultYear = availableYears[0];
+      datastoreActions.setMeasurementYear(defaultYear);
+      localStorage.setItem('selectedYear', defaultYear);
+    }
   }, []);
 
   const handleYearChange = (event) => {
@@ -51,7 +57,7 @@ function MeasurementYearSelector() {
       <Select
         labelId="measurement-year-select-label"
         id="measurement-year-select"
-        value={measurementYear}
+        value={measurementYear || ''}
         onChange={handleYearChange}
         label="Year"
         data-testid="measurement-year-selector"

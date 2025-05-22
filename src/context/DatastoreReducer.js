@@ -61,7 +61,7 @@ export const initialState = {
     healthcareCoverages: [],
     healthcarePractitioners: [],
   },
-  measurementYear: 2022,
+  measurementYear: undefined,
 };
 
 export const DatastoreReducer = (state, action) => {
