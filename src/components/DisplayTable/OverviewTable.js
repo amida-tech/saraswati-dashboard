@@ -18,7 +18,8 @@ export default function OverviewTable({
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
   const [checkboxColors, setCheckboxColors] = useState('');
-  const [selectionModel, setSelectionModel] = useState([]);
+  // eslint-disable-next-line max-len
+  const [rowSelectionModel, setRowSelectionModel] = useState(() => currentResults?.map((m) => m.label) ?? []);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,11 +47,11 @@ export default function OverviewTable({
     setCheckboxColors(colorMaps);
     setColumns(columnData);
     setRows(rowData);
-    setSelectionModel(() => rowData.map((r) => r.id));
+    setRowSelectionModel(() => rowData.map((r) => r.id));
   }, [currentResults, colorMap, headerInfo]);
 
-  const handleSelectionModelChange = (event) => {
-    setSelectionModel(event);
+  const handleRowSelectionModelChange = (event) => {
+    setRowSelectionModel(event);
 
     const newSelections = event
       .map((label) => currentResults
@@ -89,9 +90,9 @@ export default function OverviewTable({
         checkboxSelection
         showCellRightBorder={false}
         showColumnRightBorder={false}
-        onSelectionModelChange={(event) => handleSelectionModelChange(event)}
+        rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={(event) => handleRowSelectionModelChange(event)}
         onRowClick={(event) => handleRowClick(event)}
-        selectionModel={selectionModel}
         components={{
           Toolbar: GridToolbar,
         }}

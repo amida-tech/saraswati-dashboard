@@ -31,8 +31,8 @@ export default function Notification({ status }) {
         rel: 'noopener noreferrer',
         pathto: '',
       }}
-      noResultsALERT
-      forwardBtn="refresh"
+      noResultsAlert
+      buttonText="refresh"
       handleResetData={() => handleRefreshPage()}
     >
       An error occurred while fetching member data. If the error persists, please contact your system administrator.
@@ -41,9 +41,9 @@ export default function Notification({ status }) {
 }
 
 Notification.propTypes = {
-  status: PropTypes.number, // status is of type number
+  status: PropTypes.number,
 };
 
 Notification.defaultProps = {
-  status: 400, // Defaulting to Bad Request client error for now
+  status: undefined,
 };

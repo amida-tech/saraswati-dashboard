@@ -9,14 +9,14 @@ export default function Alert({
   title,
   options,
   children,
-  noResultsALERT,
+  noResultsAlert,
   handleResetData,
-  forwardBtn,
+  buttonText,
 }) {
   function handleAlert() {
     return openAlert ? setOpenAlert(false) : setOpenAlert(true);
   }
-  if (noResultsALERT) {
+  if (noResultsAlert) {
     return (
       <Dialog
         open={openAlert}
@@ -36,7 +36,7 @@ export default function Alert({
 
         <DialogActions>
           <Button variant="contained" onClick={() => handleResetData()}>
-            {forwardBtn}
+            {buttonText}
           </Button>
         </DialogActions>
       </Dialog>
@@ -80,7 +80,7 @@ export default function Alert({
 }
 
 Alert.propTypes = {
-  forwardBtn: PropTypes.string,
+  buttonText: PropTypes.string,
   openAlert: PropTypes.bool,
   setOpenAlert: PropTypes.func,
   title: PropTypes.string,
@@ -90,17 +90,17 @@ Alert.propTypes = {
     pathto: PropTypes.string,
   }),
   children: PropTypes.string,
-  noResultsALERT: PropTypes.bool,
+  noResultsAlert: PropTypes.bool,
   handleResetData: PropTypes.func,
 };
 
 Alert.defaultProps = {
-  forwardBtn: '',
+  buttonText: '',
   openAlert: false,
   setOpenAlert: () => undefined,
   title: '',
   options: {},
   children: '',
-  noResultsALERT: false,
+  noResultsAlert: false,
   handleResetData: () => undefined,
 };
