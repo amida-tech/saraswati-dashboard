@@ -136,13 +136,13 @@ export default function Login() {
           <Grid container spacing={2} direction="column" sx={{ my: '.5rem' }}>
             <Grid item>
               <Typography variant="h6" sx={{ my: '.5rem' }}>
-                Enter your username or email address
+                Enter your email address
               </Typography>
               <TextField
                 variant="outlined"
                 fullWidth
                 required
-                label="Username/Email"
+                label="Email"
                 id="LoginEmailInput"
                 type="email"
                 margin="dense"
@@ -154,7 +154,7 @@ export default function Login() {
                     backgroundColor: theme.palette.bluegray?.L5,
                   },
                 }}
-                placeholder="Username or email address"
+                placeholder="Email address"
               />
             </Grid>
             <Grid item>
@@ -184,14 +184,12 @@ export default function Login() {
               component={RouterLink}
               color="primary"
               underline="none"
-              to="#pablo"
-              disabled
+              to="#forgot-password"
               sx={{
                 m: '1rem 0 0 0',
                 alignSelf: 'end',
                 ':hover': {
                   pointerEvents: 'auto',
-                  cursor: 'not-allowed',
                 },
               }}
             >

@@ -4,10 +4,10 @@ import {
 } from 'react-router-dom'
 import { ThemeProvider } from '@emotion/react'
 import { Snackbar } from '@mui/material'
+import Register from 'views/auth/Register'
 import theme from './assets/styles/AppTheme'
 import ProtectedRoutes from './ProtectedRoutes'
 import Login from './views/auth/Login'
-import Register from './views/auth/Register'
 import LoadingPage from './components/Utilities/LoadingPage'
 import { validateAccessToken } from './components/Common/Controller'
 
