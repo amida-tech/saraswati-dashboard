@@ -6,8 +6,7 @@ import { ThemeProvider } from '@emotion/react'
 import { Snackbar } from '@mui/material'
 import theme from './assets/styles/AppTheme'
 import ProtectedRoutes from './ProtectedRoutes'
-import Login from './views/auth/Login'
-import Register from './views/auth/Register'
+import Welcome from './views/auth/Welcome'
 import LoadingPage from './components/Utilities/LoadingPage'
 import { validateAccessToken } from './components/Common/Controller'
 
@@ -64,8 +63,8 @@ export default function App() {
       />
       <BrowserRouter>
         <Routes>
-          <Route path="/welcome" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/register" element={<Welcome />} />
           <Route
             path="*"
             element={

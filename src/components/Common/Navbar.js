@@ -7,6 +7,7 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import theme from '../../assets/styles/AppTheme';
+import Logo from '../../assets/img/saraswati-logo.png';
 
 const logout = () => {
   localStorage.removeItem('token');
@@ -18,7 +19,11 @@ export default function Navbar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar sx={{ backgroundColor: theme.palette?.bluegray.D4 }}>
         <Toolbar position="fixed">
-          <Box sx={{ pl: '.7rem' }}>
+          <Box sx={{
+            pl: '.7rem', display: 'flex', alignItems: 'center', gap: '1rem',
+          }}
+          >
+            <img style={{ height: '2rem' }} src={Logo} alt="Saraswati logo" />
             <Link
               sx={{ color: theme.palette?.bluegray.L4 }}
               component={RouterLink}
