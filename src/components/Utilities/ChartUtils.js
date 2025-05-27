@@ -144,7 +144,7 @@ export const DisplayDataFormatter = (
 
     newChartDisplay.push({
       color: '#222222',
-      name: '2024 Composite Average',
+      name: 'MY2024 Composite Average',
       data: Array(sortedData.length).fill(measureAvgValue),
       date: sortedData.map((entry) => entry.date),
     });
