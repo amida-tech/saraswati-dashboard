@@ -82,7 +82,13 @@ export default function Welcome() {
 
       <Container maxWidth={false} sx={{ padding: '1rem' }}>
         <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <img style={{ height: '3rem' }} src={Logo} alt="Saraswati logo" />
+          <img
+            style={{
+              height: '4rem', background: '#263238', padding: '8px', borderRadius: '8px',
+            }}
+            src={Logo}
+            alt="Saraswati logo"
+          />
           <Typography variant="h5" sx={{ fontWeight: 700 }}>SARASWATI</Typography>
         </Box>
 
