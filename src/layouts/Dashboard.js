@@ -530,8 +530,9 @@ export default function Dashboard() {
               openAlert={noResultsFound}
               setOpenAlert={setNoResultsFound}
               title="NO RESULTS FOUND"
-              noResultsALERT
+              noResultsAlert
               handleResetData={handleResetData}
+              buttonText="Reset"
             >
               No results found. Please click button to reset the data to the initial results.
             </Alert>

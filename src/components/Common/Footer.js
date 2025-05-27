@@ -30,6 +30,7 @@ export default function Footer() {
             width: '90%',
             display: 'flex',
             alignSelf: 'center',
+            whiteSpace: 'nowrap',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', width: '95%' }}>

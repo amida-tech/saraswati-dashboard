@@ -94,7 +94,7 @@ export function Footer({ preferences }) {
 }
 
 // we need to return star, percentage, high, low
-export const submeasureResults = (activeMeasure, trends) => {
+export const submeasureResults = (activeMeasure, trends = {}) => {
   // add submeasures
   const { subScoreTrends } = trends
     .slice()

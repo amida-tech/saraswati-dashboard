@@ -55,11 +55,11 @@ describe('Labels render as expected', () => {
     const labelsOnPage = document.getElementsByTagName('label');
     expect(labelsOnPage.length).toBe(2);
   });
-  it('"Username/Email" label renders to page with correct placeholder', () => {
+  it('"Email" label renders to page with correct placeholder', () => {
     render(<BrowserRouter><Login /></BrowserRouter>);
     const labelsOnPage = document.getElementsByTagName('label');
-    const usernameEmailLabel = labelsOnPage[0];
-    expect(usernameEmailLabel.innerHTML.includes('Username/Email')).toBe(true);
+    const emailLabel = labelsOnPage[0];
+    expect(emailLabel.innerHTML.includes('Email')).toBe(true);
   });
   it('"Password" label renders to page with correct placeholder', () => {
     render(<BrowserRouter><Login /></BrowserRouter>);
@@ -76,12 +76,12 @@ describe('Inputs render as expected', () => {
     const inputsOnPage = document.getElementsByTagName('input');
     expect(inputsOnPage.length).toBe(2);
   });
-  it('"Username/Email" input renders to page with correct text', () => {
+  it('"Email" input renders to page with correct text', () => {
     render(<BrowserRouter><Login /></BrowserRouter>);
     const inputsOnPage = document.getElementsByTagName('input');
 
-    const usernameEmailLabel = inputsOnPage[0];
-    expect(usernameEmailLabel.placeholder).toBe('Username or email address');
+    const emailLabel = inputsOnPage[0];
+    expect(emailLabel.placeholder).toBe('Email address');
   });
   it('"Password" input renders to page with correct text', () => {
     render(<BrowserRouter><Login /></BrowserRouter>);

@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import {
-  Box, Grid, Typography,
+  Box, Button, Grid, Typography,
 } from '@mui/material';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
@@ -43,14 +43,16 @@ function ReportBuilder({ store }) {
       </Grid>
       { measure !== undefined
         && (
-        <a
+        <Button
+          color="primary"
+          variant="contained"
           className="report-builder__download-link"
           href={`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/exportCsv?measurementType=${measure}&measurementYear=${datastore.measurementYear}`}
           target="_blank"
           rel="noreferrer"
         >
           Get Report
-        </a>
+        </Button>
         )}
     </Box>
 

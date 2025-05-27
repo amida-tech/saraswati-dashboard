@@ -109,7 +109,6 @@ function DisplayTableContainer({
                 </Grid>
               ) : null}
 
-            {/* NEW TABLE */}
             <OverviewTable
               activeMeasure={activeMeasure}
               headerInfo={headerInfo}
