@@ -370,6 +370,7 @@ export default function Dashboard() {
       displayData,
       colorMap,
       theme,
+      datastore.measureAvgValue,
     );
     if (ChartData.length > 0) {
       setChartData(ChartData);

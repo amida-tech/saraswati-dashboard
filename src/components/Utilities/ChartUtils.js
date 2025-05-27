@@ -101,7 +101,7 @@ export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
   const workingList = {};
   dailyMeasureResults.forEach((item) => {
     if (workingList[item.measure] === undefined
-            || item.date > workingList[item.measure].date) {
+      || item.date > workingList[item.measure].date) {
       workingList[item.measure] = item;
     }
   });
@@ -134,8 +134,21 @@ export const DisplayDataFormatter = (
   displayData,
   colorMap,
   theme,
+  measureAvgValue,
 ) => {
   const newChartDisplay = [];
+  if (displayData.length > 0) {
+    const sortedData = displayData
+      .filter((data) => data.measure === selectedMeasures[0])
+      .sort((a, b) => a.date <= b.date);
+
+    newChartDisplay.push({
+      color: '#222222',
+      name: '2024 Composite Average',
+      data: Array(sortedData.length).fill(measureAvgValue),
+      date: sortedData.map((entry) => entry.date),
+    });
+  }
   currentResults.forEach((cr) => {
     const Measure = cr.measure;
 
@@ -323,7 +336,7 @@ export const lineChartOptions = (
     curve: 'smooth',
     lineCap: 'round',
     width: 4.5,
-    dashArray: 0,
+    dashArray: [16, 0],
   };
 
   const xaxis = {
@@ -366,7 +379,7 @@ export const lineChartOptions = (
               return value.split('T')[0];
             }
             return value;
-          // eslint-disable-next-line no-else-return
+            // eslint-disable-next-line no-else-return
           } else {
             return Date.now();
           }

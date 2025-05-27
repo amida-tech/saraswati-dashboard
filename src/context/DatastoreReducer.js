@@ -62,6 +62,7 @@ export const initialState = {
     healthcarePractitioners: [],
   },
   measurementYear: undefined,
+  measureAvgValue: 71.05,
 };
 
 export const DatastoreReducer = (state, action) => {
