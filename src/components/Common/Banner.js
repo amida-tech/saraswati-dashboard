@@ -1,8 +1,9 @@
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
+import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
-import MeasurementYearSelector from './MeasurmentYearSelector';
+import MeasurementYearSelector from '../Chart/MeasurmentYearSelector';
 
 function Banner({ headerText, lastUpdated }) {
   return (
@@ -11,6 +12,9 @@ function Banner({ headerText, lastUpdated }) {
         <Typography variant="h1" color={theme.palette?.bluegray.D2} className="banner__header">
           {headerText}
         </Typography>
+        <Box className="banner__comparison-selector">
+          <ComparisonSelector />
+        </Box>
         <Box className="banner__year-selector">
           <MeasurementYearSelector />
         </Box>

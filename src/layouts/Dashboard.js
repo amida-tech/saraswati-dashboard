@@ -126,7 +126,7 @@ export default function Dashboard() {
       setFilterActivated(false);
       setNoResultsFound(false);
       setIsLoading(false);
-    } else if (router === 'ALL MEASURES') {
+    } else if (router === 'all') {
       const otherMeasureFinder = filterInfo.results.filter(
         (res) => !res.measure.includes(measure),
       );

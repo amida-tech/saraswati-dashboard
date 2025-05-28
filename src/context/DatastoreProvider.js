@@ -78,6 +78,11 @@ export default function DatastoreProvider({ children }) {
       payload: year,
     }),
 
+    setComparisonMode: (mode) => dispatch({
+      type: 'SET_COMPARISON_MODE',
+      payload: { comparisonMode: mode },
+    }),
+
   }), [dispatch]);
 
   const searchUrl = new URL(baseSearchUrl);

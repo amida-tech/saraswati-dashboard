@@ -61,7 +61,16 @@ export const initialState = {
     healthcareCoverages: [],
     healthcarePractitioners: [],
   },
-  measurementYear: 2022,
+  measurementYear: (() => {
+    const stored = parseInt(localStorage.getItem('selectedYear'), 10);
+    return [2022, 2025].includes(stored) ? stored : 2022;
+  })(),
+  comparisonMode: (() => {
+    const stored = localStorage.getItem('comparisonMode');
+    return ['Default', 'Payors', 'Providers', 'Coverage', 'Practitioners'].includes(stored)
+      ? stored
+      : 'Default';
+  })(),
 };
 
 export const DatastoreReducer = (state, action) => {
@@ -119,9 +128,15 @@ export const DatastoreReducer = (state, action) => {
         status: action.payload,
       };
     case 'SET_MEASUREMENT_YEAR':
+      localStorage.setItem('selectedYear', action.payload);
       return {
         ...state,
         measurementYear: action.payload,
+      };
+    case 'SET_COMPARISON_MODE':
+      return {
+        ...state,
+        comparisonMode: action.payload.comparisonMode,
       };
     default:
       return state;
