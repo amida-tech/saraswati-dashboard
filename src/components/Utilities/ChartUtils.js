@@ -71,9 +71,10 @@ export function getSubMeasureCurrentResultsPerMeasure(givenMeasure, currentResul
   }
   return subMeasureCurrentResults;
 }
-export const createLabel = (measure, info) => {
-  if (info[measure]) {
-    return `${info[measure].displayLabel} - ${info[measure].title}`;
+export const createLabel = (measure, info = {}) => {
+  const key = measure.toLowerCase();
+  if (info[key]) {
+    return `${info[key].displayLabel} – ${info[key].title}`;
   }
   if (measure === 'composite') {
     return 'Composite';
@@ -97,37 +98,40 @@ export const createSubMeasureLabel = (subMeasure, info) => {
 
   return displayLabel;
 };
-export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
+export const calcMemberResults = (dailyMeasureResults, measureInfo = {}) => {
   const workingList = {};
   dailyMeasureResults.forEach((item) => {
-    if (workingList[item.measure] === undefined
-            || item.date > workingList[item.measure].date) {
+    if (
+      workingList[item.measure] === undefined
+      || item.date > workingList[item.measure].date
+    ) {
       workingList[item.measure] = item;
     }
   });
+
   Object.keys(workingList).forEach((key) => {
-    workingList[key].label = createLabel(workingList[key].measure, measureInfo);
-    workingList[key].shortLabel = measureInfo[workingList[key].measure]?.displayLabel;
-    workingList[key].title = measureInfo[workingList[key].measure]?.title;
+    const infoKey = key.toLowerCase();
+    const info = measureInfo[infoKey] || {};
+    workingList[key].label = createLabel(key, measureInfo);
+    workingList[key].shortLabel = info.displayLabel;
+    workingList[key].title = info.title;
     if (workingList[key].subScores) {
-      workingList[key].subScores.forEach((subscore) => {
-        const newSubscore = subscore;
-        newSubscore.label = createSubMeasureLabel(newSubscore.measure, measureInfo);
+      workingList[key].subScores.forEach((sub) => {
+        // eslint-disable-next-line no-param-reassign
+        sub.label = createSubMeasureLabel(sub.measure, measureInfo);
       });
     }
   });
-  const currentResults = Object.values(workingList)
-    .sort((a, b) => {
-      if (a.measure === 'composite') return -1;
-      if (b.measure === 'composite') return 1;
-      return a.measure > b.measure ? 1 : -1;
-    });
 
-  return {
-    results: dailyMeasureResults,
-    currentResults,
-  };
+  const currentResults = Object.values(workingList).sort((a, b) => {
+    if (a.measure === 'composite') return -1;
+    if (b.measure === 'composite') return 1;
+    return a.measure > b.measure ? 1 : -1;
+  });
+
+  return { results: dailyMeasureResults, currentResults };
 };
+
 export const DisplayDataFormatter = (
   currentResults,
   selectedMeasures,

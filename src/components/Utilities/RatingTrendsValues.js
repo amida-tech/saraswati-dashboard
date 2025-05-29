@@ -94,37 +94,30 @@ export function Footer({ preferences }) {
 }
 
 // we need to return star, percentage, high, low
-export const submeasureResults = (activeMeasure, trends = {}) => {
-  // add submeasures
-  const { subScoreTrends } = trends
-    .slice()
-    .find((trend) => trend.measure === activeMeasure.measure)
+export const submeasureResults = (activeMeasure, trends = []) => {
+  const trendObj = trends.find(
+    (t) => t.measure === activeMeasure.measure,
+  ) || {};
+
+  const subScoreTrends = Array.isArray(trendObj.subScoreTrends)
+    ? trendObj.subScoreTrends
+    : [];
 
   const values = {
-    0: {
-      type: 'star',
-      measure: activeMeasure.measure,
-    },
-    1: {
-      type: 'percentage',
-      measure: activeMeasure.measure,
-    },
+    0: { type: 'star', measure: activeMeasure.measure },
+    1: { type: 'percentage', measure: activeMeasure.measure },
   };
 
-  const manySubscores = trends.find(
-    (trend) => trend.measure === activeMeasure.measure,
-  ).subScoreTrends.length > 1
-
-  if (manySubscores) {
-    const sorted = subScoreTrends
-      // High Severity | WrongComparisonOperatorInSort (tldr. - instead of <)
-      .sort((prev, curr) => prev.percentChange - curr.percentChange)
-    const highLows = [sorted.at(-1), sorted[0]]
-    highLows.forEach((trend, idx) => {
-      Object.assign(values, {
-        [idx + 2]:
-          { type: 'percentage', measure: trend.measure },
-      });
+  if (subScoreTrends.length > 1) {
+    const sorted = subScoreTrends.slice().sort(
+      (a, b) => a.percentChange - b.percentChange,
+    );
+    const highLow = [sorted[sorted.length - 1], sorted[0]];
+    highLow.forEach((trend, idx) => {
+      values[idx + 2] = {
+        type: 'percentage',
+        measure: trend.measure,
+      };
     });
   }
 

@@ -49,29 +49,39 @@ export async function validateAccessToken(accessToken) {
 }
 
 // Filter Search
-export async function filterSearch(searchMeasure, searchArray, isComposite) {
+export async function filterSearch(searchMeasure, searchArrayOrFilters, isComposite) {
   try {
+    const filters = Array.isArray(searchArrayOrFilters)
+      ? { [searchMeasure]: searchArrayOrFilters }
+      : searchArrayOrFilters;
+
     const searchObject = {
       submeasure: isComposite ? false : searchMeasure,
-      filters: searchArray,
+      filters,
       isComposite,
     };
-    const filterSearchURL = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}/filter`);
-    const filterResults = await axios.post(filterSearchURL, searchObject).then((res) => res.data);
+
+    const filterSearchURL = new URL(
+      `${env.REACT_APP_HEDIS_MEASURE_API_URL}/filter`,
+    );
+
+    const filterResults = (await axios.post(filterSearchURL, searchObject)).data;
+
     if (filterResults.status === 'Success') {
       const { members, dailyMeasureResults } = filterResults;
       return {
-        status: filterResults.status,
+        status: 'Success',
         members,
         dailyMeasureResults,
       };
     }
+
     return {
       status: 'Failed',
       members: [],
       dailyMeasureResults: [],
     };
-  } catch (error) {
+  } catch {
     return {
       status: 'Failed',
       members: [],
@@ -79,6 +89,7 @@ export async function filterSearch(searchMeasure, searchArray, isComposite) {
     };
   }
 }
+
 export async function infoDataFetch() {
   try {
     const infoUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}measures/info`);

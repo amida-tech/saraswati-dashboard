@@ -1,7 +1,8 @@
 import { Grid, Typography } from '@mui/material';
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
+import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
 
 import FilterDrawer from '../FilterMenu/FilterDrawer';
@@ -21,7 +22,7 @@ import {
   currentFiltersProps,
   setCurrentTimelineProps,
   isCompositeProps,
-  setCompositeProps,
+  setIsCompositeProps,
   setTableFilterProps,
   currentResultsProps,
   filterDisabledProps,
@@ -60,7 +61,7 @@ function ChartContainer({
   filterDrawerOpen,
   toggleFilterDrawer,
   isComposite,
-  setComposite,
+  setIsComposite,
   setTableFilter,
   isLoading,
   currentResults,
@@ -76,6 +77,11 @@ function ChartContainer({
   setFilterInfo,
   chartData,
 }) {
+  const {
+    datastore: {
+      comparisonMode,
+    },
+  } = useContext(DatastoreContext);
   const handleFilterChange = (filterOptions) => {
     setCurrentFilters(filterOptions);
     handleFilteredDataUpdate(filterOptions, currentTimeline);
@@ -87,23 +93,25 @@ function ChartContainer({
 
   return (
     <div className="chart-container">
-      <FilterDrawer
-        filterDrawerOpen={filterDrawerOpen}
-        toggleFilterDrawer={toggleFilterDrawer}
-        currentFilters={currentFilters}
-        handleFilterChange={handleFilterChange}
-        additionalFilterOptions={additionalFilterOptions}
-        setFilterActivated={setFilterActivated}
-        setIsLoading={setIsLoading}
-        setComposite={setComposite}
-        setTableFilter={setTableFilter}
-        setRowEntries={setRowEntries}
-        handleResetData={handleResetData}
-        setFilterInfo={setFilterInfo}
-      />
+      { comparisonMode !== 'Default' && (
+        <FilterDrawer
+          filterDrawerOpen={filterDrawerOpen}
+          toggleFilterDrawer={toggleFilterDrawer}
+          currentFilters={currentFilters}
+          handleFilterChange={handleFilterChange}
+          additionalFilterOptions={additionalFilterOptions}
+          setFilterActivated={setFilterActivated}
+          setIsLoading={setIsLoading}
+          setIsComposite={setIsComposite}
+          setTableFilter={setTableFilter}
+          setRowEntries={setRowEntries}
+          handleResetData={handleResetData}
+          setFilterInfo={setFilterInfo}
+        />
+      )}
       <ChartHeader
         isComposite={isComposite}
-        setComposite={setComposite}
+        setIsComposite={setIsComposite}
         setTabValue={setTabValue}
         setTableFilter={setTableFilter}
         isLoading={isLoading}
@@ -124,6 +132,7 @@ function ChartContainer({
           />
         </Grid>
         <Grid item className="chart-container__chart">
+          {/* TODO UPDATE HERE */}
           <ReactApexChart
             options={lineChartOptions(
               {
@@ -157,7 +166,7 @@ ChartContainer.propTypes = {
   currentFilters: currentFiltersProps,
   setCurrentTimeline: setCurrentTimelineProps,
   isComposite: isCompositeProps,
-  setComposite: setCompositeProps,
+  setIsComposite: setIsCompositeProps,
   setTableFilter: setTableFilterProps,
   currentResults: currentResultsProps,
   filterDisabled: filterDisabledProps,
@@ -183,7 +192,7 @@ ChartContainer.defaultProps = {
   currentFilters: [],
   setCurrentTimeline: () => undefined,
   isComposite: true,
-  setComposite: () => undefined,
+  setIsComposite: () => undefined,
   setTableFilter: () => undefined,
   currentResults: [],
   filterDisabled: true,

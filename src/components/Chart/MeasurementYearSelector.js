@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import {
   FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
@@ -8,16 +8,6 @@ function MeasurementYearSelector() {
   const { datastore, datastoreActions } = useContext(DatastoreContext);
   const { measurementYear } = datastore;
   const availableYears = [2022, 2025];
-
-  // check localStorage for saved year
-  useEffect(() => {
-    const storedYear = localStorage.getItem('selectedYear');
-
-    // Only update if there's a valid year in localStorage
-    if (storedYear && availableYears.includes(Number(storedYear))) {
-      datastoreActions.setMeasurementYear(Number(storedYear));
-    }
-  }, []);
 
   const handleYearChange = (event) => {
     const newYear = event.target.value;

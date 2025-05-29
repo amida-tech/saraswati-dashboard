@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 const { getMeasureCompliance } = require('./GeneralUtil');
 
 const memberIdTip = 'The member\'s member ID.';
@@ -42,67 +43,68 @@ const allValuesEqual = (valueArray) => {
   return true;
 };
 
-const formatData = (memberResults, activeMeasure, storeInfo, tableFilter) => {
+const formatData = (
+  memberResults = [],
+  activeMeasure = '',
+  storeInfo = {},
+  tableFilter,
+) => {
   const formattedData = [];
   let workingData = [];
 
-  const subMeasures = Object.keys(storeInfo).filter((item) => item.includes(activeMeasure));
+  const safeStore = storeInfo || {};
+  const subMeasures = Object.keys(safeStore).filter((item) => item.includes(activeMeasure));
 
-  if (activeMeasure !== 'composite' && activeMeasure !== '') {
-    // loop through member results for active measure
-    memberResults.forEach((res) => {
-      if (res.measurementType === activeMeasure) {
-        workingData.push(res);
-      }
-    });
-    // workingData = memberResults
-    //   .filter((result) => activeMeasure.measure.includes(result.measurementType))
+  if (activeMeasure && activeMeasure !== 'composite') {
+    workingData = memberResults.filter(
+      (res) => res.measurementType === activeMeasure,
+    );
   } else {
     workingData = memberResults;
   }
-  if (workingData && activeMeasure) {
-    workingData.forEach((memberResult) => {
-      const memberResultArray = [];
-      const complianceResult = getMeasureCompliance(memberResult);
-      if (complianceResult.length === 1) {
+
+  workingData.forEach((memberResult) => {
+    const memberResultArray = [];
+    const complianceResult = getMeasureCompliance(memberResult);
+
+    if (complianceResult.length === 1) {
+      const key0 = subMeasures[0] || '';
+      memberResultArray.push({
+        memberID: memberResult.memberId,
+        measure: key0,
+        label: safeStore[key0]?.displayLabel,
+        value: complianceResult[0],
+      });
+    } else {
+      complianceResult.forEach((value, idx) => {
+        const key = subMeasures[idx + 1] || '';
         memberResultArray.push({
           memberID: memberResult.memberId,
-          measure: subMeasures[0],
-          label: storeInfo[subMeasures[0]].displayLabel,
-          value: complianceResult[0],
+          measure: key,
+          label: safeStore[key]?.displayLabel,
+          value,
         });
-      } else {
-        complianceResult.forEach((result, index) => {
-          memberResultArray.push({
-            memberID: memberResult.memberId,
-            measure: subMeasures[index + 1],
-            label: storeInfo[subMeasures[index + 1]]?.displayLabel,
-            value: result,
-          });
-        });
+      });
+    }
+
+    const formattedResult = {
+      value: memberResult.memberId,
+      label: memberResult.memberId,
+      type: 'member',
+    };
+
+    if (memberResultArray.length === 1) {
+      formattedResult[subMeasures[0]] = memberResultArray[0].value.toString();
+    } else {
+      formattedResult[subMeasures[0]] = allValuesEqual(memberResultArray).toString();
+      for (let i = 1; i < subMeasures.length; i += 1) {
+        const mr = memberResultArray[i - 1];
+        if (mr) formattedResult[subMeasures[i]] = mr.value.toString();
       }
+    }
 
-      const formattedResult = {
-        value: memberResult.memberId,
-        label: memberResult.memberId,
-        type: 'member',
-      };
-
-      if (memberResultArray.length === 1) {
-        formattedResult[subMeasures[0]] = memberResultArray[0].value.toString();
-      } else {
-        formattedResult[subMeasures[0]] = allValuesEqual(memberResultArray).toString();
-        for (let k = 1; k < subMeasures.length; k += 1) {
-          const memberFoundResult = memberResultArray[k - 1];
-          if (memberFoundResult) {
-            formattedResult[subMeasures[k]] = memberFoundResult.value.toString();
-          }
-        }
-      }
-
-      formattedData.push(formattedResult);
-    });
-  }
+    formattedData.push(formattedResult);
+  });
 
   return filterByNonCompliance(formattedData, tableFilter);
 };

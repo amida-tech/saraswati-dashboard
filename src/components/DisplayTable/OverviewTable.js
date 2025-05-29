@@ -64,8 +64,6 @@ export default function OverviewTable({
   const handleRowClick = (event) => {
     if (activeMeasure.measure === 'composite') {
       navigate((`/${event.row.value}`));
-    } else {
-      // alert action here -- see MTR
     }
   };
 

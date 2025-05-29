@@ -10,7 +10,7 @@ $block-class: 'banner';
         & &__header-container {
             display: grid;
             align-items: center;
-            grid-template-columns: 8fr 1fr 1fr;
+            grid-template-columns: 8fr 1fr auto;
             margin-bottom: .5rem;
         }
 

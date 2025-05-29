@@ -29,7 +29,7 @@ export const DatastoreContext = createContext(initialState);
 
 export default function DatastoreProvider({ children }) {
   const [datastore, dispatch] = useReducer(DatastoreReducer, initialState);
-  const { measurementYear } = datastore;
+  const { measurementYear, comparisonMode } = datastore;
 
   const datastoreActions = useMemo(() => ({
     setResults: (results, info) => dispatch({
@@ -139,7 +139,7 @@ export default function DatastoreProvider({ children }) {
         datastoreActions.setStatus(error.request.status)
       });
     }
-  }, [datastoreActions, measurementYear]);
+  }, [datastoreActions, measurementYear, comparisonMode]);
 
   const reducerValue = useMemo(() => ({
     datastore, datastoreActions,

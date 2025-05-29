@@ -10,7 +10,7 @@ import theme from '../../assets/styles/AppTheme';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import {
   additionalFilterOptionsProps, currentFiltersProps, filterDrawerOpenProps,
-  handleFilterChangeProps, handleResetDataProps, setCompositeProps,
+  handleFilterChangeProps, handleResetDataProps, setIsCompositeProps,
   setFilterActivatedProps, setIsLoadingProps, setRowEntriesProps,
   setTableFilterProps, toggleFilterDrawerProps,
 } from '../Utilities/PropTypes';
@@ -27,7 +27,7 @@ function FilterDrawer({
   setFilterActivated,
   additionalFilterOptions,
   setIsLoading,
-  setComposite,
+  setIsComposite,
   setTableFilter,
   setRowEntries,
   handleResetData,
@@ -135,7 +135,7 @@ function FilterDrawer({
     datastoreActions?.setMemberResults([]);
     setTableFilter([]);
     setRowEntries([]);
-    setComposite(true);
+    setIsComposite(true);
     setIsLoading(false);
   };
 
@@ -153,7 +153,7 @@ function FilterDrawer({
     filterOptions.sum = filterDrawerItemData.sumCalculator(filterOptions, additionalFilterOptions);
     handleFilterChange(filterOptions);
     toggleFilterDrawer(false);
-    setComposite(true);
+    setIsComposite(true);
   };
 
   const sliderValueText = (value) => `${value}%`;
@@ -315,7 +315,7 @@ FilterDrawer.propTypes = {
   setFilterActivated: setFilterActivatedProps,
   additionalFilterOptions: additionalFilterOptionsProps,
   setIsLoading: setIsLoadingProps,
-  setComposite: setCompositeProps,
+  setIsComposite: setIsCompositeProps,
   setTableFilter: setTableFilterProps,
   setRowEntries: setRowEntriesProps,
   handleResetData: handleResetDataProps,
@@ -338,7 +338,7 @@ FilterDrawer.defaultProps = {
   setFilterActivated: () => undefined,
   additionalFilterOptions: {},
   setIsLoading: () => undefined,
-  setComposite: () => undefined,
+  setIsComposite: () => undefined,
   setTableFilter: () => undefined,
   setRowEntries: () => undefined,
   handleResetData: () => undefined,

@@ -57,10 +57,12 @@ export default function Dashboard() {
   const [displayData, setDisplayData] = useState(
     datastore.results.map((result) => ({ ...result })),
   );
-  const [isComposite, setComposite] = useState(true);
+  const [isComposite, setIsComposite] = useState(true);
   const [currentResults, setCurrentResults] = useState([]);
   const [colorMap, setColorMap] = useState([]);
-  const [selectedMeasures, setSelectedMeasures] = useState(Object.keys(datastore.info));
+  const [selectedMeasures, setSelectedMeasures] = useState(
+    () => Object.keys(datastore.info ?? {}),
+  );
   const [currentFilters, setCurrentFilters] = useState([]);
   const [additionalFilterOptions, setAdditionalFilterOptions] = useState([]);
   const [currentTimeline, setCurrentTimeline] = useState(datastore.defaultTimelineState);
@@ -76,6 +78,7 @@ export default function Dashboard() {
   // CLEANS SLATE FUNCTION
   const handleResetData = (router) => {
     scrollTop();
+    datastoreActions.setComparisonMode('Default');
     if (router === undefined) {
       setIsLoading(true);
       setCurrentTimeline(datastore.defaultTimelineState);
@@ -90,7 +93,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(true);
+        setIsComposite(true);
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(Object.keys(datastore.info));
@@ -107,7 +110,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
@@ -136,7 +139,7 @@ export default function Dashboard() {
           setSelectedMeasures(filterInfo.currentResults.map((result) => result.measure));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
-        setComposite(true);
+        setIsComposite(true);
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -196,7 +199,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(true);
+        setIsComposite(true);
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults.map((result) => result.measure));
@@ -213,7 +216,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
@@ -260,14 +263,14 @@ export default function Dashboard() {
           setSelectedMeasures(filterInfo.currentResults.map((result) => result.measure));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
-        setComposite(true);
+        setIsComposite(true);
         setColorMap(ColorMapping(filterInfo.currentResults));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
         setHeaderInfo(headerData(isComposite));
       } else {
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           filterInfo.currentResults,
@@ -302,7 +305,6 @@ export default function Dashboard() {
     if (!isComposite) {
       // FILTERS EXIST
       if (filterInfo.members.length > 0) {
-        // 120 IS THE TOTAL AND 15 IS THE EXPECTED AMOUNT
         const selectMemberResults = filterInfo.members
           .filter((result) => activeMeasure.measure.includes(result.measurementType));
 
@@ -346,7 +348,7 @@ export default function Dashboard() {
         datastore.info,
         tableFilter,
       ));
-      setComposite(false);
+      setIsComposite(false);
       setTabValue('members');
     } else {
       setTabValue('overview');
@@ -361,8 +363,9 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
+  console.log('comparisonMode: ', datastore.comparisonMode)
   // FORMATS DATA FOR CHART COMPONENT
-  const ChartDataGenerator = useCallback(() => {
+  const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
     const ChartData = DisplayDataFormatter(
       currentResults,
@@ -380,9 +383,9 @@ export default function Dashboard() {
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
     if (datastore.datastoreLoading === false) {
-      ChartDataGenerator();
+      chartDataGenerator();
     }
-  }, [currentResults, selectedMeasures, datastore, displayData, ChartDataGenerator]);
+  }, [currentResults, selectedMeasures, datastore, displayData, chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
@@ -448,7 +451,7 @@ export default function Dashboard() {
       setCurrentTimeline(newFilterInfo.timeline);
       setFilterInfo(newFilterInfo);
       if (direction) {
-        setComposite(true);
+        setIsComposite(true);
       }
       setFilterActivated(true);
     } else {
@@ -509,7 +512,13 @@ export default function Dashboard() {
         <Box sx={{ flexGrow: 2 }}>
           <Grid container spacing={4}>
             <Grid item className="dashboard__summary" sm={12}>
-              <Banner headerText="HEDIS Dashboard" lastUpdated={datastore.lastUpdated} />
+              <Banner
+                headerText="HEDIS Dashboard"
+                lastUpdated={datastore.lastUpdated}
+                activeMeasure={activeMeasure}
+                handleResetData={handleResetData}
+                setIsLoading={setIsLoading}
+              />
             </Grid>
             {!noResultsFound && (
             <Snackbar
@@ -549,7 +558,7 @@ export default function Dashboard() {
                     filterDrawerOpen={filterDrawerOpen}
                     toggleFilterDrawer={toggleFilterDrawer}
                     isComposite={isComposite}
-                    setComposite={setComposite}
+                    setIsComposite={setIsComposite}
                     setTableFilter={setTableFilter}
                     isLoading={isLoading}
                     currentResults={currentResults}
@@ -583,8 +592,8 @@ export default function Dashboard() {
                 )}
             </Grid>
             <Grid item xs={12}>
-              { isLoading
-                ? <Skeleton variant="rectangular" height={500} />
+              { isLoading || (datastore.comparisonMode !== 'Default')
+                ? <div />
                 : (
                   <div className="chart-container">
                     <DisplayTableContainer

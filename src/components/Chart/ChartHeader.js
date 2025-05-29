@@ -53,7 +53,7 @@ function ChartHeader({
     </Grid>
   );
 
-  return isComposite ? titleDisplay : linkDisplay;
+  return isComposite || comparisonMode !== 'Default' ? titleDisplay : linkDisplay;
 }
 
 ChartHeader.propTypes = {
