@@ -1,3 +1,6 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable object-curly-newline */
+/* eslint-disable react/prop-types */
 import { Grid, Typography } from '@mui/material';
 import { createContext, useContext } from 'react';
 import ReactApexChart from 'react-apexcharts';
@@ -8,7 +11,7 @@ import theme from '../../assets/styles/AppTheme';
 import FilterDrawer from '../FilterMenu/FilterDrawer';
 import ChartBar from './ChartBar';
 import ChartHeader from './ChartHeader';
-import { lineChartOptions } from '../Utilities/ChartUtils';
+import { lineChartOptions, displayDataFormatter } from '../Utilities/ChartUtils';
 
 import {
   activeMeasureProps,
@@ -40,9 +43,7 @@ import {
 export const firstRenderContext = createContext(true);
 
 function labelGenerator(measure) {
-  if (!measure?.label) {
-    return '';
-  }
+  if (!measure?.label) return '';
   const { label } = measure;
   return (
     <Grid sx={{ color: theme.palette?.bluegray.D4 }} className="chart-container__return-measure-labels">
@@ -78,22 +79,84 @@ function ChartContainer({
   chartData,
 }) {
   const {
-    datastore: {
-      comparisonMode,
-    },
+    datastore: { comparisonMode, comparisonResults, filterOptions },
   } = useContext(DatastoreContext);
-  const handleFilterChange = (filterOptions) => {
-    setCurrentFilters(filterOptions);
-    handleFilteredDataUpdate(filterOptions, currentTimeline);
+
+  const handleFilterChange = (options) => {
+    setCurrentFilters(options);
+    handleFilteredDataUpdate(options, currentTimeline);
   };
   const handleTimelineChange = (timelineUpdate) => {
     setCurrentTimeline(timelineUpdate);
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
+  // CHART DATA PREPARATION
+  let chartSeries;
+  let chartCategories;
+  let chartOptions;
+
+  const isComparison = comparisonMode
+    && comparisonMode !== 'Default'
+    && Array.isArray(comparisonResults)
+    && comparisonResults.length > 0;
+
+  if (isComparison) {
+    // --- COMPARISON MODE ---
+    // e.g. payors, healthcareProviders, etc
+    const filterKey = Object.keys(filterOptions)
+      .find((k) => comparisonMode.toLowerCase().includes(k.toLowerCase()));
+    const comparisonItems = filterOptions?.[filterKey] || [];
+    const selectedComparisonItems = comparisonItems.map((item) => item.value);
+
+    // Prepare all series keys (values) from the filterOptions in this comparison mode
+    const allSeries = selectedComparisonItems.map((value) => comparisonResults
+      .find((item) => (item.comparisonItem === value))).filter(Boolean);
+
+    chartSeries = displayDataFormatter(
+      allSeries,
+      selectedComparisonItems,
+      comparisonResults,
+      colorMap,
+      theme,
+      comparisonMode,
+      filterOptions,
+    );
+    chartCategories = [
+      ...new Set(comparisonResults.map((entry) => entry.date)),
+    ].sort();
+    chartOptions = lineChartOptions({
+      colorMap,
+      currentTimeline,
+      chartData: chartSeries,
+      theme,
+      categories: chartCategories,
+    });
+  } else {
+    // --- DEFAULT (SINGLE MEASURE) MODE ---
+    chartSeries = chartData;
+    // Try to extract categories from chartData
+    if (chartSeries.length && Array.isArray(chartSeries[0].data)) {
+      chartCategories = chartSeries[0].dates || [];
+      // If not present, fallback to indices
+      if (!chartCategories.length) {
+        chartCategories = chartSeries[0].data.map((_, idx) => idx);
+      }
+    } else {
+      chartCategories = [];
+    }
+    chartOptions = lineChartOptions({
+      colorMap,
+      currentTimeline,
+      chartData: chartSeries,
+      theme,
+      categories: chartCategories,
+    });
+  }
+
   return (
     <div className="chart-container">
-      { comparisonMode !== 'Default' && (
+      {comparisonMode !== 'Default' && (
         <FilterDrawer
           filterDrawerOpen={filterDrawerOpen}
           toggleFilterDrawer={toggleFilterDrawer}
@@ -132,24 +195,14 @@ function ChartContainer({
           />
         </Grid>
         <Grid item className="chart-container__chart">
-          {/* TODO UPDATE HERE */}
           <ReactApexChart
-            options={lineChartOptions(
-              {
-                colorMap,
-                currentTimeline,
-                chartData,
-                theme,
-              },
-            )}
-            series={chartData}
+            options={chartOptions}
+            series={chartSeries}
             type="line"
             width="100%"
             height="100%"
           />
-
         </Grid>
-
       </Grid>
     </div>
   );

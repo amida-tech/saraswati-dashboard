@@ -25,7 +25,7 @@ import { scrolly, scrollTop } from '../components/Utilities/ScrollNavigate';
 
 import {
   calcMemberResults,
-  DisplayDataFormatter,
+  displayDataFormatter,
   expandSubMeasureResults, filterByDOC,
   filterByPercentage,
   filterByStars,
@@ -363,29 +363,27 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
-  console.log('comparisonMode: ', datastore.comparisonMode)
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
-    const ChartData = DisplayDataFormatter(
+    const newChartData = displayDataFormatter(
       currentResults,
       selectedMeasures,
       displayData,
       colorMap,
       theme,
     );
-    if (ChartData.length > 0) {
-      setChartData(ChartData);
-    }
+    setChartData(newChartData && newChartData.length > 0 ? newChartData : []);
     setIsLoading(false);
-  }, [currentResults, displayData, selectedMeasures, colorMap]);
+  }, [currentResults, displayData, selectedMeasures, colorMap, theme, datastore.comparisonMode]);
 
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
     if (datastore.datastoreLoading === false) {
       chartDataGenerator();
     }
-  }, [currentResults, selectedMeasures, datastore, displayData, chartDataGenerator]);
+  // eslint-disable-next-line max-len
+  }, [currentResults, selectedMeasures, datastore, displayData, chartDataGenerator, datastore.comparisonMode]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
@@ -544,8 +542,8 @@ export default function Dashboard() {
               No results found. Please click button to reset the data to the initial results.
             </Alert>
             <Grid item xs={12}>
-              { isLoading || noResultsFound || chartData.length === 0
-                ? <Skeleton variant="rectangular" height={300} />
+              { isLoading || noResultsFound
+                ? <Skeleton variant="rectangular" height="500" />
                 : (
                   <ChartContainer
                     additionalFilterOptions={additionalFilterOptions}
@@ -581,7 +579,7 @@ export default function Dashboard() {
             </Grid>
             <Grid item xs={12} className="rating-trends__container">
               { isLoading
-                ? <Skeleton variant="rectangular" height={200} />
+                ? <Skeleton variant="rectangular" height="200" />
                 : (
                   <RatingTrends
                     currentResults={datastore.currentResults}

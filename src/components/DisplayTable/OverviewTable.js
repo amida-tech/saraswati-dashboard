@@ -90,7 +90,7 @@ export default function OverviewTable({
         showColumnRightBorder={false}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(event) => handleRowSelectionModelChange(event)}
-        onRowClick={(event) => handleRowClick(event)}
+        onRowDoubleClick={(event) => handleRowClick(event)}
         components={{
           Toolbar: GridToolbar,
         }}

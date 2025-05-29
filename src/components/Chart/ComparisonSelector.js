@@ -25,9 +25,11 @@ const comparisonModes = [
 export default function ComparisonSelector({ activeMeasure, handleResetData, setIsLoading }) {
   const {
     datastore: {
-      measurementYear, comparisonMode,
+      measurementYear, comparisonMode, filterOptions,
     },
-    datastoreActions,
+    datastoreActions: {
+      setComparisonResults, setComparisonMode,
+    },
   } = useContext(DatastoreContext);
   const [error, setError] = useState(undefined);
 
@@ -40,7 +42,7 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
 
   const handleChange = async (e) => {
     const mode = e.target.value;
-    datastoreActions.setComparisonMode(mode);
+    setComparisonMode(mode);
     
     if (mode === 'Default') {
       setIsLoading(true)
@@ -57,9 +59,12 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
       const comparisonPromise = await axios.post(comparisonURL, { ...comparisonBody });
       
       console.log(comparisonPromise)
+      console.log('filter options: ', filterOptions)
+      // I need to provide the filter options as the "measures" for the calcmemberResults
+      // because this ultimately crafts the currentResults object the chart ingests 
   
       if (comparisonPromise.status === 200) {
-        datastoreActions.setResults(comparisonPromise.data)
+        setComparisonResults(comparisonPromise.data)
       } else {
         setError(comparisonPromise.status)
       }

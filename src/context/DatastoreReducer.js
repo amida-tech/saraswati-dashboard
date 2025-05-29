@@ -133,6 +133,11 @@ export const DatastoreReducer = (state, action) => {
         ...state,
         comparisonMode: action.payload.comparisonMode,
       };
+    case 'SET_COMPARISON_RESULTS':
+      return {
+        ...state,
+        comparisonResults: action.payload,
+      };
     default:
       return state;
   }

@@ -83,6 +83,11 @@ export default function DatastoreProvider({ children }) {
       payload: { comparisonMode: mode },
     }),
 
+    setComparisonResults: (payload) => dispatch({
+      type: 'SET_COMPARISON_RESULTS',
+      payload,
+    }),
+
   }), [dispatch]);
 
   const searchUrl = new URL(baseSearchUrl);
