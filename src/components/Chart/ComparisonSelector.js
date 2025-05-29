@@ -41,43 +41,7 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
   const handleChange = async (e) => {
     const mode = e.target.value;
     datastoreActions.setComparisonMode(mode);
-    // perhaps iterate through each available item of the four metrics and create
-    // an average compliance, and return that is our dataResults?
-    // it is horrible and we would make a request for every item in a metric
-    // but whatever, then once we have aggregated scores each day per metric
-    // we can then... glue them all together like we do with measures and voila
-    // "measure" would really be the "metric" but whatever, the chart would eat it up
-
-    // the new aggregateByDate function will take the dataResults mass and parse it down
-    // to an average if we can at least filter the data by metric first... lort, that filter drawer
-
-    // ----------------
-
-    // get the actual name of the filter
-    // const metric = Object.entries(aliasObj).find(([k, v]) => k === comparisonMode ?? v);
-    // console.log('metric: ', metric)
-    // // now we need to go through and fetch the data for each item of the metric,
-    // // aggregate, and then push to the metricObj
-    // const metricObj = filterOptions[metric].map(async (item, idx) => {
-    //   console.log('item: ', item)
-    //   const filter = await filterSearch(
-    //     metric,
-    //     filters[idx], // index from list of metric
-    //   );
     
-    // apparently the below doesn't work because there is no gd simple
-    // way to get fresh data easily in this app lol
-    // const freshData = await filterSearch(false, defaultFilterOptions);
-    // console.log('fresh data: ', freshData)
-
-    // okay am I able to just flipping call hera for the new data keith provided?
-    // expected obj:
-    // {
-    //   "measurementYear": 2025,
-    //   "measurementType": "aise",
-    //   "compareOption": "healthcareProviders"
-    // }
-
     if (mode === 'Default') {
       setIsLoading(true)
       handleResetData();
