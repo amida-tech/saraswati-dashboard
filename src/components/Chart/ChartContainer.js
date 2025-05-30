@@ -79,7 +79,7 @@ function ChartContainer({
   chartData,
 }) {
   const {
-    datastore: { comparisonMode, comparisonResults, filterOptions, results },
+    datastore: { comparisonMode, comparisonResults, filterOptions },
   } = useContext(DatastoreContext);
 
   const handleFilterChange = (options) => {
@@ -131,18 +131,11 @@ function ChartContainer({
       chartCategories = [];
     }
   } else {
-    // --- MEASURE MODE: aggregate top‐level measures from raw results ---
-    chartSeries = displayDataFormatter(
-      results,
-      [],
-      results,
-      colorMap,
-      theme,
-      'Default',
-      filterOptions,
-    );
-    chartCategories = Array.from(new Set(results.map((r) => r.date)))
-      .sort();
+    // MEASURE MODE: use filtered or default chartData
+    chartSeries = chartData;
+    chartCategories = chartData[0]?.dates?.length
+      ? chartData[0].dates
+      : chartData[0]?.data?.map((_, i) => i) || [];
   }
 
   // eslint-disable-next-line prefer-const
@@ -241,10 +234,7 @@ ChartContainer.defaultProps = {
   toggleFilterDrawer: false,
   handleFilteredDataUpdate: () => undefined,
   setCurrentFilters: () => undefined,
-  currentTimeline: {
-    choice: 'all',
-    range: [null, null],
-  },
+  currentTimeline: undefined,
   currentFilters: [],
   setCurrentTimeline: () => undefined,
   isComposite: true,

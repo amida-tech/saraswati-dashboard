@@ -49,30 +49,49 @@ export async function validateAccessToken(accessToken) {
 }
 
 // Filter Search
-export async function filterSearch(searchMeasure, searchArrayOrFilters, isComposite) {
+// eslint-disable-next-line max-len
+export async function filterSearch(searchMeasure, searchArrayOrFilters, isComposite, measurementYear) {
   try {
-    const filters = Array.isArray(searchArrayOrFilters)
-      ? { [searchMeasure]: searchArrayOrFilters }
-      : searchArrayOrFilters;
+    // normalize filters argument
+    let filters = {};
+    if (Array.isArray(searchArrayOrFilters)) {
+      // must have a string key for array filters
+      if (typeof searchMeasure === 'string' && searchMeasure) {
+        filters[searchMeasure] = searchArrayOrFilters;
+      } else {
+        // no valid key provided ⇒ empty filters
+        filters = {};
+      }
+    } else if (
+      searchArrayOrFilters
+      && typeof searchArrayOrFilters === 'object'
+    ) {
+      filters = searchArrayOrFilters;
+    }
 
-    const searchObject = {
-      submeasure: isComposite ? false : searchMeasure,
+    // decide submeasure: only non-composite calls pass a string
+    const submeasure = !isComposite && typeof searchMeasure === 'string' && searchMeasure
+      ? searchMeasure
+      : false;
+
+    const body = {
+      submeasure,
       filters,
-      isComposite,
+      isComposite: Boolean(isComposite),
+      measurementYear,
     };
 
-    const filterSearchURL = new URL(
+    const url = new URL(
       `${env.REACT_APP_HEDIS_MEASURE_API_URL}/filter`,
     );
+    const resp = await axios.post(url, body);
+    const result = resp.data;
 
-    const filterResults = (await axios.post(filterSearchURL, searchObject)).data;
-
-    if (filterResults.status === 'Success') {
-      const { members, dailyMeasureResults } = filterResults;
+    if (result.status === 'Success') {
       return {
         status: 'Success',
-        members,
-        dailyMeasureResults,
+        members: result.members,
+        dailyMeasureResults: result.dailyMeasureResults,
       };
     }
 
@@ -81,7 +100,8 @@ export async function filterSearch(searchMeasure, searchArrayOrFilters, isCompos
       members: [],
       dailyMeasureResults: [],
     };
-  } catch {
+  } catch (err) {
+    console.error('filterSearch error:', err);
     return {
       status: 'Failed',
       members: [],

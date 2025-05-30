@@ -44,9 +44,11 @@ function Banner({
           </Box>
         )}
 
-        <Box className="banner__year-selector">
-          <MeasurementYearSelector />
-        </Box>
+        {!showComparison && (
+          <Box className="banner__year-selector">
+            <MeasurementYearSelector />
+          </Box>
+        )}
       </Box>
 
       {lastUpdated && (

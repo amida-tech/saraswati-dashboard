@@ -388,7 +388,12 @@ export default function Dashboard() {
         const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
         const allResults = [];
         for (const item of items) {
-          const search = await filterSearch(false, [item.value]);
+          const search = await filterSearch(
+            false,
+            [item.value],
+            isComposite,
+            datastore.measurementYear,
+          );
           // map each result to this payor series
           allResults.push(
             ...search.dailyMeasureResults.map((r) => ({
@@ -504,32 +509,32 @@ export default function Dashboard() {
           },
         ];
       }
-    }
-    else if (
-      Array.isArray(datastore.results)
-      && typeof datastore.results[0]?.measure === 'string'
-      && typeof datastore.results[0]?.date === 'string'
+    } else if (
+      Array.isArray(displayData)
+        && displayData.length > 0
+        && typeof displayData[0].measure === 'string'
+        && typeof displayData[0].date === 'string'
     ) {
-      const uniqueDates = [...new Set(datastore.results.map((e) => e.date))].sort();
+      const uniqueDates = [...new Set(displayData.map((e) => e.date))].sort();
       const measureMap = {};
-      datastore.results.forEach((entry) => {
-        const key = entry.measure;
-        if (!measureMap[key]) measureMap[key] = {};
-        measureMap[key][entry.date] = entry.value;
+      displayData.forEach((entry) => {
+        if (!measureMap[entry.measure]) measureMap[entry.measure] = {};
+        measureMap[entry.measure][entry.date] = entry.value;
       });
       newChartData = Object.entries(measureMap).map(([meas, dateMap]) => ({
         name: meas,
-        color:
-          colorMap.find((c) => c.value === meas)?.color
-          || theme.palette.primary.main,
+        color: colorMap.find((c) => c.value === meas)?.color || theme.palette.primary.main,
         data: uniqueDates.map((date) => (typeof dateMap[date] === 'number'
           ? Number(dateMap[date].toFixed(2))
           : null)),
+        dates: uniqueDates,
       }));
-    }
-    else {
-      console.warn('Unexpected results structure:', datastore.results);
-      newChartData = [];
+    } else {
+      // just in super duper case
+      if (!isLoading) {
+        console.warn('Unexpected results structure:', displayData);
+        newChartData = [];
+      }
     }
 
     setChartData(newChartData.length > 0 ? newChartData : []);
@@ -558,23 +563,23 @@ export default function Dashboard() {
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
     setIsLoading(true);
+
     // let newDisplayData
     let cloneDailyMeasureResults = {};
     let cloneMembers = [];
     let searchResults = [];
+
     const currentMeasureResolver = measure === undefined ? false : measure;
     const info = await infoDataFetch();
-    if (direction === 'GO BACK') {
-      searchResults = await filterSearch(
-        false,
-        filters,
-      );
-    } else {
-      searchResults = await filterSearch(
-        currentMeasureResolver,
-        filters,
-      );
-    }
+
+    const searchMeasParam = direction === 'GO BACK' ? false : currentMeasureResolver;
+    searchResults = await filterSearch(
+      searchMeasParam,
+      filters,
+      isComposite,
+      datastore.measurementYear,
+    );
+
     cloneDailyMeasureResults = structuredClone(searchResults.dailyMeasureResults);
     cloneMembers = structuredClone(searchResults.members);
     if (filters.domainsOfCare.length > 0) {
