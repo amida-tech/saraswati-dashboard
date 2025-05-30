@@ -41,9 +41,11 @@ function DisplayTableContainer({
   handleSelectedMeasureChange,
   rowEntries,
   handleTabChange,
+  // eslint-disable-next-line react/prop-types
+  selectedMeasures,
 }) {
   const { datastore } = useContext(DatastoreContext);
-
+  console.log('selectedMeasures: ', selectedMeasures)
   return (
     <Grid
       sx={{ outline: `${theme.palette?.primary.dark} solid 1px` }}

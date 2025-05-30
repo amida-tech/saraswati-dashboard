@@ -5,6 +5,7 @@
 /* eslint-disable no-console */
 import {
   useContext, useEffect, useState, useCallback,
+  useTransition,
 } from 'react';
 import {
   Box, Grid, Paper, Snackbar, Skeleton,
@@ -57,6 +58,7 @@ export default function Dashboard() {
     filters: {},
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
   const [activeMeasure, setActiveMeasure] = useState(defaultActiveMeasure);
   const navigate = useNavigate();
   const [displayData, setDisplayData] = useState(
@@ -413,7 +415,7 @@ export default function Dashboard() {
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
-    let newChartData;
+    let newChartData = [];
 
     if (datastore.comparisonMode && datastore.comparisonMode !== 'Default') {
       newChartData = displayDataFormatter(
@@ -530,14 +532,18 @@ export default function Dashboard() {
         dates: uniqueDates,
       }));
     } else {
-      // just in super duper case
-      if (!isLoading) {
+      // just in super duper case while loading
+      if (displayData.length !== 0) {
         console.warn('Unexpected results structure:', displayData);
         newChartData = [];
       }
     }
 
-    setChartData(newChartData.length > 0 ? newChartData : []);
+    setChartData(
+      Array.isArray(newChartData) && newChartData.length > 0
+        ? newChartData
+        : [],
+    );
     setIsLoading(false);
   }, [
     datastore.results,
@@ -554,7 +560,10 @@ export default function Dashboard() {
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
     if (datastore.datastoreLoading === false) {
-      chartDataGenerator();
+      // wrap expensive work in a transition
+      startTransition(() => {
+        chartDataGenerator();
+      });
     }
   // eslint-disable-next-line max-len
   }, [currentResults, selectedMeasures, datastore, displayData,
@@ -718,8 +727,8 @@ export default function Dashboard() {
               No results found. Please click button to reset the data to the initial results.
             </Alert>
             <Grid item xs={12}>
-              { isLoading || noResultsFound
-                ? <Skeleton variant="rectangular" height="500" />
+              { (isLoading || isPending) || noResultsFound
+                ? <Skeleton variant="rectangular" height={500} />
                 : (
                   <ChartContainer
                     additionalFilterOptions={additionalFilterOptions}
@@ -754,7 +763,7 @@ export default function Dashboard() {
             </Grid>
             <Grid item xs={12} className="rating-trends__container">
               { isLoading
-                ? <Skeleton variant="rectangular" height="200" />
+                ? <Skeleton variant="rectangular" height={200} />
                 : (
                   <RatingTrends
                     currentResults={datastore.currentResults}

@@ -133,7 +133,7 @@ ChartBar.propTypes = {
   // Necessary for DateRangePicker to function and pass props
   currentTimeline: PropTypes.shape({
     choice: PropTypes.string,
-    range: PropTypes.arrayOf(PropTypes.string),
+    range: PropTypes.arrayOf(PropTypes.number),
   }),
   handleTimelineChange: PropTypes.func,
   filterDisabled: PropTypes.bool,
