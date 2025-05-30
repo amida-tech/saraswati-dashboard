@@ -19,7 +19,7 @@ function ChartHeader({
 
   const chartTitle = comparisonMode === 'Default'
     ? 'All Measures'
-    : `Compare By ${comparisonMode}`;
+    : `Compare By ${comparisonMode} For ${activeMeasure.measure}`;
 
   const titleDisplay = (
     <Grid className="chart-container__return-title-display">

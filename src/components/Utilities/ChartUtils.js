@@ -210,7 +210,6 @@ export const displayDataFormatter = (
     grouped[key].push(row);
   });
 
-  console.log('grouped: ', grouped)
   return Object.keys(grouped).map((measureKey) => {
     // Sort by date
     const sorted = grouped[measureKey].slice().sort((a, b) => new Date(a.date) - new Date(b.date));
