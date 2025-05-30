@@ -163,44 +163,65 @@ export const displayDataFormatter = (
   comparisonMode,
   filterOptions,
 ) => {
-  if (!Array.isArray(currentResults) || !Array.isArray(displayData)) return [];
+  if (!Array.isArray(currentResults)) return [];
 
-  const uniqueDates = [
-    ...new Set(displayData.map((entry) => entry.date)),
-  ].sort();
+  // COMPARISON MODE
+  if (comparisonMode && comparisonMode !== 'Default') {
+    const uniqueDates = [
+      ...new Set(displayData.map((entry) => entry.date)),
+    ].sort();
 
-  // In comparison mode, auto-populate keys from displayData if selectedMeasures is not provided
-  const comparisonKeys = selectedMeasures && selectedMeasures.length
-    ? selectedMeasures
-    : [
-      ...new Set(
-        displayData
-          .map((entry) => entry.comparisonItem)
-          .filter(Boolean),
-      ),
-    ];
+    // Use selectedMeasures or fallback to all keys
+    const comparisonKeys = selectedMeasures && selectedMeasures.length
+      ? selectedMeasures
+      : [
+        ...new Set(
+          displayData
+            .map((entry) => entry.comparisonItem)
+            .filter(Boolean),
+        ),
+      ];
 
-  const series = [];
-
-  comparisonKeys.forEach((key) => {
-    const filtered = displayData.filter((entry) => entry.comparisonItem === key);
-
-    const yValues = uniqueDates.map((date) => {
-      const found = filtered.find((item) => item.date === date);
-      return found && typeof found.value === 'number' ? Number(found.value.toFixed(2)) : null;
-    });
-
-    if (yValues.some((v) => v !== null)) {
-      series.push({
-        name: createSeriesName(key, comparisonMode, filterOptions),
-        color: colorMap.find((color) => color.value === key)?.color || theme.palette?.primary.main,
-        data: yValues,
+    const series = [];
+    comparisonKeys.forEach((key) => {
+      const filtered = displayData.filter((entry) => entry.comparisonItem === key);
+      const yValues = uniqueDates.map((date) => {
+        const found = filtered.find((item) => item.date === date);
+        return found && typeof found.value === 'number' ? Number(found.value.toFixed(2)) : null;
       });
-    }
+      if (yValues.some((v) => v !== null)) {
+        series.push({
+          name: createSeriesName(key, comparisonMode, filterOptions),
+          color: colorMap.find((color) => color.value === key)?.color
+            || theme.palette?.primary.main,
+          data: yValues,
+        });
+      }
+    });
+    return series;
+  }
+
+  // MEASURE MODE (Default or fallback)
+  // Group all entries by "measure"
+  const grouped = {};
+  currentResults.forEach((row) => {
+    const key = row.measure;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(row);
   });
 
-  console.log('series: ', series)
-  return series;
+  console.log('grouped: ', grouped)
+  return Object.keys(grouped).map((measureKey) => {
+    // Sort by date
+    const sorted = grouped[measureKey].slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+    return {
+      name: sorted[0]?.label || measureKey,
+      color: colorMap.find((color) => color.value === measureKey)?.color
+        || theme.palette?.primary.main,
+      data: sorted.map((row) => (typeof row.value === 'number' ? Number(row.value.toFixed(2)) : null)),
+      dates: sorted.map((row) => row.date),
+    };
+  });
 };
 
 export const lineChartOptions = ({

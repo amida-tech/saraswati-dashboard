@@ -1,3 +1,8 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable brace-style */
+/* eslint-disable no-lonely-if */
+/* eslint-disable no-console */
 import {
   useContext, useEffect, useState, useCallback,
 } from 'react';
@@ -363,19 +368,172 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
+  useEffect(() => {
+    if (datastore.comparisonMode && datastore.comparisonMode !== 'Default') {
+      (async () => {
+        setIsLoading(true);
+        // match label to filterOptions key
+        const aliasObj = {
+          payors: 'Payors',
+          healthcareProviders: 'Providers',
+          healthcareCoverages: 'Coverages',
+          healthcarePractitioners: 'Practitioners',
+        };
+        const filterKey = Object.entries(aliasObj)
+          .find(([, label]) => label === datastore.comparisonMode)?.[0];
+        const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
+        const allResults = [];
+        for (const item of items) {
+          const search = await filterSearch(false, [item.value]);
+          // map each result to this payor series
+          allResults.push(
+            ...search.dailyMeasureResults.map((r) => ({
+              ...r,
+              measure: item.value,
+            })),
+          );
+        }
+        setCurrentResults(allResults);
+        setDisplayData(allResults);
+        setSelectedMeasures(items.map((i) => i.value));
+        setIsLoading(false);
+      })();
+    }
+  }, [datastore.comparisonMode, datastore.filterOptions]);
+
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
-    setIsLoading(true);
-    const newChartData = displayDataFormatter(
+    console.log('chartDataGenerator debug', {
+      comparisonMode: datastore.comparisonMode,
       currentResults,
-      selectedMeasures,
       displayData,
+      selectedMeasures,
       colorMap,
-      theme,
-    );
+    });
+    setIsLoading(true);
+    let newChartData;
+    if (datastore.comparisonMode && datastore.comparisonMode !== 'Default') {
+      newChartData = displayDataFormatter(
+        currentResults,
+        selectedMeasures,
+        displayData,
+        colorMap,
+        theme,
+        datastore.comparisonMode,
+        datastore.filterOptions,
+      );
+      console.log('displayDataFormatter output:', newChartData);
+    }
+    // Submeasure view
+    else if (
+      activeMeasure
+      && activeMeasure.measure
+      && activeMeasure.measure !== 'composite'
+      && activeMeasure.measure !== ''
+    ) {
+      // Find all subScores for activeMeasure
+      const subScoreRows = datastore.results
+        .filter((entry) => entry.measure === activeMeasure.measure
+          && Array.isArray(entry.subScores) && entry.subScores.length > 0)
+        .flatMap((entry) => (entry.subScores || []).map((s) => ({
+          ...s,
+          date: entry.date || s.date,
+        })));
+
+      if (subScoreRows.length > 0) {
+        const subNamesSet = new Set();
+        const allDatesSet = new Set();
+        subScoreRows.forEach((s) => {
+          subNamesSet.add(s.measure);
+          allDatesSet.add(s.date);
+        });
+        const subNames = Array.from(subNamesSet);
+        const uniqueDates = Array.from(allDatesSet).sort();
+        const subMap = {};
+        subNames.forEach((sub) => { subMap[sub] = {}; });
+        subScoreRows.forEach((s) => {
+          subMap[s.measure][s.date] = s.value;
+        });
+        newChartData = subNames.map((sub) => ({
+          name: sub,
+          color:
+            colorMap.find((color) => color.value === sub)?.color
+            || theme.palette?.primary.main,
+          data: uniqueDates.map((date) => (typeof subMap[sub][date] === 'number'
+            ? Number(subMap[sub][date].toFixed(2))
+            : null)),
+        }));
+      } else {
+        // No subScores: just plot the measure itself as a series
+        const filtered = datastore.results.filter(
+          (entry) => entry.measure === activeMeasure.measure,
+        );
+        const uniqueDates = [
+          ...new Set(filtered.map((entry) => entry.date)),
+        ].sort();
+        const dateMap = {};
+        filtered.forEach((entry) => {
+          dateMap[entry.date] = entry.value;
+        });
+        newChartData = [
+          {
+            name: activeMeasure.measure,
+            color:
+              colorMap.find((color) => color.value === activeMeasure.measure)?.color
+              || theme.palette?.primary.main,
+            data: uniqueDates.map((date) => (typeof dateMap[date] === 'number'
+              ? Number(dateMap[date].toFixed(2))
+              : null)),
+          },
+        ];
+      }
+    }
+    // Measure view
+    else if (
+      Array.isArray(datastore.results)
+      && typeof datastore.results[0]?.measure === 'string'
+      && typeof datastore.results[0]?.date === 'string'
+    ) {
+      // Flat timeseries array, group by measure
+      const uniqueDates = [
+        ...new Set(datastore.results.map((entry) => entry.date)),
+      ].sort();
+
+      const measureMap = {};
+      datastore.results.forEach((entry) => {
+        const key = entry.measure;
+        if (!measureMap[key]) measureMap[key] = {};
+        measureMap[key][entry.date] = entry.value;
+      });
+
+      newChartData = Object.entries(measureMap).map(([meas, dateMap]) => ({
+        name: meas,
+        color:
+          colorMap.find((color) => color.value === meas)?.color
+          || theme.palette?.primary.main,
+        data: uniqueDates.map((date) => (typeof dateMap[date] === 'number'
+          ? Number(dateMap[date].toFixed(2))
+          : null)),
+      }));
+    } else {
+      // Fallback, unhandled shape
+      console.warn('Unexpected results structure:', datastore.results);
+      newChartData = [];
+    }
+
     setChartData(newChartData && newChartData.length > 0 ? newChartData : []);
     setIsLoading(false);
-  }, [currentResults, displayData, selectedMeasures, colorMap, theme, datastore.comparisonMode]);
+  }, [
+    datastore.results,
+    currentResults,
+    displayData,
+    selectedMeasures,
+    colorMap,
+    theme,
+    datastore.comparisonMode,
+    datastore.filterOptions,
+    activeMeasure,
+  ]);
 
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {

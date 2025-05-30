@@ -91,10 +91,7 @@ function ChartContainer({
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
-  // CHART DATA PREPARATION
-  let chartSeries;
-  let chartCategories;
-  let chartOptions;
+  let chartSeries; let chartOptions; let chartCategories;
 
   const isComparison = comparisonMode
     && comparisonMode !== 'Default'
@@ -103,15 +100,13 @@ function ChartContainer({
 
   if (isComparison) {
     // --- COMPARISON MODE ---
-    // e.g. payors, healthcareProviders, etc
     const filterKey = Object.keys(filterOptions)
       .find((k) => comparisonMode.toLowerCase().includes(k.toLowerCase()));
     const comparisonItems = filterOptions?.[filterKey] || [];
     const selectedComparisonItems = comparisonItems.map((item) => item.value);
-
-    // Prepare all series keys (values) from the filterOptions in this comparison mode
-    const allSeries = selectedComparisonItems.map((value) => comparisonResults
-      .find((item) => (item.comparisonItem === value))).filter(Boolean);
+    const allSeries = selectedComparisonItems
+      .map((value) => comparisonResults.find((item) => item.comparisonItem === value))
+      .filter(Boolean);
 
     chartSeries = displayDataFormatter(
       allSeries,
@@ -125,38 +120,31 @@ function ChartContainer({
     chartCategories = [
       ...new Set(comparisonResults.map((entry) => entry.date)),
     ].sort();
-    chartOptions = lineChartOptions({
-      colorMap,
-      currentTimeline,
-      chartData: chartSeries,
-      theme,
-      categories: chartCategories,
-    });
   } else {
-    // --- DEFAULT (SINGLE MEASURE) MODE ---
+    // --- MEASURE MODE: Pass chartData as-is, assuming already formatted for ApexCharts ---
     chartSeries = chartData;
-    // Try to extract categories from chartData
-    if (chartSeries.length && Array.isArray(chartSeries[0].data)) {
-      chartCategories = chartSeries[0].dates || [];
-      // If not present, fallback to indices
-      if (!chartCategories.length) {
-        chartCategories = chartSeries[0].data.map((_, idx) => idx);
-      }
+    // Optionally extract categories if chartData[0] contains them, else fallback to x-axis indices
+    if (Array.isArray(chartData) && chartData.length && Array.isArray(chartData[0].data)) {
+      chartCategories = chartData[0].dates && chartData[0].dates.length
+        ? chartData[0].dates
+        : chartData[0].data.map((_, idx) => idx);
     } else {
       chartCategories = [];
     }
-    chartOptions = lineChartOptions({
-      colorMap,
-      currentTimeline,
-      chartData: chartSeries,
-      theme,
-      categories: chartCategories,
-    });
   }
+
+  // eslint-disable-next-line prefer-const
+  chartOptions = lineChartOptions({
+    colorMap,
+    currentTimeline,
+    chartData: chartSeries,
+    theme,
+    categories: chartCategories,
+  });
 
   return (
     <div className="chart-container">
-      {comparisonMode !== 'Default' && (
+      {comparisonMode === 'Default' && (
         <FilterDrawer
           filterDrawerOpen={filterDrawerOpen}
           toggleFilterDrawer={toggleFilterDrawer}
