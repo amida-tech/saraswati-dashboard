@@ -55,6 +55,7 @@ const formatData = (
   const safeStore = storeInfo || {};
   const subMeasures = Object.keys(safeStore).filter((item) => item.includes(activeMeasure));
 
+  console.log('format data props: ', [memberResults, activeMeasure, storeInfo])
   if (activeMeasure && activeMeasure !== 'composite') {
     workingData = memberResults.filter(
       (res) => res.measurementType === activeMeasure,

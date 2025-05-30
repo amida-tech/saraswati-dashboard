@@ -19,7 +19,9 @@ export default function OverviewTable({
   const [rows, setRows] = useState([]);
   const [checkboxColors, setCheckboxColors] = useState('');
   // eslint-disable-next-line max-len
-  const [rowSelectionModel, setRowSelectionModel] = useState(() => currentResults?.map((m) => m.label) ?? []);
+  const [rowSelectionModel, setRowSelectionModel] = useState(
+    () => currentResults.map((m) => m.label),
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,16 +52,16 @@ export default function OverviewTable({
     setRowSelectionModel(() => rowData.map((r) => r.id));
   }, [currentResults, colorMap, headerInfo]);
 
-  const handleRowSelectionModelChange = (event) => {
-    setRowSelectionModel(event);
-
-    const newSelections = event
-      .map((label) => currentResults
-        .find((measure) => measure.label === label)
-        .measure);
-
-    handleSelectedMeasureChange(newSelections);
+  const handleRowSelectionModelChange = (newModel) => {
+    setRowSelectionModel(newModel);
   };
+  useEffect(() => {
+    const newMeasures = rowSelectionModel
+      .map((label) => currentResults.find((m) => m.label === label)?.measure)
+      .filter(Boolean);
+
+    handleSelectedMeasureChange(newMeasures);
+  }, [rowSelectionModel, currentResults, handleSelectedMeasureChange]);
 
   const handleRowClick = (event) => {
     if (activeMeasure.measure === 'composite') {

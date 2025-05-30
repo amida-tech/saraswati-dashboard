@@ -573,16 +573,10 @@ export default function Dashboard() {
     activeMeasure,
   ]);
 
-  // GENERATES CHART DATA AFTER PAGE LOAD
+  // GENERATES CHART DATA ONCE, WHEN LOADING COMPLETES
   useEffect(() => {
-    if (!datastore.datastoreLoading) {
-      startTransition(() => {
-        chartDataGenerator();
-      });
-    }
-  // eslint-disable-next-line max-len
-  }, [currentResults, selectedMeasures, datastore, displayData,
-    chartDataGenerator, datastore.comparisonMode]);
+    chartDataGenerator();
+  }, [chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
