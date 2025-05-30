@@ -77,6 +77,7 @@ function ChartContainer({
   handleResetData,
   setFilterInfo,
   chartData,
+  selectedMeasures,
 }) {
   const {
     datastore: { comparisonMode, comparisonResults, filterOptions },
@@ -136,6 +137,18 @@ function ChartContainer({
     chartCategories = chartData[0]?.dates?.length
       ? chartData[0].dates
       : chartData[0]?.data?.map((_, i) => i) || [];
+  }
+
+  // filter out anything not selected in selected measures
+  if (!isComparison) {
+    chartSeries = chartSeries.filter((s) => selectedMeasures.includes(s.name));
+    if (chartSeries[0]?.dates?.length) {
+      chartCategories = chartSeries[0].dates;
+    } else if (Array.isArray(chartSeries[0]?.data)) {
+      chartCategories = chartSeries[0].data.map((_, i) => i);
+    } else {
+      chartCategories = [];
+    }
   }
 
   // eslint-disable-next-line prefer-const
