@@ -27,7 +27,7 @@ const defaultFilterState = {
 };
 const defaultTimelineState = {
   choice: 'all', // 30, 60, ytd or custom.
-  range: [null, null],
+  range: [0, 100],
 };
 
 export const initialState = {

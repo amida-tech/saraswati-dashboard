@@ -407,13 +407,6 @@ export default function Dashboard() {
 
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
-    console.log('chartDataGenerator debug', {
-      comparisonMode: datastore.comparisonMode,
-      currentResults,
-      displayData,
-      selectedMeasures,
-      colorMap,
-    });
     setIsLoading(true);
     let newChartData;
 
@@ -427,7 +420,6 @@ export default function Dashboard() {
         datastore.comparisonMode,
         datastore.filterOptions,
       );
-      console.log('displayDataFormatter output:', newChartData);
     }
     else if (
       activeMeasure
@@ -475,6 +467,7 @@ export default function Dashboard() {
           data: uniqueDates.map((date) => (typeof mainMap[date] === 'number'
             ? mainMap[date]
             : null)),
+          dates: uniqueDates,
         };
 
         newChartData = [
@@ -487,6 +480,7 @@ export default function Dashboard() {
             data: uniqueDates.map((date) => (typeof subMap[sub][date] === 'number'
               ? Number(subMap[sub][date].toFixed(2))
               : null)),
+            dates: uniqueDates,
           })),
         ];
       } else {
@@ -506,6 +500,7 @@ export default function Dashboard() {
             data: uniqueDates.map((date) => (typeof dateMap[date] === 'number'
               ? Number(dateMap[date].toFixed(2))
               : null)),
+            dates: uniqueDates,
           },
         ];
       }
@@ -741,7 +736,6 @@ export default function Dashboard() {
                     filterDisabled={filterDisabled}
                     displayData={displayData}
                     colorMap={colorMap}
-                    store={datastore}
                     graphWidth={graphWidth}
                     setFilterActivated={setFilterActivated}
                     setIsLoading={setIsLoading}

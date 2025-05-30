@@ -79,7 +79,7 @@ function ChartContainer({
   chartData,
 }) {
   const {
-    datastore: { comparisonMode, comparisonResults, filterOptions },
+    datastore: { comparisonMode, comparisonResults, filterOptions, results },
   } = useContext(DatastoreContext);
 
   const handleFilterChange = (options) => {
@@ -120,17 +120,29 @@ function ChartContainer({
     chartCategories = [
       ...new Set(comparisonResults.map((entry) => entry.date)),
     ].sort();
-  } else {
-    // --- MEASURE MODE: Pass chartData as-is, assuming already formatted for ApexCharts ---
+  } else if (!isComposite) {
+    // --- SUBMEASURE MODE: use precomputed chartData from Dashboard ---
     chartSeries = chartData;
-    // Optionally extract categories if chartData[0] contains them, else fallback to x-axis indices
-    if (Array.isArray(chartData) && chartData.length && Array.isArray(chartData[0].data)) {
-      chartCategories = chartData[0].dates && chartData[0].dates.length
-        ? chartData[0].dates
-        : chartData[0].data.map((_, idx) => idx);
+    if (chartData[0]?.dates?.length) {
+      chartCategories = chartData[0].dates;
+    } else if (Array.isArray(chartData[0]?.data)) {
+      chartCategories = chartData[0].data.map((_, i) => i);
     } else {
       chartCategories = [];
     }
+  } else {
+    // --- MEASURE MODE: aggregate top‐level measures from raw results ---
+    chartSeries = displayDataFormatter(
+      results,
+      [],
+      results,
+      colorMap,
+      theme,
+      'Default',
+      filterOptions,
+    );
+    chartCategories = Array.from(new Set(results.map((r) => r.date)))
+      .sort();
   }
 
   // eslint-disable-next-line prefer-const
@@ -229,7 +241,10 @@ ChartContainer.defaultProps = {
   toggleFilterDrawer: false,
   handleFilteredDataUpdate: () => undefined,
   setCurrentFilters: () => undefined,
-  currentTimeline: [],
+  currentTimeline: {
+    choice: 'all',
+    range: [null, null],
+  },
   currentFilters: [],
   setCurrentTimeline: () => undefined,
   isComposite: true,

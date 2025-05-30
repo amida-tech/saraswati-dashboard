@@ -25,7 +25,7 @@ const comparisonModes = [
 export default function ComparisonSelector({ activeMeasure, handleResetData, setIsLoading }) {
   const {
     datastore: {
-      measurementYear, comparisonMode, filterOptions,
+      measurementYear, comparisonMode,
     },
     datastoreActions: {
       setComparisonResults, setComparisonMode,
@@ -54,15 +54,9 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
         compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
       } 
   
-      console.log('prepared body: ', comparisonBody)
       const comparisonURL = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}/measures/compare`);
       const comparisonPromise = await axios.post(comparisonURL, { ...comparisonBody });
       
-      console.log(comparisonPromise)
-      console.log('filter options: ', filterOptions)
-      // I need to provide the filter options as the "measures" for the calcmemberResults
-      // because this ultimately crafts the currentResults object the chart ingests 
-  
       if (comparisonPromise.status === 200) {
         setComparisonResults(comparisonPromise.data)
       } else {
