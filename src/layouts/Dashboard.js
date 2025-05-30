@@ -374,44 +374,6 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
-  useEffect(() => {
-    if (datastore.comparisonMode && datastore.comparisonMode !== 'Default') {
-      (async () => {
-        setIsLoading(true);
-        // match label to filterOptions key
-        const aliasObj = {
-          payors: 'Payors',
-          healthcareProviders: 'Providers',
-          healthcareCoverages: 'Coverages',
-          healthcarePractitioners: 'Practitioners',
-        };
-        const filterKey = Object.entries(aliasObj)
-          .find(([, label]) => label === datastore.comparisonMode)?.[0];
-        const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
-        const allResults = [];
-        for (const item of items) {
-          const search = await filterSearch(
-            false,
-            [item.value],
-            isComposite,
-            datastore.measurementYear,
-          );
-          // map each result to this payor series
-          allResults.push(
-            ...search.dailyMeasureResults.map((r) => ({
-              ...r,
-              measure: item.value,
-            })),
-          );
-        }
-        setCurrentResults(allResults);
-        setDisplayData(allResults);
-        setSelectedMeasures(items.map((i) => i.value));
-        setIsLoading(false);
-      })();
-    }
-  }, [datastore.comparisonMode, datastore.filterOptions]);
-
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
@@ -451,7 +413,8 @@ export default function Dashboard() {
           allDatesSet.add(s.date);
         });
         const subNames = Array.from(subNamesSet);
-        const uniqueDates = Array.from(allDatesSet).sort();
+        const uniqueDates = Array.from(allDatesSet)
+          .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
         const subMap = {};
         subNames.forEach((sub) => { subMap[sub] = {}; });
@@ -494,7 +457,8 @@ export default function Dashboard() {
         const filtered = datastore.results.filter(
           (entry) => entry.measure === activeMeasure.measure,
         );
-        const uniqueDates = [...new Set(filtered.map((e) => e.date))].sort();
+        const uniqueDates = [...new Set(filtered.map((e) => e.date))]
+          .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
         const dateMap = {};
         filtered.forEach((e) => { dateMap[e.date] = e.value; });
 
@@ -517,7 +481,8 @@ export default function Dashboard() {
         && typeof displayData[0].measure === 'string'
         && typeof displayData[0].date === 'string'
     ) {
-      const uniqueDates = [...new Set(displayData.map((e) => e.date))].sort();
+      const uniqueDates = [...new Set(displayData.map((e) => e.date))]
+        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
       const measureMap = {};
       displayData.forEach((entry) => {
         if (!measureMap[entry.measure]) measureMap[entry.measure] = {};
@@ -559,8 +524,7 @@ export default function Dashboard() {
 
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
-    if (datastore.datastoreLoading === false) {
-      // wrap expensive work in a transition
+    if (!datastore.datastoreLoading) {
       startTransition(() => {
         chartDataGenerator();
       });

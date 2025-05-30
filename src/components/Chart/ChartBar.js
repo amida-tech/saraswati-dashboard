@@ -103,7 +103,7 @@ function ChartBar({
         </Grid>
 
         <Grid item sx={buttonStyling} className="chart-container__chart-bar--filter">
-          <Badge badgeContent={filterSum} className={`chart-container__chart-bar__badge${filterDisabled ? '--hidden' : ''}`}>
+          <Badge color="warning" badgeContent={filterSum} className={`chart-container__chart-bar__badge${filterDisabled ? '--hidden' : ''}`}>
             <Button
               className="chart-container__chart-bar__filter-button"
               sx={{ width: '7 rem', justifyContent: 'left' }}
