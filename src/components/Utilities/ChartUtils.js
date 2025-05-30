@@ -172,7 +172,7 @@ export const displayDataFormatter = (
     ].sort();
 
     // Use selectedMeasures or fallback to all keys
-    const comparisonKeys = selectedMeasures && selectedMeasures.length
+    const comparisonKeys = selectedMeasures?.length
       ? selectedMeasures
       : [
         ...new Set(

@@ -374,6 +374,59 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
+  useEffect(() => {
+  // only run when entering a real comparison mode
+    if (!datastore.comparisonMode || datastore.comparisonMode === 'Default') {
+      return;
+    }
+
+    let didCancel = false;
+    const aliasObj = {
+      payors: 'Payors',
+      healthcareProviders: 'Providers',
+      healthcareCoverages: 'Coverages',
+      healthcarePractitioners: 'Practitioners',
+    };
+
+    async function loadComparisonData() {
+      setIsLoading(true);
+      const filterKey = Object.entries(aliasObj)
+        .find(([, label]) => label === datastore.comparisonMode)?.[0];
+      const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
+      const allResults = [];
+
+      for (const item of items) {
+        const search = await filterSearch(
+          false,
+          [item.value],
+          isComposite,
+          datastore.measurementYear,
+        );
+        allResults.push(
+          ...search.dailyMeasureResults.map((r) => ({ ...r, measure: item.value })),
+        );
+      }
+
+      if (!didCancel) {
+        setCurrentResults(allResults);
+        setDisplayData(allResults);
+        setSelectedMeasures(items.map((i) => i.value));
+        setIsLoading(false);
+      }
+    }
+
+    loadComparisonData();
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      didCancel = true;
+    };
+  }, [
+    datastore.comparisonMode,
+    isComposite,
+    datastore.measurementYear,
+  ]);
+
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
@@ -391,10 +444,8 @@ export default function Dashboard() {
       );
     }
     else if (
-      activeMeasure
-      && activeMeasure.measure
-      && activeMeasure.measure !== 'composite'
-      && activeMeasure.measure !== ''
+      activeMeasure?.measure !== 'composite'
+      && activeMeasure?.measure !== ''
     ) {
       const subScoreRows = datastore.results
         .filter((entry) => entry.measure === activeMeasure.measure

@@ -14,10 +14,6 @@ function Banner({
   headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading,
 }) {
   const { pathname } = useLocation();
-  const {
-    datastore,
-    datastoreActions,
-  } = useContext(DatastoreContext);
 
   const isRoot = pathname === '/';
   const isMeasure = /^\/[^/]+$/.test(pathname);
@@ -44,11 +40,9 @@ function Banner({
           </Box>
         )}
 
-        {!showComparison && (
-          <Box className="banner__year-selector">
-            <MeasurementYearSelector />
-          </Box>
-        )}
+        <Box className="banner__year-selector">
+          <MeasurementYearSelector />
+        </Box>
       </Box>
 
       {lastUpdated && (
