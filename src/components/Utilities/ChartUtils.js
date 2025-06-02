@@ -169,7 +169,7 @@ export const displayDataFormatter = (
   if (comparisonMode && comparisonMode !== 'default') {
     const uniqueDates = [
       ...new Set(displayData.map((entry) => entry.date)),
-    ].sort();
+    ].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
     // Use selectedMeasures or fallback to all keys
     const comparisonKeys = selectedMeasures?.length

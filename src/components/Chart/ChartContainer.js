@@ -119,7 +119,7 @@ function ChartContainer({
     );
     chartCategories = [
       ...new Set(comparisonResults.map((entry) => entry.date)),
-    ].sort();
+    ].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   } else if (!isComposite) {
     // --- SUBMEASURE MODE: use precomputed chartData from Dashboard ---
     chartSeries = chartData;

@@ -21,12 +21,12 @@ const headerData = (selectedMeasures, storeInfo) => {
     },
   ];
   selectedMeasures.forEach((measureName) => {
-    const labelFound = storeInfo[measureName].displayLabel;
+    const labelFound = storeInfo[measureName]?.displayLabel;
     headerInfo.push({
       key: measureName,
       link: false,
       header: labelFound,
-      tooltip: storeInfo[measureName].title,
+      tooltip: storeInfo[measureName]?.title || 'Undefined Measure',
       flexBasis: standardFlexBasis,
     });
   });
@@ -55,7 +55,6 @@ const formatData = (
   const safeStore = storeInfo || {};
   const subMeasures = Object.keys(safeStore).filter((item) => item.includes(activeMeasure));
 
-  console.log('format data props: ', [memberResults, activeMeasure, storeInfo])
   if (activeMeasure && activeMeasure !== 'composite') {
     workingData = memberResults.filter(
       (res) => res.measurementType === activeMeasure,
