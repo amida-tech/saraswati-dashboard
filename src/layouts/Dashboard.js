@@ -85,7 +85,7 @@ export default function Dashboard() {
   // CLEANS SLATE FUNCTION
   const handleResetData = (router) => {
     scrollTop();
-    datastoreActions.setComparisonMode('Default');
+    datastoreActions.setComparisonMode('default');
     if (router === undefined) {
       setIsLoading(true);
       setCurrentTimeline(datastore.defaultTimelineState);
@@ -101,7 +101,7 @@ export default function Dashboard() {
           filters: {},
         });
         setIsComposite(true);
-        datastoreActions.setComparisonMode('Default');
+        datastoreActions.setComparisonMode('default');
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(Object.keys(datastore.info));
@@ -148,7 +148,7 @@ export default function Dashboard() {
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
         setIsComposite(true);
-        datastoreActions.setComparisonMode('Default');
+        datastoreActions.setComparisonMode('default');
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -209,7 +209,7 @@ export default function Dashboard() {
           filters: {},
         });
         setIsComposite(true);
-        datastoreActions.setComparisonMode('Default');
+        datastoreActions.setComparisonMode('default');
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults.map((result) => result.measure));
@@ -274,7 +274,7 @@ export default function Dashboard() {
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
         setIsComposite(true);
-        datastoreActions.setComparisonMode('Default');
+        datastoreActions.setComparisonMode('default');
         setColorMap(ColorMapping(filterInfo.currentResults));
         setFilterDisabled(false);
         setTableFilter([]);
@@ -374,65 +374,65 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
-  useEffect(() => {
-  // only run when entering a real comparison mode
-    if (!datastore.comparisonMode || datastore.comparisonMode === 'Default') {
-      return;
-    }
+  // useEffect(() => {
+  // // only run when entering a real comparison mode
+  //   if (!datastore.comparisonMode || datastore.comparisonMode === 'Default') {
+  //     return;
+  //   }
 
-    let didCancel = false;
-    const aliasObj = {
-      payors: 'Payors',
-      healthcareProviders: 'Providers',
-      healthcareCoverages: 'Coverages',
-      healthcarePractitioners: 'Practitioners',
-    };
+  //   let didCancel = false;
+  //   const aliasObj = {
+  //     payors: 'Payors',
+  //     healthcareProviders: 'Providers',
+  //     healthcareCoverages: 'Coverages',
+  //     healthcarePractitioners: 'Practitioners',
+  //   };
 
-    async function loadComparisonData() {
-      setIsLoading(true);
-      const filterKey = Object.entries(aliasObj)
-        .find(([, label]) => label === datastore.comparisonMode)?.[0];
-      const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
-      const allResults = [];
+  //   async function loadComparisonData() {
+  //     setIsLoading(true);
+  //     const filterKey = Object.entries(aliasObj)
+  //       .find(([, label]) => label === datastore.comparisonMode)?.[0];
+  //     const items = filterKey ? (datastore.filterOptions[filterKey] || []) : [];
+  //     const allResults = [];
 
-      for (const item of items) {
-        const search = await filterSearch(
-          false,
-          [item.value],
-          isComposite,
-          datastore.measurementYear,
-        );
-        allResults.push(
-          ...search.dailyMeasureResults.map((r) => ({ ...r, measure: item.value })),
-        );
-      }
+  //     for (const item of items) {
+  //       const search = await filterSearch(
+  //         false,
+  //         [item.value],
+  //         isComposite,
+  //         datastore.measurementYear,
+  //       );
+  //       allResults.push(
+  //         ...search.dailyMeasureResults.map((r) => ({ ...r, measure: item.value })),
+  //       );
+  //     }
 
-      if (!didCancel) {
-        setCurrentResults(allResults);
-        setDisplayData(allResults);
-        setSelectedMeasures(items.map((i) => i.value));
-        setIsLoading(false);
-      }
-    }
+  //     if (!didCancel) {
+  //       setCurrentResults(allResults);
+  //       setDisplayData(allResults);
+  //       setSelectedMeasures(items.map((i) => i.value));
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-    loadComparisonData();
+  //   loadComparisonData();
 
-    // eslint-disable-next-line consistent-return
-    return () => {
-      didCancel = true;
-    };
-  }, [
-    datastore.comparisonMode,
-    isComposite,
-    datastore.measurementYear,
-  ]);
+  //   // eslint-disable-next-line consistent-return
+  //   return () => {
+  //     didCancel = true;
+  //   };
+  // }, [
+  //   datastore.comparisonMode,
+  //   isComposite,
+  //   datastore.measurementYear,
+  // ]);
 
   // FORMATS DATA FOR CHART COMPONENT
   const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
     let newChartData = [];
 
-    if (datastore.comparisonMode && datastore.comparisonMode !== 'Default') {
+    if (datastore.comparisonMode && datastore.comparisonMode !== 'default') {
       newChartData = displayDataFormatter(
         currentResults,
         selectedMeasures,
@@ -643,7 +643,7 @@ export default function Dashboard() {
       setFilterInfo(newFilterInfo);
       if (direction) {
         setIsComposite(true);
-        datastoreActions.setComparisonMode('Default');
+        datastoreActions.setComparisonMode('default');
       }
       setFilterActivated(true);
     } else {
@@ -787,7 +787,7 @@ export default function Dashboard() {
                 )}
             </Grid>
             <Grid item xs={12}>
-              { isLoading || (datastore.comparisonMode !== 'Default')
+              { isLoading || (datastore.comparisonMode !== 'default')
                 ? <div />
                 : (
                   <div className="chart-container">

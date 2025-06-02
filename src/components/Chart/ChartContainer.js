@@ -95,16 +95,15 @@ function ChartContainer({
   let chartSeries; let chartOptions; let chartCategories;
 
   const isComparison = comparisonMode
-    && comparisonMode !== 'Default'
+    && comparisonMode !== 'default'
     && Array.isArray(comparisonResults)
     && comparisonResults.length > 0;
 
   if (isComparison) {
     // --- COMPARISON MODE ---
-    const filterKey = Object.keys(filterOptions)
-      .find((k) => comparisonMode.toLowerCase().includes(k.toLowerCase()));
-    const comparisonItems = filterOptions?.[filterKey] || [];
-    const selectedComparisonItems = comparisonItems.map((item) => item.value);
+    const selectedComparisonItems = [
+      ...new Set(comparisonResults.map((entry) => entry.comparisonItem)),
+    ];
     const allSeries = selectedComparisonItems
       .map((value) => comparisonResults.find((item) => item.comparisonItem === value))
       .filter(Boolean);
@@ -162,7 +161,7 @@ function ChartContainer({
 
   return (
     <div className="chart-container">
-      {comparisonMode === 'Default' && (
+      {comparisonMode === 'default' && (
         <FilterDrawer
           filterDrawerOpen={filterDrawerOpen}
           toggleFilterDrawer={toggleFilterDrawer}

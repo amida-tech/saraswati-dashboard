@@ -166,7 +166,7 @@ export const displayDataFormatter = (
   if (!Array.isArray(currentResults)) return [];
 
   // COMPARISON MODE
-  if (comparisonMode && comparisonMode !== 'Default') {
+  if (comparisonMode && comparisonMode !== 'default') {
     const uniqueDates = [
       ...new Set(displayData.map((entry) => entry.date)),
     ].sort();
@@ -191,7 +191,7 @@ export const displayDataFormatter = (
       });
       if (yValues.some((v) => v !== null)) {
         series.push({
-          name: createSeriesName(key, comparisonMode, filterOptions),
+          name: key,
           color: colorMap.find((color) => color.value === key)?.color
             || theme.palette?.primary.main,
           data: yValues,

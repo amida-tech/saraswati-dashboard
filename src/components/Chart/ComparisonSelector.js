@@ -14,13 +14,28 @@ import Notification from '../Common/Notification';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import env from '../../env';
 
-const comparisonModes = [
-  'Default',
-  'Payors',
-  'Providers',
-  'Coverage',
-  'Practitioners',
-];
+const newComparisonModes = [
+  {
+    label: 'Default',
+    value: 'default',
+  },
+  {
+    label: 'Payors',
+    value: 'payors',
+  },
+  {
+    label: 'Providers',
+    value: 'healthcareProviders',
+  },
+  {
+    label: 'Coverage',
+    value: 'healthcareCoverages',
+  },
+  {
+    label: 'Practitioners',
+    value: 'healthcarePractitioners',
+  },
+]
 
 export default function ComparisonSelector({ activeMeasure, handleResetData, setIsLoading }) {
   const {
@@ -33,25 +48,18 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
   } = useContext(DatastoreContext);
   const [error, setError] = useState(undefined);
 
-  const aliasObj = {
-    payors: 'Payors',
-    healthcareProviders: 'Providers',
-    healthcareCoverages: 'Coverage',
-    healthcarePractitioners: 'Practitioners',
-  };
-
   const handleChange = async (e) => {
     const mode = e.target.value;
     setComparisonMode(mode);
     
-    if (mode === 'Default') {
+    if (mode === 'default') {
       setIsLoading(true)
       handleResetData();
     } else {
       const comparisonBody = {
         measurementYear,
         measurementType: activeMeasure.measure,
-        compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
+        compareOption: mode,
       } 
   
       const comparisonURL = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}/measures/compare`);
@@ -78,14 +86,14 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
         <Select
           labelId="comparison-select-label"
           id="comparison-select"
-          value={comparisonMode || 'Default'}
+          value={comparisonMode || 'default'}
           onChange={handleChange}
           label="Comparison Mode"
           data-testid="comparison-selector"
         >
-          {comparisonModes.map((mode) => (
-            <MenuItem key={mode} value={mode}>
-              {mode}
+          {newComparisonModes.map((mode) => (
+            <MenuItem key={mode.value} value={mode.value}>
+              {mode.label}
             </MenuItem>
           ))}
         </Select>

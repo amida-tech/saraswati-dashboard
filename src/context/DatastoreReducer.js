@@ -65,7 +65,7 @@ export const initialState = {
     const stored = parseInt(localStorage.getItem('selectedYear'), 10);
     return [2022, 2025].includes(stored) ? stored : 2022;
   })(),
-  comparisonMode: 'Default',
+  comparisonMode: 'default',
 };
 
 export const DatastoreReducer = (state, action) => {
