@@ -14,7 +14,7 @@ import Notification from '../Common/Notification';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import env from '../../env';
 
-const newComparisonModes = [
+const comparisonModes = [
   {
     label: 'Default',
     value: 'default',
@@ -91,7 +91,7 @@ export default function ComparisonSelector({ activeMeasure, handleResetData, set
           label="Comparison Mode"
           data-testid="comparison-selector"
         >
-          {newComparisonModes.map((mode) => (
+          {comparisonModes.map((mode) => (
             <MenuItem key={mode.value} value={mode.value}>
               {mode.label}
             </MenuItem>
