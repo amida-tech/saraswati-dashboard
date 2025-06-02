@@ -58,7 +58,7 @@ export default function Dashboard() {
     filters: {},
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
   const [activeMeasure, setActiveMeasure] = useState(defaultActiveMeasure);
   const navigate = useNavigate();
   const [displayData, setDisplayData] = useState(
@@ -655,10 +655,14 @@ export default function Dashboard() {
 
   // MEASURE CHANGE FUNCTION
   const handleSelectedMeasureChange = (selections) => {
-    setTableFilter([]);
-    return selections.target?.name
-      ? navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`)
-      : setSelectedMeasures(selections);
+    if (!tableFilter || tableFilter.length > 0) {
+      setTableFilter([]);
+    }
+    if (selections.target?.name) {
+      navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`);
+    } else if (selectedMeasures.length !== selections.length) {
+      setSelectedMeasures(selections);
+    }
   };
 
   // TABLE FILTERING
