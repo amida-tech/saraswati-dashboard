@@ -80,7 +80,7 @@ function ChartContainer({
   selectedMeasures,
 }) {
   const {
-    datastore: { comparisonMode, comparisonResults, filterOptions },
+    datastore: { comparisonMode, comparisonResults },
   } = useContext(DatastoreContext);
 
   const handleFilterChange = (options) => {
@@ -115,7 +115,6 @@ function ChartContainer({
       colorMap,
       theme,
       comparisonMode,
-      filterOptions,
     );
     chartCategories = [
       ...new Set(comparisonResults.map((entry) => entry.date)),

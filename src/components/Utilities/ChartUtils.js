@@ -133,27 +133,6 @@ export const calcMemberResults = (dailyMeasureResults, measureInfo = {}) => {
   return { results: dailyMeasureResults, currentResults };
 };
 
-function createSeriesName(comparisonItem, comparisonMode, filterOptions) {
-  if (!comparisonItem || !filterOptions || !comparisonMode) return comparisonItem;
-
-  const aliasObj = {
-    Payors: 'payors',
-    Providers: 'healthcareProviders',
-    Coverage: 'healthcareCoverages',
-    Practitioners: 'healthcarePractitioners',
-  };
-  const optionsKey = aliasObj[comparisonMode] || comparisonMode?.toLowerCase();
-  const list = filterOptions[optionsKey];
-  if (!list) return comparisonItem;
-  const labelFields = ['payor', 'provider', 'coverage', 'practitioner'];
-  const match = list.find((opt) => opt.value === comparisonItem);
-  if (!match) return comparisonItem;
-  for (const field of labelFields) {
-    if (match[field]) return match[field];
-  }
-  return comparisonItem;
-}
-
 export const displayDataFormatter = (
   currentResults,
   selectedMeasures,
@@ -161,7 +140,6 @@ export const displayDataFormatter = (
   colorMap,
   theme,
   comparisonMode,
-  filterOptions,
 ) => {
   if (!Array.isArray(currentResults)) return [];
 

@@ -440,7 +440,6 @@ export default function Dashboard() {
         colorMap,
         theme,
         datastore.comparisonMode,
-        datastore.filterOptions,
       );
     }
     else if (

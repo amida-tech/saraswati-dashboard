@@ -101,7 +101,6 @@ export async function filterSearch(searchMeasure, searchArrayOrFilters, isCompos
       dailyMeasureResults: [],
     };
   } catch (err) {
-    console.error('filterSearch error:', err);
     return {
       status: 'Failed',
       members: [],
