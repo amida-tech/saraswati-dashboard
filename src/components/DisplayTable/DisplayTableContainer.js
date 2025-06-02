@@ -41,8 +41,6 @@ function DisplayTableContainer({
   handleSelectedMeasureChange,
   rowEntries,
   handleTabChange,
-  // eslint-disable-next-line react/prop-types
-  selectedMeasures,
 }) {
   const { datastore } = useContext(DatastoreContext);
   return (

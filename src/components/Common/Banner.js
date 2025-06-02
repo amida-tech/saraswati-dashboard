@@ -1,11 +1,8 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
-import { useContext } from 'react';
-import { DatastoreContext } from '../../context/DatastoreProvider';
 import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
 import MeasurementYearSelector from '../Chart/MeasurementYearSelector';
