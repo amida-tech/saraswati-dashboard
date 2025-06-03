@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable object-curly-newline */
 /* eslint-disable react/prop-types */
-import { Grid, Typography } from '@mui/material';
+import { Grid, Skeleton, Typography } from '@mui/material';
 import { createContext, useContext } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
@@ -55,30 +55,34 @@ function labelGenerator(measure) {
 }
 
 function ChartContainer({
-  setCurrentFilters,
+  // general state of the app
+  isComposite,
+  isLoading,
+  activeMeasure,
+  selectedMeasures,
+  // data sets
+  currentResults,
+  colorMap,
+  chartData,
   currentTimeline,
+  // filter related
   currentFilters,
+  additionalFilterOptions,
   handleFilteredDataUpdate,
-  setCurrentTimeline,
   filterDrawerOpen,
   toggleFilterDrawer,
-  isComposite,
-  setIsComposite,
-  setTableFilter,
-  isLoading,
-  currentResults,
-  activeMeasure,
   filterDisabled,
-  colorMap,
-  setFilterActivated,
-  setIsLoading,
-  additionalFilterOptions,
-  setTabValue,
+  // setters
   setRowEntries,
   handleResetData,
+  setIsComposite,
+  setTableFilter,
   setFilterInfo,
-  chartData,
-  selectedMeasures,
+  setFilterActivated,
+  setCurrentTimeline,
+  setCurrentFilters,
+  setIsLoading,
+  setTabValue,
 }) {
   const {
     datastore: { comparisonMode, comparisonResults },
@@ -165,9 +169,20 @@ function ChartContainer({
     chartItemHeader,
   });
 
-  return (
-    <div className="chart-container">
-      {comparisonMode === 'default' && (
+  // handles if we are in composite view, comparison mode, or deselected everything
+  // seems the only thing hanging is initial page load on composite view, closer than we were
+  const dataEmpty = comparisonMode === 'default'
+    ? !(chartData?.length)
+    : !(comparisonResults?.length);
+  const currentResultsEmpty = currentResults.length === 0;
+  const chartSeriesEmpty = chartSeries.length === 0;
+  const isLoadingChartData = (dataEmpty && chartSeriesEmpty) || currentResultsEmpty;
+
+  return isLoadingChartData
+    ? (<Skeleton variant="rectangular" height={500} />)
+    : (
+      <div className="chart-container">
+        {comparisonMode === 'default' && (
         <FilterDrawer
           filterDrawerOpen={filterDrawerOpen}
           toggleFilterDrawer={toggleFilterDrawer}
@@ -182,41 +197,41 @@ function ChartContainer({
           handleResetData={handleResetData}
           setFilterInfo={setFilterInfo}
         />
-      )}
-      <ChartHeader
-        isComposite={isComposite}
-        setIsComposite={setIsComposite}
-        setTabValue={setTabValue}
-        setTableFilter={setTableFilter}
-        isLoading={isLoading}
-        handleResetData={handleResetData}
-        labelGenerator={labelGenerator}
-        currentResults={currentResults}
-        activeMeasure={activeMeasure}
-      />
-      <Grid className="chart-container__main-chart">
-        <Grid item className="chart-container__chart-bar">
-          <ChartBar
-            filterDrawerOpen={filterDrawerOpen}
-            toggleFilterDrawer={toggleFilterDrawer}
-            currentTimeline={currentTimeline}
-            handleTimelineChange={handleTimelineChange}
-            filterSum={currentFilters.sum}
-            filterDisabled={filterDisabled}
-          />
+        )}
+        <ChartHeader
+          isComposite={isComposite}
+          setIsComposite={setIsComposite}
+          setTabValue={setTabValue}
+          setTableFilter={setTableFilter}
+          isLoading={isLoading}
+          handleResetData={handleResetData}
+          labelGenerator={labelGenerator}
+          currentResults={currentResults}
+          activeMeasure={activeMeasure}
+        />
+        <Grid className="chart-container__main-chart">
+          <Grid item className="chart-container__chart-bar">
+            <ChartBar
+              filterDrawerOpen={filterDrawerOpen}
+              toggleFilterDrawer={toggleFilterDrawer}
+              currentTimeline={currentTimeline}
+              handleTimelineChange={handleTimelineChange}
+              filterSum={currentFilters.sum}
+              filterDisabled={filterDisabled}
+            />
+          </Grid>
+          <Grid item className="chart-container__chart">
+            <ReactApexChart
+              options={chartOptions}
+              series={chartSeries}
+              type="line"
+              width="100%"
+              height="100%"
+            />
+          </Grid>
         </Grid>
-        <Grid item className="chart-container__chart">
-          <ReactApexChart
-            options={chartOptions}
-            series={chartSeries}
-            type="line"
-            width="100%"
-            height="100%"
-          />
-        </Grid>
-      </Grid>
-    </div>
-  );
+      </div>
+    );
 }
 
 ChartContainer.propTypes = {

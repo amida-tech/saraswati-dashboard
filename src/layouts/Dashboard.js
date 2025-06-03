@@ -58,7 +58,7 @@ export default function Dashboard() {
     filters: {},
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [isPending] = useTransition();
+  const [startTransition] = useTransition();
   const [activeMeasure, setActiveMeasure] = useState(defaultActiveMeasure);
   const navigate = useNavigate();
   const [displayData, setDisplayData] = useState(
@@ -70,8 +70,8 @@ export default function Dashboard() {
   const [selectedMeasures, setSelectedMeasures] = useState(
     () => Object.keys(datastore.info ?? {}),
   );
-  const [currentFilters, setCurrentFilters] = useState([]);
-  const [additionalFilterOptions, setAdditionalFilterOptions] = useState([]);
+  const [currentFilters, setCurrentFilters] = useState(datastore.defaultFilterState);
+  const [additionalFilterOptions, setAdditionalFilterOptions] = useState({});
   const [currentTimeline, setCurrentTimeline] = useState(datastore.defaultTimelineState);
   const [graphWidth, setGraphWidth] = useState(window.innerWidth);
   const [filterDisabled, setFilterDisabled] = useState(true);
@@ -521,7 +521,13 @@ export default function Dashboard() {
 
   // GENERATES CHART DATA ONCE, WHEN LOADING COMPLETES
   useEffect(() => {
-    chartDataGenerator();
+    if (typeof startTransition === 'function') {
+      startTransition(() => {
+        chartDataGenerator();
+      });
+    } else {
+      chartDataGenerator();
+    }
   }, [chartDataGenerator]);
 
   // HANDLES FILTERING
@@ -690,39 +696,35 @@ export default function Dashboard() {
               No results found. Please click button to reset the data to the initial results.
             </Alert>
             <Grid item xs={12}>
-              { (isLoading || isPending) || noResultsFound
-                ? <Skeleton variant="rectangular" height={500} />
-                : (
-                  <ChartContainer
-                    additionalFilterOptions={additionalFilterOptions}
-                    setCurrentFilters={setCurrentFilters}
-                    selectedMeasures={selectedMeasures}
-                    currentTimeline={currentTimeline}
-                    currentFilters={currentFilters}
-                    handleFilteredDataUpdate={handleFilteredDataUpdate}
-                    setCurrentTimeline={setCurrentTimeline}
-                    filterDrawerOpen={filterDrawerOpen}
-                    toggleFilterDrawer={toggleFilterDrawer}
-                    isComposite={isComposite}
-                    setIsComposite={setIsComposite}
-                    setTableFilter={setTableFilter}
-                    isLoading={isLoading}
-                    currentResults={currentResults}
-                    setTabValue={setTabValue}
-                    activeMeasure={activeMeasure}
-                    filterDisabled={filterDisabled}
-                    displayData={displayData}
-                    colorMap={colorMap}
-                    graphWidth={graphWidth}
-                    setFilterActivated={setFilterActivated}
-                    setIsLoading={setIsLoading}
-                    setRowEntries={setRowEntries}
-                    handleResetData={handleResetData}
-                    setFilterInfo={setFilterInfo}
-                    filterCurrentResultsLength={filterInfo.currentResults.length}
-                    chartData={chartData}
-                  />
-                )}
+              <ChartContainer
+                additionalFilterOptions={additionalFilterOptions}
+                setCurrentFilters={setCurrentFilters}
+                selectedMeasures={selectedMeasures}
+                currentTimeline={currentTimeline}
+                currentFilters={currentFilters}
+                handleFilteredDataUpdate={handleFilteredDataUpdate}
+                setCurrentTimeline={setCurrentTimeline}
+                filterDrawerOpen={filterDrawerOpen}
+                toggleFilterDrawer={toggleFilterDrawer}
+                isComposite={isComposite}
+                setIsComposite={setIsComposite}
+                setTableFilter={setTableFilter}
+                isLoading={isLoading}
+                currentResults={currentResults}
+                setTabValue={setTabValue}
+                activeMeasure={activeMeasure}
+                filterDisabled={filterDisabled}
+                displayData={displayData}
+                colorMap={colorMap}
+                graphWidth={graphWidth}
+                setFilterActivated={setFilterActivated}
+                setIsLoading={setIsLoading}
+                setRowEntries={setRowEntries}
+                handleResetData={handleResetData}
+                setFilterInfo={setFilterInfo}
+                filterCurrentResultsLength={filterInfo.currentResults.length}
+                chartData={chartData}
+              />
             </Grid>
             <Grid item xs={12} className="rating-trends__container">
               { isLoading

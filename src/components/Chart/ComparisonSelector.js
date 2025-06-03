@@ -62,9 +62,9 @@ function ComparisonSelector({
     healthcarePractitioners: 'Practitioners',
   };
 
-  // handles comparison mode no matter what, even if you were changing the year,
-  // went composite view to submeasure view, are in the member table view,
-  // anything that isn't expressly the selection dropdown
+  // handles dailyMeasureResults in comparison mode no matter what,
+  // even if you were changing the year, went composite view to submeasure view,
+  // are in the member table view, anything that isn't expressly the selection dropdown
   useEffect(() => {
     if (!comparisonMode || comparisonMode === 'Default') {
       return;

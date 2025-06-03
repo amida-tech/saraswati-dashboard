@@ -18,10 +18,7 @@ export default function OverviewTable({
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
   const [checkboxColors, setCheckboxColors] = useState('');
-  // eslint-disable-next-line max-len
-  const [rowSelectionModel, setRowSelectionModel] = useState(
-    () => currentResults.map((m) => m.label),
-  );
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,6 +52,11 @@ export default function OverviewTable({
   const handleRowSelectionModelChange = (newModel) => {
     setRowSelectionModel(newModel);
   };
+
+  useEffect(() => {
+    setRowSelectionModel(() => currentResults.map((m) => m.label));
+  }, [])
+
   useEffect(() => {
     const newMeasures = rowSelectionModel
       .map((label) => currentResults.find((m) => m.label === label)?.measure)
