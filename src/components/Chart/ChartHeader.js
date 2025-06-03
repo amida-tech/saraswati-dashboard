@@ -4,6 +4,7 @@ import { Grid, Typography } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
+import { comparisonModeLabels } from './ComparisonSelector';
 
 function ChartHeader({
   isComposite,
@@ -17,9 +18,13 @@ function ChartHeader({
     datastore: { comparisonMode },
   } = useContext(DatastoreContext);
 
+  const comparisonLabel = comparisonModeLabels
+    .find((c) => c.value === comparisonMode && c.label).label
+    || 'Comparison Mode';
+
   const chartTitle = comparisonMode === 'default'
     ? 'All Measures'
-    : `Compare By ${comparisonMode} For ${activeMeasure.measure}`;
+    : `Compare By ${comparisonLabel} For ${activeMeasure.measure}`;
 
   const titleDisplay = (
     <Grid className="chart-container__return-title-display">

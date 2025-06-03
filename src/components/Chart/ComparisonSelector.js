@@ -14,7 +14,7 @@ import Notification from '../Common/Notification';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import env from '../../env';
 
-const comparisonModes = [
+export const comparisonModeLabels = [
   {
     label: 'Default',
     value: 'default',
@@ -22,18 +22,22 @@ const comparisonModes = [
   {
     label: 'Payors',
     value: 'payors',
+    single: 'Payor',
   },
   {
     label: 'Providers',
     value: 'healthcareProviders',
+    single: 'Provider',
   },
   {
     label: 'Coverage',
     value: 'healthcareCoverages',
+    single: 'Coverage',
   },
   {
     label: 'Practitioners',
     value: 'healthcarePractitioners',
+    single: 'Practitioner',
   },
 ]
 
@@ -151,7 +155,7 @@ function ComparisonSelector({
           label="Comparison Mode"
           data-testid="comparison-selector"
         >
-          {comparisonModes.map((mode) => (
+          {comparisonModeLabels.map((mode) => (
             <MenuItem key={mode.value} value={mode.value}>
               {mode.label}
             </MenuItem>

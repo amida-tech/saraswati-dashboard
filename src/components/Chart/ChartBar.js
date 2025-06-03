@@ -5,7 +5,8 @@ import {
   Badge, Box, Button, FormControlLabel, Grid, Menu, Radio, RadioGroup, Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
 import { TimelineOptions } from '../Utilities/ChartUtils';
 
@@ -30,7 +31,10 @@ function ChartBar({
   handleTimelineChange,
   filterDisabled,
 }) {
-  const buttonStyling = {};
+  const {
+    datastore: { comparisonMode },
+  } = useContext(DatastoreContext);
+  const buttonStyling = { cursor: filterDisabled || comparisonMode !== 'default' ? 'not-allowed' : 'pointer' };
 
   const [dateAnchorEl, setDateAnchorEl] = useState(null);
   const [dateOpen, setDateOpen] = useState(false);
@@ -106,7 +110,7 @@ function ChartBar({
           <Badge color="warning" badgeContent={filterSum} className={`chart-container__chart-bar__badge${filterDisabled ? '--hidden' : ''}`}>
             <Button
               className="chart-container__chart-bar__filter-button"
-              sx={{ width: '7 rem', justifyContent: 'left' }}
+              sx={{ width: '7 rem', justifyContent: 'left', '&:hover': { ...buttonStyling } }}
               color="secondary"
               variant="text"
               onClick={onClickFilter}

@@ -39,6 +39,7 @@ import {
   setFilterInfoProps,
   chartDataProps,
 } from '../Utilities/PropTypes';
+import { comparisonModeLabels } from './ComparisonSelector';
 
 export const firstRenderContext = createContext(true);
 
@@ -92,7 +93,7 @@ function ChartContainer({
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
-  let chartSeries; let chartOptions; let chartCategories;
+  let chartSeries; let chartOptions; let chartCategories; let chartItemHeader;
 
   const isComparison = comparisonMode
     && comparisonMode !== 'default'
@@ -100,6 +101,9 @@ function ChartContainer({
     && comparisonResults.length > 0;
 
   if (isComparison) {
+    chartItemHeader = comparisonModeLabels
+      .find((c) => c.value === comparisonMode && c.label).single
+      || 'Comparison item';
     // --- COMPARISON MODE ---
     const selectedComparisonItems = [
       ...new Set(comparisonResults.map((entry) => entry.comparisonItem)),
@@ -114,12 +118,13 @@ function ChartContainer({
       comparisonResults,
       colorMap,
       theme,
-      comparisonMode,
+      chartItemHeader,
     );
     chartCategories = [
       ...new Set(comparisonResults.map((entry) => entry.date)),
     ].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   } else if (!isComposite) {
+    chartItemHeader = 'Sub-measure';
     // --- SUBMEASURE MODE: use precomputed chartData from Dashboard ---
     chartSeries = chartData;
     if (chartData[0]?.dates?.length) {
@@ -130,6 +135,7 @@ function ChartContainer({
       chartCategories = [];
     }
   } else {
+    chartItemHeader = 'Measure';
     // MEASURE MODE: use filtered or default chartData
     chartSeries = chartData;
     chartCategories = chartData[0]?.dates?.length
@@ -156,6 +162,7 @@ function ChartContainer({
     chartData: chartSeries,
     theme,
     categories: chartCategories,
+    chartItemHeader,
   });
 
   return (
