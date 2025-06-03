@@ -395,6 +395,7 @@ export const lineChartOptions = ({
     show: true,
     showAlways: true,
     max: Array.isArray(safeChartData.data) && safeChartData.data.length > 0 ? 100 : undefined,
+    min: 0,
     tickAmount: 5,
     labels: {
       show: true,

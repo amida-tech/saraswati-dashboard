@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { filterSearch } from '../Common/Controller';
 import Notification from '../Common/Notification';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 import env from '../../env';
@@ -42,74 +41,17 @@ export const comparisonModeLabels = [
 ]
 
 function ComparisonSelector({
-  activeMeasure, handleResetData, isComposite, setIsLoading,
-  setDisplayData, setSelectedMeasures, setCurrentResults,
+  activeMeasure, handleResetData, setIsLoading,
 }) {
   const {
     datastore: {
-      measurementYear, comparisonMode, filterOptions,
+      measurementYear, comparisonMode,
     },
     datastoreActions: {
       setComparisonResults, setComparisonMode,
     },
   } = useContext(DatastoreContext);
   const [error, setError] = useState(undefined);
-
-  const aliasObj = {
-    payors: 'Payors',
-    healthcareProviders: 'Providers',
-    healthcareCoverages: 'Coverage',
-    healthcarePractitioners: 'Practitioners',
-  };
-
-  // handles dailyMeasureResults in comparison mode no matter what,
-  // even if you were changing the year, went composite view to submeasure view,
-  // are in the member table view, anything that isn't expressly the selection dropdown
-  useEffect(() => {
-    if (!comparisonMode || comparisonMode === 'Default') {
-      return;
-    }
-
-    let didCancel = false;
-
-    const fetchFreshData = async () => {
-      setIsLoading(true);
-      const filterKey = Object.entries(aliasObj)
-        .find(([, label]) => label === comparisonMode)?.[0];
-      const items = filterKey ? (filterOptions[filterKey] || []) : [];
-      const allResults = [];
-
-      for (const item of items) {
-        // eslint-disable-next-line no-await-in-loop
-        const search = await filterSearch(
-          false,
-          [item.value],
-          isComposite,
-          measurementYear,
-        );
-        allResults.push(
-          ...search.dailyMeasureResults.map((r) => ({ ...r, measure: item.value })),
-        );
-      }
-
-      if (!didCancel) {
-        setCurrentResults(allResults);
-        setDisplayData(allResults);
-        setSelectedMeasures(items.map((i) => i.value));
-        setIsLoading(false);
-      }
-    }
-
-    fetchFreshData();
-
-    return () => {
-      didCancel = true;
-    };
-  }, [
-    comparisonMode,
-    isComposite,
-    measurementYear,
-  ]);
 
   const handleChange = async (e) => {
     const mode = e.target.value;
@@ -172,20 +114,12 @@ ComparisonSelector.propTypes = {
     measure: PropTypes.string,
   }),
   setIsLoading: PropTypes.func,
-  isComposite: PropTypes.bool,
-  setDisplayData: PropTypes.func,
-  setSelectedMeasures: PropTypes.func,
-  setCurrentResults: PropTypes.func,
 };
 
 ComparisonSelector.defaultProps = {
   handleResetData: () => {},
   activeMeasure: '',
   setIsLoading: false,
-  isComposite: false,
-  setDisplayData: {},
-  setSelectedMeasures: () => {},
-  setCurrentResults: () => {},
 };
 
 export default ComparisonSelector;

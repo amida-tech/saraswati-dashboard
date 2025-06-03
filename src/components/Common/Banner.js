@@ -1,7 +1,6 @@
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useLocation } from 'react-router-dom';
 import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
 import MeasurementYearSelector from '../Chart/MeasurementYearSelector';
@@ -11,12 +10,6 @@ function Banner({
   setIsLoading, isComposite, setDisplayData, setSelectedMeasures,
   setCurrentResults,
 }) {
-  const { pathname } = useLocation();
-
-  const isRoot = pathname === '/';
-  const isMeasure = /^\/[^/]+$/.test(pathname);
-  const showComparison = !isRoot || isMeasure;
-
   return (
     <Box className="banner">
       <Box className="banner__header-container">
@@ -28,19 +21,17 @@ function Banner({
           {headerText}
         </Typography>
 
-        {showComparison && (
-          <Box className="banner__comparison-selector">
-            <ComparisonSelector
-              activeMeasure={activeMeasure}
-              handleResetData={handleResetData}
-              setIsLoading={setIsLoading}
-              isComposite={isComposite}
-              setDisplayData={setDisplayData}
-              setSelectedMeasures={setSelectedMeasures}
-              setCurrentResults={setCurrentResults}
-            />
-          </Box>
-        )}
+        <Box className="banner__comparison-selector">
+          <ComparisonSelector
+            activeMeasure={activeMeasure}
+            handleResetData={handleResetData}
+            setIsLoading={setIsLoading}
+            isComposite={isComposite}
+            setDisplayData={setDisplayData}
+            setSelectedMeasures={setSelectedMeasures}
+            setCurrentResults={setCurrentResults}
+          />
+        </Box>
 
         <Box className="banner__year-selector">
           <MeasurementYearSelector />
@@ -85,13 +76,13 @@ Banner.propTypes = {
 Banner.defaultProps = {
   headerText: '',
   lastUpdated: '',
-  handleResetData: () => {},
+  handleResetData: () => { },
   activeMeasure: '',
   setIsLoading: false,
   isComposite: false,
   setDisplayData: {},
-  setSelectedMeasures: () => {},
-  setCurrentResults: () => {},
+  setSelectedMeasures: () => { },
+  setCurrentResults: () => { },
 };
 
 export default Banner;

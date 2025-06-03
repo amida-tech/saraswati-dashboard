@@ -209,7 +209,6 @@ export default function Dashboard() {
           filters: {},
         });
         setIsComposite(true);
-        datastoreActions.setComparisonMode('default');
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults.map((result) => result.measure));
