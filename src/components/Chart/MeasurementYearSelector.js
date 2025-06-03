@@ -22,7 +22,7 @@ function MeasurementYearSelector() {
     <FormControl
       variant="outlined"
       size="small"
-      disabled={datastore.comparisonMode !== 'Default'} // only for now
+      disabled={datastore.comparisonMode !== 'default'} // only for now
       sx={{
         minWidth: 180,
         '& .MuiInputLabel-root': {

@@ -15,12 +15,27 @@ import { DatastoreContext } from '../../context/DatastoreProvider';
 import env from '../../env';
 
 const comparisonModes = [
-  'Default',
-  'Payors',
-  'Providers',
-  'Coverage',
-  'Practitioners',
-];
+  {
+    label: 'Default',
+    value: 'default',
+  },
+  {
+    label: 'Payors',
+    value: 'payors',
+  },
+  {
+    label: 'Providers',
+    value: 'healthcareProviders',
+  },
+  {
+    label: 'Coverage',
+    value: 'healthcareCoverages',
+  },
+  {
+    label: 'Practitioners',
+    value: 'healthcarePractitioners',
+  },
+]
 
 function ComparisonSelector({
   activeMeasure, handleResetData, isComposite, setIsLoading,
@@ -103,7 +118,8 @@ function ComparisonSelector({
       const comparisonBody = {
         measurementYear,
         measurementType: activeMeasure.measure,
-        compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
+        // compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
+        compareOption: mode,
       }
 
       const comparisonURL = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}/measures/compare`);
@@ -130,14 +146,14 @@ function ComparisonSelector({
         <Select
           labelId="comparison-select-label"
           id="comparison-select"
-          value={comparisonMode || 'Default'}
+          value={comparisonMode || 'default'}
           onChange={handleChange}
           label="Comparison Mode"
           data-testid="comparison-selector"
         >
           {comparisonModes.map((mode) => (
-            <MenuItem key={mode} value={mode}>
-              {mode}
+            <MenuItem key={mode.value} value={mode.value}>
+              {mode.label}
             </MenuItem>
           ))}
         </Select>

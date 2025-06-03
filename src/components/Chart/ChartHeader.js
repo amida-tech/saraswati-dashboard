@@ -17,7 +17,7 @@ function ChartHeader({
     datastore: { comparisonMode },
   } = useContext(DatastoreContext);
 
-  const chartTitle = comparisonMode === 'Default'
+  const chartTitle = comparisonMode === 'default'
     ? 'All Measures'
     : `Compare By ${comparisonMode} For ${activeMeasure.measure}`;
 
@@ -53,7 +53,7 @@ function ChartHeader({
     </Grid>
   );
 
-  return isComposite || comparisonMode !== 'Default' ? titleDisplay : linkDisplay;
+  return isComposite || comparisonMode !== 'default' ? titleDisplay : linkDisplay;
 }
 
 ChartHeader.propTypes = {
