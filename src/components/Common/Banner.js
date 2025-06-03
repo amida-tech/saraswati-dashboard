@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -72,11 +71,27 @@ function Banner({
 Banner.propTypes = {
   headerText: PropTypes.string,
   lastUpdated: PropTypes.string,
+  handleResetData: PropTypes.func,
+  activeMeasure: PropTypes.shape({
+    measure: PropTypes.string,
+  }),
+  setIsLoading: PropTypes.func,
+  isComposite: PropTypes.bool,
+  setDisplayData: PropTypes.func,
+  setSelectedMeasures: PropTypes.func,
+  setCurrentResults: PropTypes.func,
 };
 
 Banner.defaultProps = {
   headerText: '',
   lastUpdated: '',
+  handleResetData: () => {},
+  activeMeasure: '',
+  setIsLoading: false,
+  isComposite: false,
+  setDisplayData: {},
+  setSelectedMeasures: () => {},
+  setCurrentResults: () => {},
 };
 
 export default Banner;

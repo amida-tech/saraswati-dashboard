@@ -1,10 +1,5 @@
 /* eslint-disable consistent-return */
-/* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-console */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-param-reassign */
 import { useState, useContext, useEffect } from 'react';
 import {
   FormControl,
@@ -13,6 +8,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { filterSearch } from '../Common/Controller';
 import Notification from '../Common/Notification';
 import { DatastoreContext } from '../../context/DatastoreProvider';
@@ -26,7 +22,7 @@ const comparisonModes = [
   'Practitioners',
 ];
 
-export default function ComparisonSelector({
+function ComparisonSelector({
   activeMeasure, handleResetData, isComposite, setIsLoading,
   setDisplayData, setSelectedMeasures, setCurrentResults,
 }) {
@@ -54,9 +50,9 @@ export default function ComparisonSelector({
     if (!comparisonMode || comparisonMode === 'Default') {
       return;
     }
-  
+
     let didCancel = false;
-     
+
     const fetchFreshData = async () => {
       setIsLoading(true);
       const filterKey = Object.entries(aliasObj)
@@ -65,6 +61,7 @@ export default function ComparisonSelector({
       const allResults = [];
 
       for (const item of items) {
+        // eslint-disable-next-line no-await-in-loop
         const search = await filterSearch(
           false,
           [item.value],
@@ -98,7 +95,7 @@ export default function ComparisonSelector({
   const handleChange = async (e) => {
     const mode = e.target.value;
     setComparisonMode(mode);
-    
+
     if (mode === 'Default') {
       setIsLoading(true)
       handleResetData();
@@ -107,11 +104,11 @@ export default function ComparisonSelector({
         measurementYear,
         measurementType: activeMeasure.measure,
         compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
-      } 
-  
+      }
+
       const comparisonURL = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}/measures/compare`);
       const comparisonPromise = await axios.post(comparisonURL, { ...comparisonBody });
-      
+
       if (comparisonPromise.status === 200) {
         setComparisonResults(comparisonPromise.data)
       } else {
@@ -148,3 +145,27 @@ export default function ComparisonSelector({
     </>
   );
 }
+
+ComparisonSelector.propTypes = {
+  handleResetData: PropTypes.func,
+  activeMeasure: PropTypes.shape({
+    measure: PropTypes.string,
+  }),
+  setIsLoading: PropTypes.func,
+  isComposite: PropTypes.bool,
+  setDisplayData: PropTypes.func,
+  setSelectedMeasures: PropTypes.func,
+  setCurrentResults: PropTypes.func,
+};
+
+ComparisonSelector.defaultProps = {
+  handleResetData: () => {},
+  activeMeasure: '',
+  setIsLoading: false,
+  isComposite: false,
+  setDisplayData: {},
+  setSelectedMeasures: () => {},
+  setCurrentResults: () => {},
+};
+
+export default ComparisonSelector;
