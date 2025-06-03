@@ -8,7 +8,9 @@ import theme from '../../assets/styles/AppTheme';
 import MeasurementYearSelector from '../Chart/MeasurementYearSelector';
 
 function Banner({
-  headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading,
+  headerText, lastUpdated, handleResetData, activeMeasure,
+  setIsLoading, isComposite, setDisplayData, setSelectedMeasures,
+  setCurrentResults,
 }) {
   const { pathname } = useLocation();
 
@@ -33,6 +35,10 @@ function Banner({
               activeMeasure={activeMeasure}
               handleResetData={handleResetData}
               setIsLoading={setIsLoading}
+              isComposite={isComposite}
+              setDisplayData={setDisplayData}
+              setSelectedMeasures={setSelectedMeasures}
+              setCurrentResults={setCurrentResults}
             />
           </Box>
         )}

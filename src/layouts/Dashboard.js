@@ -714,6 +714,10 @@ export default function Dashboard() {
                 activeMeasure={activeMeasure}
                 handleResetData={handleResetData}
                 setIsLoading={setIsLoading}
+                isComposite={isComposite}
+                setDisplayData={setDisplayData}
+                setSelectedMeasures={setSelectedMeasures}
+                setCurrentResults={setCurrentResults}
               />
             </Grid>
             {!noResultsFound && (
