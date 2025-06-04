@@ -114,7 +114,8 @@ export default function Dashboard() {
         );
         setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
-        setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
+        setSelectedMeasures(subMeasureCurrentResults
+          .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
           ColorMapping(datastore.currentResults, subMeasureCurrentResults),
         );
@@ -133,7 +134,8 @@ export default function Dashboard() {
       if (otherMeasureFinder.length > 0) {
         if (filterInfo.members.length !== datastore.memberResults.length) {
           setCurrentResults(filterInfo.currentResults);
-          setSelectedMeasures(filterInfo.currentResults.map((result) => result.measure));
+          setSelectedMeasures(filterInfo.currentResults
+            .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
         setComposite(true);
@@ -167,6 +169,7 @@ export default function Dashboard() {
         (result) => result.measure === currentMeasure,
       ) || defaultActiveMeasure);
       setIsLoading(datastore.datastoreLoading);
+      handleFilteredDataUpdate(filterInfo.filters, filterInfo.timeline);
     }
   }, [datastore.currentResults, datastore.isLoading, datastore.status, measure]);
 
@@ -199,7 +202,8 @@ export default function Dashboard() {
         setComposite(true);
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
-        setSelectedMeasures(datastore.currentResults.map((result) => result.measure));
+        setSelectedMeasures(datastore.currentResults
+          .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(ColorMapping(datastore.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
@@ -221,7 +225,8 @@ export default function Dashboard() {
         );
         setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
-        setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
+        setSelectedMeasures(subMeasureCurrentResults
+          .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
           ColorMapping(datastore.currentResults, subMeasureCurrentResults, datastore.comparisonMode !== 'default'),
         );
@@ -258,11 +263,12 @@ export default function Dashboard() {
       if (ActiveMeasureTest) {
         if (filterInfo.members.length !== datastore.memberResults.length) {
           setCurrentResults(filterInfo.currentResults);
-          setSelectedMeasures(filterInfo.currentResults.map((result) => result.measure));
+          setSelectedMeasures(filterInfo.currentResults
+            .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
         setComposite(true);
-        setColorMap(ColorMapping(filterInfo.currentResults));
+        setColorMap(ColorMapping(filterInfo.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -276,7 +282,8 @@ export default function Dashboard() {
         );
         setDisplayData(expandSubMeasureResults(activeMeasure, filterInfo.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
-        setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
+        setSelectedMeasures(subMeasureCurrentResults
+          .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
           ColorMapping(filterInfo.currentResults, subMeasureCurrentResults),
         );
@@ -389,6 +396,9 @@ export default function Dashboard() {
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
+    if (Object.keys(filters).length === 0 && !timeline) {
+      return;
+    }
     setIsLoading(true);
     const isComparisonMode = datastore.comparisonMode !== 'default';
     // let newDisplayData
@@ -438,25 +448,36 @@ export default function Dashboard() {
 
     cloneDailyMeasureResults = filterByTimeline(cloneDailyMeasureResults, timeline);
     if (cloneDailyMeasureResults.length > 0) {
-      const calcResults = calcMemberResults(cloneDailyMeasureResults, datastore.info);
+      const calcResults = calcMemberResults(cloneDailyMeasureResults, datastore.info, datastore.comparisonMode !== 'default');
       const resultsByState = isComposite || direction === 'GO BACK'
         ? calcResults.results
         : expandSubMeasureResults(activeMeasure, calcResults.results, datastore.comparisonMode !== 'default');
+      let filteredCurrentResults = {};
+      if (datastore.comparisonMode !== 'default') {
+        filteredCurrentResults = getSubMeasureCurrentResults(
+          activeMeasure,
+          calcResults.currentResults,
+          datastore.comparisonMode !== 'default',
+        );
+      } else if (activeMeasure.measure === 'composite' || activeMeasure.measure === '' || direction === 'GO BACK') {
+        filteredCurrentResults = calcResults.currentResults;
+      } else {
+        filteredCurrentResults = getSubMeasureCurrentResults(
+          activeMeasure,
+          calcResults.currentResults,
+          datastore.comparisonMode !== 'default',
+        );
+      }
       const newFilterInfo = {
         members: cloneMembers,
-        currentResults: activeMeasure.measure === 'composite' || activeMeasure.measure === '' || direction === 'GO BACK'
-          ? calcResults.currentResults
-          : getSubMeasureCurrentResults(
-            activeMeasure,
-            calcResults.currentResults,
-            datastore.comparisonMode !== 'default',
-          ),
+        currentResults: filteredCurrentResults,
         results: resultsByState,
         filters,
         timeline,
       };
       setCurrentResults(newFilterInfo.currentResults);
-      setSelectedMeasures(newFilterInfo.currentResults.map((result) => result.measure));
+      setSelectedMeasures(newFilterInfo.currentResults
+        .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
       setDisplayData(newFilterInfo.results.map((result) => ({ ...result })));
       setCurrentFilters(newFilterInfo.filters);
       setCurrentTimeline(newFilterInfo.timeline);

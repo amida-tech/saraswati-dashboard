@@ -1,6 +1,7 @@
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import MeasurementYearSelector from '../Chart/MeasurmentYearSelector';
 import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
@@ -8,6 +9,9 @@ import theme from '../../assets/styles/AppTheme';
 function Banner({
   headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading,
 }) {
+  const { pathname } = useLocation();
+  const isMeasure = !pathname.endsWith('/reports');
+
   return (
     <Box className="banner">
       <Box className="banner__header-container">
@@ -19,13 +23,15 @@ function Banner({
           {headerText}
         </Typography>
 
-        <Box className="banner__comparison-selector">
-          <ComparisonSelector
-            activeMeasure={activeMeasure}
-            handleResetData={handleResetData}
-            setIsLoading={setIsLoading}
-          />
-        </Box>
+        {isMeasure && (
+          <Box className="banner__comparison-selector">
+            <ComparisonSelector
+              activeMeasure={activeMeasure}
+              handleResetData={handleResetData}
+              setIsLoading={setIsLoading}
+            />
+          </Box>
+        )}
 
         <Box className="banner__year-selector">
           <MeasurementYearSelector />

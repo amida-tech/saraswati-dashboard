@@ -58,7 +58,11 @@ function ChartBar({
   };
 
   const onClickFilter = () => {
-    toggleFilterDrawer(!filterDrawerOpen);
+    if (comparisonMode !== 'default') {
+      toggleFilterDrawer(false);
+    } else {
+      toggleFilterDrawer(!filterDrawerOpen);
+    }
   };
 
   const timelineCaption = `Timeline: ${timelineLabel(currentTimeline.choice)}`;

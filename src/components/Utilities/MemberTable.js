@@ -46,14 +46,7 @@ const formatData = (memberResults, activeMeasure, storeInfo, tableFilter) => {
   const formattedData = [];
   let workingData = [];
 
-  let label = '';
-
-  if (Array.isArray(storeInfo)) {
-    label = [storeInfo.find((info) => info.measureType)?.info.displayLabel];
-  } else {
-    subMeasures = Object.keys(storeInfo).filter((item) => item.includes(activeMeasure));
-    label = storeInfo[subMeasures[0]].displayLabel;
-  }
+  const subMeasures = Object.keys(storeInfo).filter((item) => item.includes(activeMeasure));
 
   if (activeMeasure !== 'composite' && activeMeasure !== '') {
     // loop through member results for active measure
@@ -75,7 +68,7 @@ const formatData = (memberResults, activeMeasure, storeInfo, tableFilter) => {
         memberResultArray.push({
           memberID: memberResult.memberId,
           measure: subMeasures[0],
-          label,
+          label: storeInfo[subMeasures[0]].displayLabel,
           value: complianceResult[0],
         });
       } else {
