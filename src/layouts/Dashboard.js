@@ -36,7 +36,6 @@ import {
 import {
   measureDataFetch,
   filterSearch,
-  infoDataFetch,
 } from '../components/Common/Controller';
 
 export default function Dashboard() {
@@ -391,45 +390,55 @@ export default function Dashboard() {
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
     setIsLoading(true);
+    const isComparisonMode = datastore.comparisonMode !== 'default';
     // let newDisplayData
     let cloneDailyMeasureResults = {};
     let cloneMembers = [];
     let searchResults = [];
-    const currentMeasureResolver = measure === undefined ? false : measure;
-    const info = await infoDataFetch();
-    if (direction === 'GO BACK') {
-      searchResults = await filterSearch(
-        false,
-        filters,
-      );
+    // const info = await infoDataFetch();
+    if (isComparisonMode) {
+      cloneDailyMeasureResults = structuredClone(datastore.results);
     } else {
-      searchResults = await filterSearch(
-        currentMeasureResolver,
-        filters,
-      );
+      const currentMeasureResolver = measure === undefined ? false : measure;
+      if (direction === 'GO BACK') {
+        searchResults = await filterSearch(
+          false,
+          datastore.measurementYear,
+          filters,
+          isComposite,
+        );
+      } else {
+        searchResults = await filterSearch(
+          currentMeasureResolver,
+          datastore.measurementYear,
+          filters,
+          isComposite,
+        );
+      }
+      cloneDailyMeasureResults = structuredClone(searchResults.dailyMeasureResults);
+      cloneMembers = structuredClone(searchResults.members);
+      if (filters.domainsOfCare.length > 0) {
+        cloneDailyMeasureResults = filterByDOC(cloneDailyMeasureResults, filters, datastore.info);
+      }
+      if (filters.stars.length > 0) {
+        cloneDailyMeasureResults = filterByStars(
+          cloneDailyMeasureResults,
+          filters,
+          cloneDailyMeasureResults,
+        );
+      }
+      if (filters.percentRange[0] > 0 || filters.percentRange[1] < 100) {
+        cloneDailyMeasureResults = filterByPercentage(
+          cloneDailyMeasureResults,
+          filters,
+          cloneDailyMeasureResults,
+        );
+      }
     }
-    cloneDailyMeasureResults = structuredClone(searchResults.dailyMeasureResults);
-    cloneMembers = structuredClone(searchResults.members);
-    if (filters.domainsOfCare.length > 0) {
-      cloneDailyMeasureResults = filterByDOC(cloneDailyMeasureResults, filters, info);
-    }
-    if (filters.stars.length > 0) {
-      cloneDailyMeasureResults = filterByStars(
-        cloneDailyMeasureResults,
-        filters,
-        cloneDailyMeasureResults,
-      );
-    }
-    if (filters.percentRange[0] > 0 || filters.percentRange[1] < 100) {
-      cloneDailyMeasureResults = filterByPercentage(
-        cloneDailyMeasureResults,
-        filters,
-        cloneDailyMeasureResults,
-      );
-    }
+
     cloneDailyMeasureResults = filterByTimeline(cloneDailyMeasureResults, timeline);
     if (cloneDailyMeasureResults.length > 0) {
-      const calcResults = calcMemberResults(cloneDailyMeasureResults, info);
+      const calcResults = calcMemberResults(cloneDailyMeasureResults, datastore.info);
       const resultsByState = isComposite || direction === 'GO BACK'
         ? calcResults.results
         : expandSubMeasureResults(activeMeasure, calcResults.results, datastore.comparisonMode !== 'default');
