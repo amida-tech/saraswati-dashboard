@@ -66,8 +66,12 @@ export default function OverviewTable({
   }, [])
 
   useEffect(() => {
+    const fieldName = datastore.comparisonMode === 'default' ? 'measure' : 'comparisonItem';
     const newMeasures = rowSelectionModel
-      .map((label) => currentResults.find((m) => m.label === label)?.measure)
+      .map((label) => {
+        const foundResult = currentResults.find((m) => m.label === label);
+        return foundResult ? foundResult[fieldName] : false
+      })
       .filter(Boolean);
 
     handleSelectedMeasureChange(newMeasures);

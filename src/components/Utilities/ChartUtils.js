@@ -150,12 +150,11 @@ export const displayDataFormatter = (
   const newChartDisplay = [];
 
   if (isComparisonMode) {
-    const comparisonItems = [...new Set(displayData.map((data) => data.comparisonItem))];
-    comparisonItems.forEach((ci) => {
+    selectedMeasures.forEach((ci) => {
       const comparisonItemFilter = displayData.filter((entry) => ci === entry.comparisonItem);
       if (comparisonItemFilter.length > 0) {
         const data = comparisonItemFilter
-          .map((item) => (item.value ? Number(item.value.toFixed(2)) : null));
+          .map((item) => (item.value !== undefined ? Number(item.value.toFixed(2)) : null));
         if (data.length !== 0 && data[0] !== null) {
           newChartDisplay.push({
             color: colorMap
