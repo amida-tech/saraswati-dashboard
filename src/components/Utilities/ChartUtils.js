@@ -82,6 +82,9 @@ export function getSubMeasureCurrentResultsPerMeasure(givenMeasure, currentResul
   return subMeasureCurrentResults;
 }
 export const createLabel = (measure, info) => {
+  if (!measure) {
+    return '';
+  }
   if (info[measure]) {
     return `${info[measure].displayLabel} - ${info[measure].title}`;
   }
@@ -151,7 +154,8 @@ export const displayDataFormatter = (
   const newChartDisplay = [];
   if (displayData.length > 0) {
     const sortedData = displayData
-      .filter((data) => data.measure === selectedMeasures[0])
+      .filter((data) => (isComparisonMode
+        ? data.comparisonItem : data.measure) === selectedMeasures[0])
       .sort((a, b) => a.date <= b.date);
 
     newChartDisplay.push({

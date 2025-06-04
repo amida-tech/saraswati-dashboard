@@ -9,22 +9,6 @@ function MeasurementYearSelector() {
   const { measurementYear } = datastore;
   const availableYears = [2022, 2025];
 
-  // check localStorage for saved year
-  // useEffect(() => {
-  //   const storedYear = localStorage.getItem('selectedYear');
-
-  //   // Only update if there's a valid year in localStorage
-  //   if (storedYear && availableYears.includes(Number(storedYear))) {
-  //     datastoreActions.setMeasurementYear(Number(storedYear));
-  //   }
-  //   if (!storedYear && !measurementYear) {
-  //     // If no year is stored, set the default to the first available year
-  //     const defaultYear = availableYears[0];
-  //     datastoreActions.setMeasurementYear(defaultYear);
-  //     localStorage.setItem('selectedYear', defaultYear);
-  //   }
-  // }, []);
-
   const handleYearChange = (event) => {
     const newYear = event.target.value;
 

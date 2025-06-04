@@ -67,6 +67,7 @@ export const initialState = {
   })(),
   comparisonMode: 'default',
   refresh: 0,
+  measureAvgValue: 71.05,
 };
 
 export const DatastoreReducer = (state, action) => {
