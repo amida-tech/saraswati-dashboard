@@ -27,7 +27,7 @@ const defaultFilterState = {
 };
 const defaultTimelineState = {
   choice: 'all', // 30, 60, ytd or custom.
-  range: [null, null],
+  range: [0, 100],
 };
 
 export const initialState = {
@@ -61,14 +61,19 @@ export const initialState = {
     healthcareCoverages: [],
     healthcarePractitioners: [],
   },
-  measurementYear: 2022,
+  measurementYear: (() => {
+    const stored = parseInt(localStorage.getItem('selectedYear'), 10);
+    return [2022, 2025].includes(stored) ? stored : 2022;
+  })(),
+  comparisonMode: 'default',
+  refresh: 0,
 };
 
 export const DatastoreReducer = (state, action) => {
   switch (action.type) {
     case 'SET_RESULTS': {
       const { results, info } = action.payload;
-      const { currentResults } = calcMemberResults(results, info);
+      const { currentResults } = calcMemberResults(results, info, state.comparisonMode !== 'default');
       return {
         ...state,
         results,
@@ -119,10 +124,21 @@ export const DatastoreReducer = (state, action) => {
         status: action.payload,
       };
     case 'SET_MEASUREMENT_YEAR':
+      localStorage.setItem('selectedYear', action.payload);
       return {
         ...state,
         measurementYear: action.payload,
       };
+    case 'SET_COMPARISON_MODE':
+      return {
+        ...state,
+        comparisonMode: action.payload.comparisonMode,
+      };
+    case 'UPDATE_REFRESH':
+      return {
+        ...state,
+        refresh: state.refresh + 1,
+      }
     default:
       return state;
   }

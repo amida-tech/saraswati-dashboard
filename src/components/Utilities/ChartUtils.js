@@ -34,24 +34,34 @@ export function filterByTimeline(timelineDisplayData, timeline) {
   }
   return timelineDisplayData;
 }
-export function expandSubMeasureResults(selectedMeasure, results) {
+export function expandSubMeasureResults(selectedMeasure, results, isComparisonMode) {
   const expandedResults = [];
-  results.filter(
-    (result) => result.measure === selectedMeasure.measure,
-  ).forEach((byLine) => {
-    expandedResults.push(byLine);
-    if (selectedMeasure.subScores && selectedMeasure.subScores.length > 1) {
-      byLine.subScores.forEach((subScore) => expandedResults.push(subScore));
-    }
-  });
+  if (isComparisonMode) {
+    return results;
+  } else {
+    results.filter(
+      (result) => result.measure === selectedMeasure.measure,
+    ).forEach((byLine) => {
+      expandedResults.push(byLine);
+      if (selectedMeasure.subScores && selectedMeasure.subScores.length > 1) {
+        byLine.subScores.forEach((subScore) => expandedResults.push(subScore));
+      }
+    });
+  }
+
   return expandedResults;
 }
-export function getSubMeasureCurrentResults(activeMeasure, currentResults) {
+export function getSubMeasureCurrentResults(activeMeasure, currentResults, isComparisonMode) {
+  if (isComparisonMode) {
+    return currentResults;
+  }
   let subMeasureCurrentResults = [];
   const subMeasurePrime = currentResults.find(
     (item) => item.measure === activeMeasure.measure,
   );
-  if (subMeasurePrime.subScores && subMeasurePrime.subScores.length > 1) {
+  if (!subMeasurePrime) {
+    return [];
+  } else if (subMeasurePrime.subScores && subMeasurePrime.subScores.length > 1) {
     subMeasureCurrentResults = [subMeasurePrime, ...subMeasurePrime.subScores];
   } else {
     subMeasureCurrentResults = [subMeasurePrime];
@@ -97,19 +107,20 @@ export const createSubMeasureLabel = (subMeasure, info) => {
 
   return displayLabel;
 };
-export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
+export const calcMemberResults = (dailyMeasureResults, measureInfo, isComparisonMode) => {
   const workingList = {};
+  const sortingAttribute = isComparisonMode ? 'comparisonItem' : 'measure'
   dailyMeasureResults.forEach((item) => {
-    if (workingList[item.measure] === undefined
-            || item.date > workingList[item.measure].date) {
-      workingList[item.measure] = item;
+    if (workingList[item[sortingAttribute]] === undefined
+      || item.date > workingList[item[sortingAttribute]].date) {
+      workingList[item[sortingAttribute]] = item;
     }
   });
   Object.keys(workingList).forEach((key) => {
-    workingList[key].label = createLabel(workingList[key].measure, measureInfo);
-    workingList[key].shortLabel = measureInfo[workingList[key].measure]?.displayLabel;
-    workingList[key].title = measureInfo[workingList[key].measure]?.title;
-    if (workingList[key].subScores) {
+    workingList[key].label = createLabel(workingList[key][sortingAttribute], measureInfo);
+    workingList[key].shortLabel = measureInfo[workingList[key][sortingAttribute]]?.displayLabel;
+    workingList[key].title = measureInfo[workingList[key][sortingAttribute]]?.title;
+    if (!isComparisonMode && workingList[key].subScores) {
       workingList[key].subScores.forEach((subscore) => {
         const newSubscore = subscore;
         newSubscore.label = createSubMeasureLabel(newSubscore.measure, measureInfo);
@@ -128,30 +139,53 @@ export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
     currentResults,
   };
 };
-export const DisplayDataFormatter = (
+export const displayDataFormatter = (
   currentResults,
   selectedMeasures,
   displayData,
   colorMap,
   theme,
+  isComparisonMode,
 ) => {
   const newChartDisplay = [];
-  currentResults.forEach((cr) => {
-    const Measure = cr.measure;
 
-    if (selectedMeasures.includes(Measure)) {
-      const selectMeasureFilter = displayData.filter((entry) => Measure === entry.measure);
-      if (selectMeasureFilter.length > 0) {
-        newChartDisplay.push({
-          color: colorMap
-            .find((color) => color.value === Measure)?.color || theme.palette?.primary.main,
-          name: Measure,
-          data: selectMeasureFilter.map((item) => Number(item.value.toFixed(2))),
-          date: selectMeasureFilter.map((entry) => entry.date),
-        });
+  if (isComparisonMode) {
+    const comparisonItems = [...new Set(displayData.map((data) => data.comparisonItem))];
+    comparisonItems.forEach((ci) => {
+      const comparisonItemFilter = displayData.filter((entry) => ci === entry.comparisonItem);
+      if (comparisonItemFilter.length > 0) {
+        const data = comparisonItemFilter
+          .map((item) => (item.value ? Number(item.value.toFixed(2)) : null));
+        if (data.length !== 0 && data[0] !== null) {
+          newChartDisplay.push({
+            color: colorMap
+              .find((color) => color.value === ci)?.color || theme.palette?.primary.main,
+            name: ci,
+            data: comparisonItemFilter.map((item) => Number(item.value.toFixed(2))),
+            date: comparisonItemFilter.map((entry) => entry.date),
+          });
+        }
       }
-    }
-  });
+    })
+  } else {
+    currentResults.forEach((cr) => {
+      const Measure = cr.measure;
+
+      if (selectedMeasures.includes(Measure)) {
+        const selectMeasureFilter = displayData.filter((entry) => Measure === entry.measure);
+        if (selectMeasureFilter.length > 0) {
+          newChartDisplay.push({
+            color: colorMap
+              .find((color) => color.value === Measure)?.color || theme.palette?.primary.main,
+            name: Measure,
+            data: selectMeasureFilter.map((item) => Number(item.value.toFixed(2))),
+            date: selectMeasureFilter.map((entry) => entry.date),
+          });
+        }
+      }
+    });
+  }
+
   if (newChartDisplay.length > 0) {
     return newChartDisplay;
   }
@@ -366,7 +400,7 @@ export const lineChartOptions = (
               return value.split('T')[0];
             }
             return value;
-          // eslint-disable-next-line no-else-return
+            // eslint-disable-next-line no-else-return
           } else {
             return Date.now();
           }
@@ -415,6 +449,7 @@ export const lineChartOptions = (
     show: true,
     showAlways: true,
     max: chartData[0].data.length > 0 ? 100 : undefined,
+    min: 0,
     tickAmount: 5,
     labels: {
       show: true,

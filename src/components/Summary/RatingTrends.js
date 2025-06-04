@@ -45,19 +45,20 @@ function RatingTrends({
           <Info infoText={ratingTrendsTip} />
         </Box>
 
-        <Box sx={ratingTrendsMeasureContainer}>
-          {Object.values(measurePreferences).map((pref, idx) => (
-            <RatingTrendBox
-              key={`${pref.measure}'s ${pref.type}`}
-              activeMeasure={activeMeasure}
-              widgetPrefs={measurePreferences[idx]}
-              trends={trends}
-              currentResults={currentResults}
-              order={idx}
-            />
-          ))}
-
-        </Box>
+        {datastore.comparisonMode === 'default' && (
+          <Box sx={ratingTrendsMeasureContainer}>
+            {Object.values(measurePreferences).map((pref, idx) => (
+              <RatingTrendBox
+                key={`${pref.measure}'s ${pref.type}`}
+                activeMeasure={activeMeasure}
+                widgetPrefs={measurePreferences[idx]}
+                trends={trends}
+                currentResults={currentResults}
+                order={idx}
+              />
+            ))}
+          </Box>
+        )}
       </Box>
     );
   }

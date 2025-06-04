@@ -45,8 +45,8 @@ function labelGenerator(measure) {
   const { label } = measure;
   return (
     <Grid sx={{ color: theme.palette?.bluegray.D4 }} className="chart-container__return-measure-labels">
-      <Typography className="chart-container__return-measure-title">{label.substring(0, label.indexOf(' '))}</Typography>
-      <Typography className="chart-container__return-measure-description">{label.substring(label.indexOf('- ') + 1)}</Typography>
+      <Typography className="chart-container__return-measure-title">{label.indexOf(' ') >= 0 ? label.substring(0, label.indexOf(' ')) : label}</Typography>
+      <Typography className="chart-container__return-measure-description">{label.indexOf('- ') >= 0 ? label.substring(label.indexOf('- ') + 1) : ''}</Typography>
     </Grid>
   );
 }

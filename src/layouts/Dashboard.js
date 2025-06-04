@@ -25,7 +25,7 @@ import { scrolly, scrollTop } from '../components/Utilities/ScrollNavigate';
 
 import {
   calcMemberResults,
-  DisplayDataFormatter,
+  displayDataFormatter,
   expandSubMeasureResults, filterByDOC,
   filterByPercentage,
   filterByStars,
@@ -98,7 +98,7 @@ export default function Dashboard() {
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setHeaderInfo(headerData(true));
+        setHeaderInfo(headerData(true, datastore.comparisonMode));
       } else {
         setFilterInfo({
           members: [],
@@ -111,8 +111,9 @@ export default function Dashboard() {
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
+          datastore.comparisonMode !== 'default',
         );
-        setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results));
+        setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
         setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
         setColorMap(
@@ -121,12 +122,12 @@ export default function Dashboard() {
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setHeaderInfo(headerData(false));
+        setHeaderInfo(headerData(false, datastore.comparisonMode));
       }
       setFilterActivated(false);
       setNoResultsFound(false);
       setIsLoading(false);
-    } else if (router === 'ALL MEASURES') {
+    } else if (router === 'all') {
       const otherMeasureFinder = filterInfo.results.filter(
         (res) => !res.measure.includes(measure),
       );
@@ -141,7 +142,7 @@ export default function Dashboard() {
         setTableFilter([]);
         setRowEntries([]);
         setColorMap(ColorMapping(filterInfo.currentResults));
-        setHeaderInfo(headerData(true));
+        setHeaderInfo(headerData(true, datastore.comparisonMode));
         scrolly(navigate, '/');
       } else {
         const isEmpty = (filter) => Object.keys(filter).length === 0;
@@ -200,11 +201,11 @@ export default function Dashboard() {
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults.map((result) => result.measure));
-        setColorMap(ColorMapping(datastore.currentResults));
+        setColorMap(ColorMapping(datastore.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setHeaderInfo(headerData(true));
+        setHeaderInfo(headerData(true, datastore.comparisonMode));
       } else {
         setFilterInfo({
           members: [],
@@ -217,20 +218,21 @@ export default function Dashboard() {
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
+          datastore.comparisonMode !== 'default',
         );
-        setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results));
+        setDisplayData(expandSubMeasureResults(activeMeasure, datastore.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
         setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
         setColorMap(
-          ColorMapping(datastore.currentResults, subMeasureCurrentResults),
+          ColorMapping(datastore.currentResults, subMeasureCurrentResults, datastore.comparisonMode !== 'default'),
         );
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setHeaderInfo(headerData(false));
+        setHeaderInfo(headerData(false, datastore.comparisonMode));
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTableFilter, activeMeasure, isComposite, filterActivated]);
 
   // HANDLES ROW ENTRIES FOR COMPOSITE OR MEASURE VIEW
@@ -244,7 +246,7 @@ export default function Dashboard() {
         tableFilter,
       ));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datastore.memberResults]);
 
   // HANDLES FILTERING
@@ -265,14 +267,15 @@ export default function Dashboard() {
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setHeaderInfo(headerData(isComposite));
+        setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
       } else {
         setComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           filterInfo.currentResults,
+          datastore.comparisonMode !== 'default',
         );
-        setDisplayData(expandSubMeasureResults(activeMeasure, filterInfo.results));
+        setDisplayData(expandSubMeasureResults(activeMeasure, filterInfo.results, datastore.comparisonMode !== 'default'));
         setCurrentResults(subMeasureCurrentResults);
         setSelectedMeasures(subMeasureCurrentResults.map((result) => result.measure));
         setColorMap(
@@ -280,10 +283,10 @@ export default function Dashboard() {
         );
         setFilterDisabled(false);
         setTableFilter([]);
-        setHeaderInfo(headerData(false));
+        setHeaderInfo(headerData(false, datastore.comparisonMode));
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     setTableFilter,
     activeMeasure,
@@ -312,7 +315,7 @@ export default function Dashboard() {
         fetchData();
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isComposite,
     filterInfo,
@@ -350,9 +353,9 @@ export default function Dashboard() {
       setTabValue('members');
     } else {
       setTabValue('overview');
-      setHeaderInfo(headerData(isComposite));
+      setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activeMeasure.measure,
     selectedMeasures,
@@ -364,12 +367,13 @@ export default function Dashboard() {
   // FORMATS DATA FOR CHART COMPONENT
   const ChartDataGenerator = useCallback(() => {
     setIsLoading(true);
-    const ChartData = DisplayDataFormatter(
+    const ChartData = displayDataFormatter(
       currentResults,
       selectedMeasures,
       displayData,
       colorMap,
       theme,
+      datastore.comparisonMode !== 'default',
     );
     if (ChartData.length > 0) {
       setChartData(ChartData);
@@ -428,7 +432,7 @@ export default function Dashboard() {
       const calcResults = calcMemberResults(cloneDailyMeasureResults, info);
       const resultsByState = isComposite || direction === 'GO BACK'
         ? calcResults.results
-        : expandSubMeasureResults(activeMeasure, calcResults.results);
+        : expandSubMeasureResults(activeMeasure, calcResults.results, datastore.comparisonMode !== 'default');
       const newFilterInfo = {
         members: cloneMembers,
         currentResults: activeMeasure.measure === 'composite' || activeMeasure.measure === '' || direction === 'GO BACK'
@@ -436,6 +440,7 @@ export default function Dashboard() {
           : getSubMeasureCurrentResults(
             activeMeasure,
             calcResults.currentResults,
+            datastore.comparisonMode !== 'default',
           ),
         results: resultsByState,
         filters,
@@ -460,10 +465,14 @@ export default function Dashboard() {
 
   // MEASURE CHANGE FUNCTION
   const handleSelectedMeasureChange = (selections) => {
-    setTableFilter([]);
-    return selections.target?.name
-      ? navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`)
-      : setSelectedMeasures(selections);
+    if (!tableFilter || tableFilter.length > 0) {
+      setTableFilter([]);
+    }
+    if (selections.target?.name) {
+      navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`);
+    } else if (selectedMeasures.length !== selections.length) {
+      setSelectedMeasures(selections);
+    }
   };
 
   // TABLE FILTERING
@@ -485,7 +494,7 @@ export default function Dashboard() {
   // TAB CHANGE HANDLER
   const handleTabChange = (_e, newValue) => {
     setTabValue(newValue);
-    if (newValue === 'members') {
+    if (newValue === 'members' && datastore.comparisonMode === 'default') {
       navigate(`/${activeMeasure.measure}/members`);
       setHeaderInfo(MemberTable.headerData(selectedMeasures, datastore.info));
       setRowEntries(MemberTable.formatData(
@@ -496,7 +505,7 @@ export default function Dashboard() {
       ));
     } else {
       navigate(`/${activeMeasure.measure}`);
-      setHeaderInfo(headerData(isComposite));
+      setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
     }
   };
 
@@ -509,20 +518,26 @@ export default function Dashboard() {
         <Box sx={{ flexGrow: 2 }}>
           <Grid container spacing={4}>
             <Grid item className="dashboard__summary" sm={12}>
-              <Banner headerText="HEDIS Dashboard" lastUpdated={datastore.lastUpdated} />
+              <Banner
+                headerText="HEDIS Dashboard"
+                lastUpdated={datastore.lastUpdated}
+                activeMeasure={activeMeasure}
+                setIsLoading={setIsLoading}
+                handleResetData={handleResetData}
+              />
             </Grid>
             {!noResultsFound && (
-            <Snackbar
-              open={filterActivated}
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              message="Filters are active. To reset, click on 'RESET FILTERS' in the filter panel."
-              sx={{
-                '& .MuiSnackbarContent-root': {
-                  backgroundColor: theme.palette?.background.main,
-                  color: theme.palette?.text.primary,
-                },
-              }}
-            />
+              <Snackbar
+                open={filterActivated}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                message="Filters are active. To reset, click on 'RESET FILTERS' in the filter panel."
+                sx={{
+                  '& .MuiSnackbarContent-root': {
+                    backgroundColor: theme.palette?.background.main,
+                    color: theme.palette?.text.primary,
+                  },
+                }}
+              />
             )}
             <Alert
               openAlert={noResultsFound}
@@ -535,7 +550,7 @@ export default function Dashboard() {
               No results found. Please click button to reset the data to the initial results.
             </Alert>
             <Grid item xs={12}>
-              { isLoading || noResultsFound || chartData.length === 0
+              {isLoading || noResultsFound || chartData.length === 0
                 ? <Skeleton variant="rectangular" height={300} />
                 : (
                   <ChartContainer
@@ -570,20 +585,22 @@ export default function Dashboard() {
                   />
                 )}
             </Grid>
-            <Grid item xs={12} className="rating-trends__container">
-              { isLoading
-                ? <Skeleton variant="rectangular" height={200} />
-                : (
-                  <RatingTrends
-                    currentResults={datastore.currentResults}
-                    activeMeasure={activeMeasure}
-                    trends={datastore.trends}
-                    widgetPrefs={datastore.preferences.ratingTrends}
-                  />
-                )}
-            </Grid>
+            {datastore.comparisonMode === 'default' && (
+              <Grid item xs={12} className="rating-trends__container">
+                {isLoading
+                  ? <Skeleton variant="rectangular" height={200} />
+                  : (
+                    <RatingTrends
+                      currentResults={datastore.currentResults}
+                      activeMeasure={activeMeasure}
+                      trends={datastore.trends}
+                      widgetPrefs={datastore.preferences.ratingTrends}
+                    />
+                  )}
+              </Grid>
+            )}
             <Grid item xs={12}>
-              { isLoading
+              {isLoading
                 ? <Skeleton variant="rectangular" height={500} />
                 : (
                   <div className="chart-container">

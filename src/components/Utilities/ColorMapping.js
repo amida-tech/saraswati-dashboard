@@ -1,6 +1,6 @@
 import tinycolor from 'tinycolor2';
 
-const ColorMapping = (allResults, displayData) => {
+const ColorMapping = (allResults, displayData, isComparisonMode = false) => {
   const chartColorArray = [
     '#88CCEE',
     '#CC6677',
@@ -39,20 +39,22 @@ const ColorMapping = (allResults, displayData) => {
     return newColor;
   };
 
+  const categtoryName = isComparisonMode ? 'comparisonItem' : 'measure';
+
   // CREATES COLOR MAP FOR ALL CURRENT MEASURES
   allResults.forEach((category, idx) => {
     baseColors.push({
-      value: category.measure,
+      value: category[categtoryName],
       color: colorBySeed(category.measure, idx),
     });
   });
 
   // HANDLES COMPOSITE VIEW
-  if (!displayData || displayData.length === 0) {
+  if (!displayData || displayData.length === 0 || isComparisonMode) {
     return baseColors;
   }
   // HANDLES MEASURE VIEW
-  const baseMeasure = displayData[0].measure;
+  const baseMeasure = displayData[0][categtoryName];
   const baseMeasureColor = baseColors.find((mapping) => mapping.value === baseMeasure).color;
   byMeasureColorMap.push({
     value: baseMeasure,
@@ -63,7 +65,7 @@ const ColorMapping = (allResults, displayData) => {
   // ADD SUBMEASURES WITH MODIFIED COLOURS
   displayData.forEach((category, idx) => {
     byMeasureColorMap.push({
-      value: category.measure,
+      value: category[categtoryName],
       color: distortColor(baseMeasureColor, idx),
     });
   });

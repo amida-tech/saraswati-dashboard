@@ -92,7 +92,7 @@ function DisplayTableContainer({
 
           <TabPanel value="overview">
 
-            {headerInfo[0].header !== 'Sub-Measure'
+            {headerInfo[0].header !== 'Sub-Measure' && datastore.comparisonMode === 'default'
               ? (
                 <Grid className="chart-container__measure-selector">
                   <Typography
