@@ -146,8 +146,21 @@ export const displayDataFormatter = (
   colorMap,
   theme,
   isComparisonMode,
+  measureAvgValue,
 ) => {
   const newChartDisplay = [];
+  if (displayData.length > 0) {
+    const sortedData = displayData
+      .filter((data) => data.measure === selectedMeasures[0])
+      .sort((a, b) => a.date <= b.date);
+
+    newChartDisplay.push({
+      color: '#222222',
+      name: 'MY2024 Composite Average',
+      data: Array(sortedData.length).fill(measureAvgValue),
+      date: sortedData.map((entry) => entry.date),
+    });
+  }
 
   if (isComparisonMode) {
     selectedMeasures.forEach((ci) => {
@@ -356,7 +369,7 @@ export const lineChartOptions = (
     curve: 'smooth',
     lineCap: 'round',
     width: 4.5,
-    dashArray: 0,
+    dashArray: [16, 0],
   };
 
   const xaxis = {

@@ -103,7 +103,7 @@ export default function DatastoreProvider({ children }) {
       datastoreActions.setPreferences(userPreferences);
       datastoreActions.setIsLoading(false);
       datastoreActions.setStatus('200')
-    } else {
+    } else if (measurementYear) {
       datastoreActions.setIsLoading(true);
       const trendPromise = axios.get(trendUrl);
       const searchPromise = axios.get(searchUrl);
