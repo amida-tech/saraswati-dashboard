@@ -29,21 +29,18 @@ function Banner({
         </Typography>
 
         {isMeasure && (
-          <>
-            <Box className="banner__comparison-selector">
-              <ComparisonSelector
-                activeMeasure={activeMeasure}
-                handleResetData={handleResetData}
-                setIsLoading={setIsLoading}
-                filterActivated={filterActivated}
-              />
-            </Box>
-
-            <Box className="banner__year-selector">
-              <MeasurementYearSelector />
-            </Box>
-          </>
+          <Box className="banner__comparison-selector">
+            <ComparisonSelector
+              activeMeasure={activeMeasure}
+              handleResetData={handleResetData}
+              setIsLoading={setIsLoading}
+              filterActivated={filterActivated}
+            />
+          </Box>
         )}
+        <Box className="banner__year-selector">
+          <MeasurementYearSelector />
+        </Box>
       </Box>
 
       {lastUpdated && (
@@ -81,9 +78,9 @@ Banner.propTypes = {
 Banner.defaultProps = {
   headerText: '',
   lastUpdated: '',
-  handleResetData: () => {},
+  handleResetData: () => { },
   activeMeasure: { measure: '' },
-  setIsLoading: () => {},
+  setIsLoading: () => { },
   filterActivated: false,
 };
 
