@@ -34,7 +34,6 @@ import {
   setFilterActivatedProps,
   setIsLoadingProps,
   additionalFilterOptionsProps,
-  setFilterInfoProps,
   chartDataProps,
 } from '../Utilities/PropTypes';
 import { comparisonModeLabels } from './ComparisonSelector';
@@ -78,7 +77,6 @@ function ChartContainer({
   setTabValue,
   setRowEntries,
   setCurrentFilters,
-  setFilterInfo,
   setFilterActivated,
   setIsLoading,
   setCurrentTimeline,
@@ -124,7 +122,6 @@ function ChartContainer({
           setTableFilter={setTableFilter}
           setRowEntries={setRowEntries}
           handleResetData={handleResetData}
-          setFilterInfo={setFilterInfo}
         />
         <ChartHeader
           isComposite={isComposite}
@@ -194,7 +191,6 @@ ChartContainer.propTypes = {
   setRowEntries: setRowEntriesProps,
   handleResetData: handleResetDataProps,
   setTabValue: setTabValueProps,
-  setFilterInfo: setFilterInfoProps,
   chartData: chartDataProps,
 };
 
@@ -219,7 +215,6 @@ ChartContainer.defaultProps = {
   additionalFilterOptions: {},
   setRowEntries: () => undefined,
   handleResetData: () => undefined,
-  setFilterInfo: () => undefined,
   setTabValue: () => undefined,
   chartData: [],
 };

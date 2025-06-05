@@ -404,11 +404,20 @@ export default function Dashboard() {
     }
     setIsLoading(true);
     const isComparisonMode = datastore.comparisonMode !== 'default';
-    // let newDisplayData
+    // Only set filter as activated if search panel criteria is selected
+    const activateFilter = filterActivated
+      || filters.healthcareCoverages.length > 0
+      || filters.healthcarePractitioners.length > 0
+      || filters.healthcareProviders.length > 0
+      || filters.payors.length > 0
+      || filters.domainsOfCare.length > 0
+      || filters.stars.length > 0
+      || filters.sum > 0;
+
     let cloneDailyMeasureResults = {};
     let cloneMembers = [];
     let searchResults = [];
-    // const info = await infoDataFetch();
+
     if (isComparisonMode) {
       cloneDailyMeasureResults = structuredClone(datastore.results);
     } else {
@@ -488,7 +497,7 @@ export default function Dashboard() {
       if (direction) {
         setIsComposite(true);
       }
-      setFilterActivated(true);
+      setFilterActivated(activateFilter);
     } else {
       setIsLoading(true);
       setNoResultsFound(true);
@@ -613,7 +622,6 @@ export default function Dashboard() {
                     setIsLoading={setIsLoading}
                     setRowEntries={setRowEntries}
                     handleResetData={handleResetData}
-                    setFilterInfo={setFilterInfo}
                     filterCurrentResultsLength={filterInfo.currentResults.length}
                     chartData={chartData}
                   />

@@ -276,26 +276,6 @@ export const lineChartOptions = (
         zoomout: true,
         pan: true,
         reset: false,
-        customIcons: [
-          // {
-          //   icon: '<img src="https://cdn4.iconfinder.com/data/icons/complete-common-version-1-5/1024/date_range2-512.png"/>',
-          //   index: -7,
-          //   title: 'tooltip of the icon',
-          //   class: 'chart-container__custom-icon',
-          //   click(chart, options, e) {
-          //     console.log('clicked custom-icon', {chart, options, e})
-          //   },
-          // },
-          // {
-          //   icon: 'F',
-          //   index: -8,
-          //   title: 'tooltip of the icon',
-          //   class: 'custom-icon',
-          //   click(chart, options, e) {
-          //     console.log('clicked custom-icon', {chart, options, e})
-          //   },
-          // },
-        ],
       },
       export: {
         csv: {
