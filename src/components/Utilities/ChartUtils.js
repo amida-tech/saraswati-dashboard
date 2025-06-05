@@ -213,6 +213,7 @@ export const lineChartOptions = (
     currentTimeline,
     chartData,
     theme,
+    chartHeader,
   },
 ) => {
   const xaxisTitle = () => {
@@ -528,7 +529,7 @@ export const lineChartOptions = (
       const foundDate = w.globals.categoryLabels[dataPointIndex + 1];
       const foundColor = w.globals.initialSeries[seriesIndex]?.color;
       return `<div class="chart-container__tooltip" style="background-color:${foundColor}; text-shadow: 1px 1px ${theme.palette?.bluegray.main}; color:${theme.palette?.background.main};">`
-        + `<span> Measure: ${w.config.series[seriesIndex].name.toUpperCase()}</span>`
+        + `<span> ${chartHeader}: ${w.config.series[seriesIndex].name.toUpperCase()}</span>`
         + '<br/>'
         + `<span> Value: ${series[seriesIndex][dataPointIndex].toFixed(2)}%</span>`
         + '<br/>'

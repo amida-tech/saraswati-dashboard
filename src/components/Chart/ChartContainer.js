@@ -1,7 +1,9 @@
+/* eslint-disable no-nested-ternary */
 import { Grid, Typography } from '@mui/material';
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
+import { DatastoreContext } from '../../context/DatastoreProvider';
 import theme from '../../assets/styles/AppTheme';
 
 import FilterDrawer from '../FilterMenu/FilterDrawer';
@@ -35,6 +37,7 @@ import {
   setFilterInfoProps,
   chartDataProps,
 } from '../Utilities/PropTypes';
+import { comparisonModeLabels } from './ComparisonSelector';
 
 export const firstRenderContext = createContext(true);
 
@@ -52,30 +55,48 @@ function labelGenerator(measure) {
 }
 
 function ChartContainer({
-  setCurrentFilters,
+  // basic data props
+  isLoading,
+  isComposite,
+  activeMeasure,
+  currentResults,
   currentTimeline,
   currentFilters,
-  handleFilteredDataUpdate,
-  setCurrentTimeline,
+  chartData,
+  colorMap,
+  // filter props
   filterDrawerOpen,
+  filterDisabled,
+  additionalFilterOptions,
+  // handlers
   toggleFilterDrawer,
-  isComposite,
+  handleFilteredDataUpdate,
+  handleResetData,
+  // setters
   setComposite,
   setTableFilter,
-  isLoading,
-  currentResults,
-  activeMeasure,
-  filterDisabled,
-  colorMap,
-  setFilterActivated,
-  setIsLoading,
-  additionalFilterOptions,
   setTabValue,
   setRowEntries,
-  handleResetData,
+  setCurrentFilters,
   setFilterInfo,
-  chartData,
+  setFilterActivated,
+  setIsLoading,
+  setCurrentTimeline,
 }) {
+  const {
+    datastore: { comparisonMode },
+  } = useContext(DatastoreContext)
+
+  const labelObj = comparisonModeLabels.find(
+    (c) => c.value.toLowerCase() === comparisonMode.toLowerCase(),
+  )
+
+  const chartHeader = comparisonMode.toLowerCase() !== 'default'
+    ? labelObj?.single || labelObj?.label || ''
+    : !isComposite
+      ? 'Sub-measure'
+      : 'Measure'
+
   const handleFilterChange = (filterOptions) => {
     setCurrentFilters(filterOptions);
     handleFilteredDataUpdate(filterOptions, currentTimeline);
@@ -131,6 +152,7 @@ function ChartContainer({
                 currentTimeline,
                 chartData,
                 theme,
+                chartHeader,
               },
             )}
             series={chartData}
