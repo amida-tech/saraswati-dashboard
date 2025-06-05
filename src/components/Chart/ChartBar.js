@@ -52,7 +52,7 @@ function ChartBar({
   const handleDateChange = (event) => {
     handleTimelineChange({
       choice: event.target.value,
-      range: [null, null],
+      range: [0, 100],
     });
     handleDateClose();
   };
@@ -153,7 +153,7 @@ ChartBar.defaultProps = {
   filterSum: 0,
   currentTimeline: {
     choice: 'all',
-    range: [null, null],
+    range: [0, 100],
   },
   handleTimelineChange: undefined,
   filterDisabled: false,

@@ -216,6 +216,14 @@ export const lineChartOptions = (
     chartHeader,
   },
 ) => {
+  const colors = Array.isArray(chartData)
+    ? chartData.map(
+      (s) => (colorMap.find((c) => c.value === s.name)?.color)
+        || s.color
+        || theme.palette?.primary.main,
+    )
+    : [];
+
   const xaxisTitle = () => {
     const { choice } = currentTimeline;
     if (choice === 'all') {
@@ -331,12 +339,7 @@ export const lineChartOptions = (
     offsetX: 0,
     offsetY: 0,
     labels: {
-      colors: colorMap.map((color) => {
-        if (color.color) {
-          return color.color;
-        }
-        return theme.palette.text.primary;
-      }),
+      colors: colorMap.map((color) => color.color || theme.palette.text.primary),
       useSeriesColors: false,
     },
     markers: {
@@ -344,12 +347,7 @@ export const lineChartOptions = (
       height: 12,
       strokeWidth: 0,
       strokeColor: '#fff',
-      fillColors: colorMap.map((color) => {
-        if (color.color) {
-          return color.color;
-        }
-        return theme.palette.text.primary;
-      }),
+      fillColors: colorMap.map((color) => color.color || theme.palette.text.primary),
       radius: 12,
       onClick: undefined,
       offsetX: 0,
@@ -566,7 +564,7 @@ export const lineChartOptions = (
     align: 'center',
     verticalAlign: 'middle',
     offsetX: 0,
-    offsetY: 0,
+    offsetY: -75,
     style: {
       color: undefined,
       fontSize: '25px',

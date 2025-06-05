@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { Grid, Typography } from '@mui/material';
+import { Grid, Skeleton, Typography } from '@mui/material';
 import { createContext, useContext } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
@@ -23,7 +23,7 @@ import {
   currentFiltersProps,
   setCurrentTimelineProps,
   isCompositeProps,
-  setCompositeProps,
+  setIsCompositeProps,
   setTableFilterProps,
   currentResultsProps,
   filterDisabledProps,
@@ -73,7 +73,7 @@ function ChartContainer({
   handleFilteredDataUpdate,
   handleResetData,
   // setters
-  setComposite,
+  setIsComposite,
   setTableFilter,
   setTabValue,
   setRowEntries,
@@ -94,8 +94,10 @@ function ChartContainer({
   const chartHeader = comparisonMode.toLowerCase() !== 'default'
     ? labelObj?.single || labelObj?.label || ''
     : !isComposite
-      ? 'Sub-measure'
+      ? 'Sub-Measure'
       : 'Measure'
+
+  const isLoadingChartData = chartData.length === 0 || currentResults.length === 0;
 
   const handleFilterChange = (filterOptions) => {
     setCurrentFilters(filterOptions);
@@ -106,66 +108,68 @@ function ChartContainer({
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
-  return (
-    <div className="chart-container">
-      <FilterDrawer
-        filterDrawerOpen={filterDrawerOpen}
-        toggleFilterDrawer={toggleFilterDrawer}
-        currentFilters={currentFilters}
-        handleFilterChange={handleFilterChange}
-        additionalFilterOptions={additionalFilterOptions}
-        setFilterActivated={setFilterActivated}
-        setIsLoading={setIsLoading}
-        setComposite={setComposite}
-        setTableFilter={setTableFilter}
-        setRowEntries={setRowEntries}
-        handleResetData={handleResetData}
-        setFilterInfo={setFilterInfo}
-      />
-      <ChartHeader
-        isComposite={isComposite}
-        setComposite={setComposite}
-        setTabValue={setTabValue}
-        setTableFilter={setTableFilter}
-        isLoading={isLoading}
-        handleResetData={handleResetData}
-        labelGenerator={labelGenerator}
-        currentResults={currentResults}
-        activeMeasure={activeMeasure}
-      />
-      <Grid className="chart-container__main-chart">
-        <Grid item className="chart-container__chart-bar">
-          <ChartBar
-            filterDrawerOpen={filterDrawerOpen}
-            toggleFilterDrawer={toggleFilterDrawer}
-            currentTimeline={currentTimeline}
-            handleTimelineChange={handleTimelineChange}
-            filterSum={currentFilters.sum}
-            filterDisabled={filterDisabled}
-          />
-        </Grid>
-        <Grid item className="chart-container__chart">
-          <ReactApexChart
-            options={lineChartOptions(
-              {
-                colorMap,
-                currentTimeline,
-                chartData,
-                theme,
-                chartHeader,
-              },
-            )}
-            series={chartData}
-            type="line"
-            width="100%"
-            height="100%"
-          />
+  return isLoadingChartData
+    ? (<Skeleton variant="rectangular" height={500} />)
+    : (
+      <div className="chart-container">
+        <FilterDrawer
+          filterDrawerOpen={filterDrawerOpen}
+          toggleFilterDrawer={toggleFilterDrawer}
+          currentFilters={currentFilters}
+          handleFilterChange={handleFilterChange}
+          additionalFilterOptions={additionalFilterOptions}
+          setFilterActivated={setFilterActivated}
+          setIsLoading={setIsLoading}
+          setIsComposite={setIsComposite}
+          setTableFilter={setTableFilter}
+          setRowEntries={setRowEntries}
+          handleResetData={handleResetData}
+          setFilterInfo={setFilterInfo}
+        />
+        <ChartHeader
+          isComposite={isComposite}
+          setIsComposite={setIsComposite}
+          setTabValue={setTabValue}
+          setTableFilter={setTableFilter}
+          isLoading={isLoading}
+          handleResetData={handleResetData}
+          labelGenerator={labelGenerator}
+          currentResults={currentResults}
+          activeMeasure={activeMeasure}
+        />
+        <Grid className="chart-container__main-chart">
+          <Grid item className="chart-container__chart-bar">
+            <ChartBar
+              filterDrawerOpen={filterDrawerOpen}
+              toggleFilterDrawer={toggleFilterDrawer}
+              currentTimeline={currentTimeline}
+              handleTimelineChange={handleTimelineChange}
+              filterSum={currentFilters.sum}
+              filterDisabled={filterDisabled}
+            />
+          </Grid>
+          <Grid item className="chart-container__chart">
+            <ReactApexChart
+              options={lineChartOptions(
+                {
+                  colorMap,
+                  currentTimeline,
+                  chartData,
+                  theme,
+                  chartHeader,
+                },
+              )}
+              series={chartData}
+              type="line"
+              width="100%"
+              height="100%"
+            />
+
+          </Grid>
 
         </Grid>
-
-      </Grid>
-    </div>
-  );
+      </div>
+    );
 }
 
 ChartContainer.propTypes = {
@@ -179,7 +183,7 @@ ChartContainer.propTypes = {
   currentFilters: currentFiltersProps,
   setCurrentTimeline: setCurrentTimelineProps,
   isComposite: isCompositeProps,
-  setComposite: setCompositeProps,
+  setIsComposite: setIsCompositeProps,
   setTableFilter: setTableFilterProps,
   currentResults: currentResultsProps,
   filterDisabled: filterDisabledProps,
@@ -205,7 +209,7 @@ ChartContainer.defaultProps = {
   currentFilters: [],
   setCurrentTimeline: () => undefined,
   isComposite: true,
-  setComposite: () => undefined,
+  setIsComposite: () => undefined,
   setTableFilter: () => undefined,
   currentResults: [],
   filterDisabled: true,

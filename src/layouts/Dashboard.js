@@ -1,5 +1,6 @@
 import {
   useContext, useEffect, useState, useCallback,
+  useTransition,
 } from 'react';
 import {
   Box, Grid, Paper, Snackbar, Skeleton,
@@ -40,6 +41,7 @@ import {
 
 export default function Dashboard() {
   const { datastore, datastoreActions } = useContext(DatastoreContext);
+  const [startTransition] = useTransition();
   const [filterDrawerOpen, toggleFilterDrawer] = useState(false);
   const [filterActivated, setFilterActivated] = useState(false);
   const [noResultsFound, setNoResultsFound] = useState(false);
@@ -56,12 +58,14 @@ export default function Dashboard() {
   const [displayData, setDisplayData] = useState(
     datastore.results.map((result) => ({ ...result })),
   );
-  const [isComposite, setComposite] = useState(true);
+  const [isComposite, setIsComposite] = useState(true);
   const [currentResults, setCurrentResults] = useState([]);
   const [colorMap, setColorMap] = useState([]);
-  const [selectedMeasures, setSelectedMeasures] = useState(Object.keys(datastore.info));
-  const [currentFilters, setCurrentFilters] = useState([]);
-  const [additionalFilterOptions, setAdditionalFilterOptions] = useState([]);
+  const [selectedMeasures, setSelectedMeasures] = useState(Object.keys(
+    () => Object.keys(datastore.info ?? {}),
+  ));
+  const [currentFilters, setCurrentFilters] = useState(datastore.defaultFilterState);
+  const [additionalFilterOptions, setAdditionalFilterOptions] = useState({});
   const [currentTimeline, setCurrentTimeline] = useState(datastore.defaultTimelineState);
   const [graphWidth, setGraphWidth] = useState(window.innerWidth);
   const [filterDisabled, setFilterDisabled] = useState(true);
@@ -89,7 +93,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(true);
+        setIsComposite(true);
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(Object.keys(datastore.info));
@@ -106,7 +110,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
@@ -138,7 +142,7 @@ export default function Dashboard() {
             .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
-        setComposite(true);
+        setIsComposite(true);
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -199,7 +203,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(true);
+        setIsComposite(true);
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults
@@ -217,7 +221,7 @@ export default function Dashboard() {
           results: [],
           filters: {},
         });
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           datastore.currentResults,
@@ -267,14 +271,14 @@ export default function Dashboard() {
             .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
-        setComposite(true);
+        setIsComposite(true);
         setColorMap(ColorMapping(filterInfo.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
         setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
       } else {
-        setComposite(false);
+        setIsComposite(false);
         const subMeasureCurrentResults = getSubMeasureCurrentResults(
           activeMeasure,
           filterInfo.currentResults,
@@ -355,7 +359,7 @@ export default function Dashboard() {
         datastore.info,
         tableFilter,
       ));
-      setComposite(false);
+      setIsComposite(false);
       setTabValue('members');
     } else {
       setTabValue('overview');
@@ -371,7 +375,7 @@ export default function Dashboard() {
   ]);
 
   // FORMATS DATA FOR CHART COMPONENT
-  const ChartDataGenerator = useCallback(() => {
+  const chartDataGenerator = useCallback(() => {
     setIsLoading(true);
     const ChartData = displayDataFormatter(
       currentResults,
@@ -390,10 +394,14 @@ export default function Dashboard() {
 
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
-    if (datastore.datastoreLoading === false) {
-      ChartDataGenerator();
+    if (typeof startTransition === 'function') {
+      startTransition(() => {
+        chartDataGenerator();
+      });
+    } else {
+      chartDataGenerator();
     }
-  }, [currentResults, selectedMeasures, datastore, displayData, ChartDataGenerator]);
+  }, [chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
@@ -484,7 +492,7 @@ export default function Dashboard() {
       setCurrentTimeline(newFilterInfo.timeline);
       setFilterInfo(newFilterInfo);
       if (direction) {
-        setComposite(true);
+        setIsComposite(true);
       }
       setFilterActivated(true);
     } else {
@@ -595,7 +603,7 @@ export default function Dashboard() {
                     filterDrawerOpen={filterDrawerOpen}
                     toggleFilterDrawer={toggleFilterDrawer}
                     isComposite={isComposite}
-                    setComposite={setComposite}
+                    setIsComposite={setIsComposite}
                     setTableFilter={setTableFilter}
                     isLoading={isLoading}
                     currentResults={currentResults}

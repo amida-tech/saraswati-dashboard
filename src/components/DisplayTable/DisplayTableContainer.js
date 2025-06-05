@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import {
   Grid, Typography, Box,
 } from '@mui/material';
@@ -44,6 +44,12 @@ function DisplayTableContainer({
 }) {
   const { datastore } = useContext(DatastoreContext);
 
+  useEffect(() => {
+    if (datastore.comparisonMode !== 'default') {
+      handleTabChange(null, 'overview')
+    }
+  }, [datastore.comparisonMode]);
+
   return (
     <Grid
       sx={{ outline: `${theme.palette?.primary.dark} solid 1px` }}
@@ -81,11 +87,13 @@ function DisplayTableContainer({
                   label="Overview"
                   value="overview"
                 />
-                <TableTab
-                  className="chart-container__table-selection-button"
-                  label="Members"
-                  value="members"
-                />
+                {datastore.comparisonMode === 'default' && (
+                  <TableTab
+                    className="chart-container__table-selection-button"
+                    label="Members"
+                    value="members"
+                  />
+                )}
               </TabList>
             )}
           </Box>
@@ -119,22 +127,20 @@ function DisplayTableContainer({
 
           </TabPanel>
 
-          <TabPanel value="members">
-
-            <TableFilterPanel
-              tableFilter={tableFilter}
-              handleTableFilterChange={handleTableFilterChange}
-            />
-            <EntriesFound total={rowEntries.length} />
-
-            <MemberTable
-              activeMeasure={activeMeasure}
-              headerInfo={headerInfo}
-              rowEntries={rowEntries}
-            />
-
-          </TabPanel>
-
+          {datastore.comparisonMode === 'default' && (
+            <TabPanel value="members">
+              <TableFilterPanel
+                tableFilter={tableFilter}
+                handleTableFilterChange={handleTableFilterChange}
+              />
+              <EntriesFound total={rowEntries.length} />
+              <MemberTable
+                activeMeasure={activeMeasure}
+                headerInfo={headerInfo}
+                rowEntries={rowEntries}
+              />
+            </TabPanel>
+          )}
         </TabContext>
       </Box>
     </Grid>
