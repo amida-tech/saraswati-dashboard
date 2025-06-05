@@ -34,24 +34,34 @@ export function filterByTimeline(timelineDisplayData, timeline) {
   }
   return timelineDisplayData;
 }
-export function expandSubMeasureResults(selectedMeasure, results) {
+export function expandSubMeasureResults(selectedMeasure, results, isComparisonMode) {
   const expandedResults = [];
-  results.filter(
-    (result) => result.measure === selectedMeasure.measure,
-  ).forEach((byLine) => {
-    expandedResults.push(byLine);
-    if (selectedMeasure.subScores && selectedMeasure.subScores.length > 1) {
-      byLine.subScores.forEach((subScore) => expandedResults.push(subScore));
-    }
-  });
+  if (isComparisonMode) {
+    return results;
+  } else {
+    results.filter(
+      (result) => result.measure === selectedMeasure.measure,
+    ).forEach((byLine) => {
+      expandedResults.push(byLine);
+      if (selectedMeasure.subScores && selectedMeasure.subScores.length > 1) {
+        byLine.subScores.forEach((subScore) => expandedResults.push(subScore));
+      }
+    });
+  }
+
   return expandedResults;
 }
-export function getSubMeasureCurrentResults(activeMeasure, currentResults) {
+export function getSubMeasureCurrentResults(activeMeasure, currentResults, isComparisonMode) {
+  if (isComparisonMode) {
+    return currentResults;
+  }
   let subMeasureCurrentResults = [];
   const subMeasurePrime = currentResults.find(
     (item) => item.measure === activeMeasure.measure,
   );
-  if (subMeasurePrime.subScores && subMeasurePrime.subScores.length > 1) {
+  if (!subMeasurePrime) {
+    return [];
+  } else if (subMeasurePrime.subScores && subMeasurePrime.subScores.length > 1) {
     subMeasureCurrentResults = [subMeasurePrime, ...subMeasurePrime.subScores];
   } else {
     subMeasureCurrentResults = [subMeasurePrime];
@@ -72,6 +82,9 @@ export function getSubMeasureCurrentResultsPerMeasure(givenMeasure, currentResul
   return subMeasureCurrentResults;
 }
 export const createLabel = (measure, info) => {
+  if (!measure) {
+    return '';
+  }
   if (info[measure]) {
     return `${info[measure].displayLabel} - ${info[measure].title}`;
   }
@@ -97,19 +110,20 @@ export const createSubMeasureLabel = (subMeasure, info) => {
 
   return displayLabel;
 };
-export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
+export const calcMemberResults = (dailyMeasureResults, measureInfo, isComparisonMode) => {
   const workingList = {};
+  const sortingAttribute = isComparisonMode ? 'comparisonItem' : 'measure'
   dailyMeasureResults.forEach((item) => {
-    if (workingList[item.measure] === undefined
-            || item.date > workingList[item.measure].date) {
-      workingList[item.measure] = item;
+    if (workingList[item[sortingAttribute]] === undefined
+      || item.date > workingList[item[sortingAttribute]].date) {
+      workingList[item[sortingAttribute]] = item;
     }
   });
   Object.keys(workingList).forEach((key) => {
-    workingList[key].label = createLabel(workingList[key].measure, measureInfo);
-    workingList[key].shortLabel = measureInfo[workingList[key].measure]?.displayLabel;
-    workingList[key].title = measureInfo[workingList[key].measure]?.title;
-    if (workingList[key].subScores) {
+    workingList[key].label = createLabel(workingList[key][sortingAttribute], measureInfo);
+    workingList[key].shortLabel = measureInfo[workingList[key][sortingAttribute]]?.displayLabel;
+    workingList[key].title = measureInfo[workingList[key][sortingAttribute]]?.title;
+    if (!isComparisonMode && workingList[key].subScores) {
       workingList[key].subScores.forEach((subscore) => {
         const newSubscore = subscore;
         newSubscore.label = createSubMeasureLabel(newSubscore.measure, measureInfo);
@@ -128,30 +142,66 @@ export const calcMemberResults = (dailyMeasureResults, measureInfo) => {
     currentResults,
   };
 };
-export const DisplayDataFormatter = (
+export const displayDataFormatter = (
   currentResults,
   selectedMeasures,
   displayData,
   colorMap,
   theme,
+  isComparisonMode,
+  measureAvgValue,
 ) => {
   const newChartDisplay = [];
-  currentResults.forEach((cr) => {
-    const Measure = cr.measure;
+  if (displayData.length > 0) {
+    const sortedData = displayData
+      .filter((data) => (isComparisonMode
+        ? data.comparisonItem : data.measure) === selectedMeasures[0])
+      .sort((a, b) => a.date <= b.date);
 
-    if (selectedMeasures.includes(Measure)) {
-      const selectMeasureFilter = displayData.filter((entry) => Measure === entry.measure);
-      if (selectMeasureFilter.length > 0) {
-        newChartDisplay.push({
-          color: colorMap
-            .find((color) => color.value === Measure)?.color || theme.palette?.primary.main,
-          name: Measure,
-          data: selectMeasureFilter.map((item) => Number(item.value.toFixed(2))),
-          date: selectMeasureFilter.map((entry) => entry.date),
-        });
+    newChartDisplay.push({
+      color: '#222222',
+      name: 'MY2024 Composite Average',
+      data: Array(sortedData.length).fill(measureAvgValue),
+      date: sortedData.map((entry) => entry.date),
+    });
+  }
+
+  if (isComparisonMode) {
+    selectedMeasures.forEach((ci) => {
+      const comparisonItemFilter = displayData.filter((entry) => ci === entry.comparisonItem);
+      if (comparisonItemFilter.length > 0) {
+        const data = comparisonItemFilter
+          .map((item) => (item.value !== undefined ? Number(item.value.toFixed(2)) : null));
+        if (data.length !== 0 && data[0] !== null) {
+          newChartDisplay.push({
+            color: colorMap
+              .find((color) => color.value === ci)?.color || theme.palette?.primary.main,
+            name: ci,
+            data: comparisonItemFilter.map((item) => Number(item.value.toFixed(2))),
+            date: comparisonItemFilter.map((entry) => entry.date),
+          });
+        }
       }
-    }
-  });
+    })
+  } else {
+    currentResults.forEach((cr) => {
+      const Measure = cr.measure;
+
+      if (selectedMeasures.includes(Measure)) {
+        const selectMeasureFilter = displayData.filter((entry) => Measure === entry.measure);
+        if (selectMeasureFilter.length > 0) {
+          newChartDisplay.push({
+            color: colorMap
+              .find((color) => color.value === Measure)?.color || theme.palette?.primary.main,
+            name: Measure,
+            data: selectMeasureFilter.map((item) => Number(item.value.toFixed(2))),
+            date: selectMeasureFilter.map((entry) => entry.date),
+          });
+        }
+      }
+    });
+  }
+
   if (newChartDisplay.length > 0) {
     return newChartDisplay;
   }
@@ -163,8 +213,17 @@ export const lineChartOptions = (
     currentTimeline,
     chartData,
     theme,
+    chartHeader,
   },
 ) => {
+  const colors = Array.isArray(chartData)
+    ? chartData.map(
+      (s) => (colorMap.find((c) => c.value === s.name)?.color)
+        || s.color
+        || theme.palette?.primary.main,
+    )
+    : [];
+
   const xaxisTitle = () => {
     const { choice } = currentTimeline;
     if (choice === 'all') {
@@ -217,26 +276,6 @@ export const lineChartOptions = (
         zoomout: true,
         pan: true,
         reset: false,
-        customIcons: [
-          // {
-          //   icon: '<img src="https://cdn4.iconfinder.com/data/icons/complete-common-version-1-5/1024/date_range2-512.png"/>',
-          //   index: -7,
-          //   title: 'tooltip of the icon',
-          //   class: 'chart-container__custom-icon',
-          //   click(chart, options, e) {
-          //     console.log('clicked custom-icon', {chart, options, e})
-          //   },
-          // },
-          // {
-          //   icon: 'F',
-          //   index: -8,
-          //   title: 'tooltip of the icon',
-          //   class: 'custom-icon',
-          //   click(chart, options, e) {
-          //     console.log('clicked custom-icon', {chart, options, e})
-          //   },
-          // },
-        ],
       },
       export: {
         csv: {
@@ -280,12 +319,7 @@ export const lineChartOptions = (
     offsetX: 0,
     offsetY: 0,
     labels: {
-      colors: colorMap.map((color) => {
-        if (color.color) {
-          return color.color;
-        }
-        return theme.palette.text.primary;
-      }),
+      colors: colorMap.map((color) => color.color || theme.palette.text.primary),
       useSeriesColors: false,
     },
     markers: {
@@ -293,12 +327,7 @@ export const lineChartOptions = (
       height: 12,
       strokeWidth: 0,
       strokeColor: '#fff',
-      fillColors: colorMap.map((color) => {
-        if (color.color) {
-          return color.color;
-        }
-        return theme.palette.text.primary;
-      }),
+      fillColors: colorMap.map((color) => color.color || theme.palette.text.primary),
       radius: 12,
       onClick: undefined,
       offsetX: 0,
@@ -323,7 +352,7 @@ export const lineChartOptions = (
     curve: 'smooth',
     lineCap: 'round',
     width: 4.5,
-    dashArray: 0,
+    dashArray: [16, 0],
   };
 
   const xaxis = {
@@ -366,7 +395,7 @@ export const lineChartOptions = (
               return value.split('T')[0];
             }
             return value;
-          // eslint-disable-next-line no-else-return
+            // eslint-disable-next-line no-else-return
           } else {
             return Date.now();
           }
@@ -415,6 +444,7 @@ export const lineChartOptions = (
     show: true,
     showAlways: true,
     max: chartData[0].data.length > 0 ? 100 : undefined,
+    min: 0,
     tickAmount: 5,
     labels: {
       show: true,
@@ -477,7 +507,7 @@ export const lineChartOptions = (
       const foundDate = w.globals.categoryLabels[dataPointIndex + 1];
       const foundColor = w.globals.initialSeries[seriesIndex]?.color;
       return `<div class="chart-container__tooltip" style="background-color:${foundColor}; text-shadow: 1px 1px ${theme.palette?.bluegray.main}; color:${theme.palette?.background.main};">`
-        + `<span> Measure: ${w.config.series[seriesIndex].name.toUpperCase()}</span>`
+        + `<span> ${chartHeader}: ${w.config.series[seriesIndex].name.toUpperCase()}</span>`
         + '<br/>'
         + `<span> Value: ${series[seriesIndex][dataPointIndex].toFixed(2)}%</span>`
         + '<br/>'
@@ -514,7 +544,7 @@ export const lineChartOptions = (
     align: 'center',
     verticalAlign: 'middle',
     offsetX: 0,
-    offsetY: 0,
+    offsetY: -50,
     style: {
       color: undefined,
       fontSize: '25px',
@@ -523,6 +553,7 @@ export const lineChartOptions = (
   };
   return {
     chart: chartOptions,
+    colors,
     dataLabels,
     stroke,
     xaxis,

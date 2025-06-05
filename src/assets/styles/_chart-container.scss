@@ -16,13 +16,13 @@ $block-class: 'chart-container';
             width: 95%;
             height: 100%;
             margin: auto;
-            margin-top: 3rem;
+            margin-top: 4rem;
         }
 
         & &__chart-bar {
             float: right;
-            margin-right: 4.7rem;
-            margin-top: -.10rem;
+            margin-right: 1rem;
+            margin-top: -2.5rem;
             &--timeline{
                 z-index: 12;
                 position: relative;
@@ -89,14 +89,16 @@ $block-class: 'chart-container';
             display: flex;
             flex-direction: row;
             position: absolute;
-            margin: .75rem 0;
+            margin: 0.75rem 1rem;
         }
 
         & &__return-measure-labels {
             display: flex;
-            flex-direction: column;
             font-size: 1.2rem;
             margin-left: 1rem;
+            align-items: center;
+            gap: 1rem;
+            padding-left: 2rem;
         }
 
         & &__return-measure-title {
@@ -108,6 +110,7 @@ $block-class: 'chart-container';
             font-size: 1.1rem;
             text-transform: uppercase;
             font-weight: bold;
+            margin-left: 2rem;
         }
 
         & &__selector-title {

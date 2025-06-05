@@ -25,9 +25,9 @@ function RatingTrends({
 
   function handleOnDragEnd(result) {
     if (!result.destination) return;
-    const items = boxItems;
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    const items = Array.from(boxItems);
+    const [reordered] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reordered);
     setBoxOrder(items);
     delete datastore.preferences.ratingTrends;
     datastoreActions?.setPreferences({ ratingTrends: items, ...datastore.preferences });
@@ -45,19 +45,20 @@ function RatingTrends({
           <Info infoText={ratingTrendsTip} />
         </Box>
 
-        <Box sx={ratingTrendsMeasureContainer}>
-          {Object.values(measurePreferences).map((pref, idx) => (
-            <RatingTrendBox
-              key={`${pref.measure}'s ${pref.type}`}
-              activeMeasure={activeMeasure}
-              widgetPrefs={measurePreferences[idx]}
-              trends={trends}
-              currentResults={currentResults}
-              order={idx}
-            />
-          ))}
-
-        </Box>
+        {datastore.comparisonMode === 'default' && (
+          <Box sx={ratingTrendsMeasureContainer}>
+            {Object.values(measurePreferences).map((pref, idx) => (
+              <RatingTrendBox
+                key={`${pref.measure}'s ${pref.type}`}
+                activeMeasure={activeMeasure}
+                widgetPrefs={measurePreferences[idx]}
+                trends={trends}
+                currentResults={currentResults}
+                order={idx}
+              />
+            ))}
+          </Box>
+        )}
       </Box>
     );
   }
@@ -83,7 +84,7 @@ function RatingTrends({
               {boxItems.map((widget, idx) => (
                 <Draggable
                   key={`${widget.measure}'s ${widget.type}`}
-                  draggableId={widget.measure}
+                  draggableId={`${widget.measure}-${widget.type}`}
                   index={idx}
                 >
                   {(provided) => (

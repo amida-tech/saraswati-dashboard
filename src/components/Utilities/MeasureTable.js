@@ -48,12 +48,29 @@ export const exclusions = {
   alignContent: 'center',
 };
 
-export const headerData = (isComposite) => {
-  if (isComposite) {
+export const headerData = (isComposite, comparisonMode = 'default') => {
+  if (comparisonMode !== 'default') {
+    return comparisonHeaderInfo;
+  } else if (isComposite) {
     return headerInfo;
   }
   return subHeaderInfo;
 };
+
+const comparisonHeaderInfo = [
+  {
+    key: 'label',
+    link: true,
+    header: 'Comparison Item',
+    tooltip: 'The value that is constant for all data points in this group',
+    flexBasis: 'large',
+  },
+  inclusions,
+  eligiblePopulation,
+  numerator,
+  denominator,
+  exclusions,
+]
 
 export const headerInfo = [
   {

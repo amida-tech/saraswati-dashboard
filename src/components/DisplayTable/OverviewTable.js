@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import theme from '../../assets/styles/AppTheme';
 import { formatData } from '../Utilities/MeasureTable';
+import { DatastoreContext } from '../../context/DatastoreProvider';
 import {
   activeMeasureProps,
   colorMapProps,
@@ -18,9 +19,10 @@ export default function OverviewTable({
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
   const [checkboxColors, setCheckboxColors] = useState('');
-  // eslint-disable-next-line max-len
-  const [rowSelectionModel, setRowSelectionModel] = useState(() => currentResults?.map((m) => m.label) ?? []);
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const navigate = useNavigate();
+
+  const { datastore } = useContext(DatastoreContext);
 
   useEffect(() => {
     const columnData = Object.values(headerInfo)
@@ -35,8 +37,13 @@ export default function OverviewTable({
       }));
     const rowData = formatData(currentResults);
 
-    const mapping = rowData.map((measure) => colorMap
-      .find((map) => (map.value === measure.value))?.color || theme.palette?.primary.main);
+    const isComparisonMode = datastore.comparisonMode !== 'default';
+    const mapping = rowData.map((measure) => {
+      const measureValue = isComparisonMode ? measure.id : measure.value;
+      return colorMap
+        .find((map) => (map.value.toUpperCase() === measureValue.toUpperCase()))?.color
+        || theme.palette?.primary.main
+    });
     const newColorObj = {};
     const colorMaps = mapping?.reduce((colorObj, mapColor, idx) => {
       const colorClass = `& .MuiDataGrid-virtualScrollerRenderZone > div:nth-of-type(${idx + 1}) > div > span`;
@@ -50,22 +57,29 @@ export default function OverviewTable({
     setRowSelectionModel(() => rowData.map((r) => r.id));
   }, [currentResults, colorMap, headerInfo]);
 
-  const handleRowSelectionModelChange = (event) => {
-    setRowSelectionModel(event);
-
-    const newSelections = event
-      .map((label) => currentResults
-        .find((measure) => measure.label === label)
-        .measure);
-
-    handleSelectedMeasureChange(newSelections);
+  const handleRowSelectionModelChange = (newModel) => {
+    setRowSelectionModel(newModel);
   };
+
+  useEffect(() => {
+    setRowSelectionModel(() => currentResults.map((m) => m.label));
+  }, [])
+
+  useEffect(() => {
+    const fieldName = datastore.comparisonMode === 'default' ? 'measure' : 'comparisonItem';
+    const newMeasures = rowSelectionModel
+      .map((label) => {
+        const foundResult = currentResults.find((m) => m.label === label);
+        return foundResult ? foundResult[fieldName] : false
+      })
+      .filter(Boolean);
+
+    handleSelectedMeasureChange(newMeasures);
+  }, [rowSelectionModel, currentResults, handleSelectedMeasureChange]);
 
   const handleRowClick = (event) => {
     if (activeMeasure.measure === 'composite') {
       navigate((`/${event.row.value}`));
-    } else {
-      // alert action here -- see MTR
     }
   };
 
@@ -92,7 +106,7 @@ export default function OverviewTable({
         showColumnRightBorder={false}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(event) => handleRowSelectionModelChange(event)}
-        onRowClick={(event) => handleRowClick(event)}
+        onRowDoubleClick={(event) => handleRowClick(event)}
         components={{
           Toolbar: GridToolbar,
         }}

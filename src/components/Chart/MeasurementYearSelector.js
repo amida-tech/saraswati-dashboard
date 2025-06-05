@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import {
   FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
@@ -9,21 +9,9 @@ function MeasurementYearSelector() {
   const { measurementYear } = datastore;
   const availableYears = [2022, 2025];
 
-  // check localStorage for saved year
-  useEffect(() => {
-    const storedYear = localStorage.getItem('selectedYear');
-
-    // Only update if there's a valid year in localStorage
-    if (storedYear && availableYears.includes(Number(storedYear))) {
-      datastoreActions.setMeasurementYear(Number(storedYear));
-    }
-  }, []);
-
   const handleYearChange = (event) => {
     const newYear = event.target.value;
-
     datastoreActions.setMeasurementYear(newYear);
-
     // Save to localStorage for persistence across pages and sessions
     localStorage.setItem('selectedYear', newYear);
   };
@@ -32,6 +20,7 @@ function MeasurementYearSelector() {
     <FormControl
       variant="outlined"
       size="small"
+      disabled={datastore.comparisonMode !== 'default'} // only for now
       sx={{
         minWidth: 180,
         '& .MuiInputLabel-root': {
@@ -51,7 +40,7 @@ function MeasurementYearSelector() {
       <Select
         labelId="measurement-year-select-label"
         id="measurement-year-select"
-        value={measurementYear}
+        value={measurementYear || ''}
         onChange={handleYearChange}
         label="Year"
         data-testid="measurement-year-selector"
