@@ -8,10 +8,10 @@ $block-class: 'banner';
         width: 97%;
 
         & &__header-container {
-            display: flex;
+            display: grid;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
+            grid-template-columns: 8fr 1fr auto;
+            margin-bottom: .5rem;
         }
 
         & &__header {

@@ -144,7 +144,7 @@ export const additionalFilterOptionsProps = PropTypes.shape({
   ),
 });
 
-export const setCompositeProps = PropTypes.func;
+export const setIsCompositeProps = PropTypes.func;
 
 export const setTabValueProps = PropTypes.func;
 
