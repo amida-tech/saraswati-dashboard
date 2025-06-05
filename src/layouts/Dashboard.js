@@ -1,6 +1,5 @@
 import {
   useContext, useEffect, useState, useCallback,
-  useTransition,
 } from 'react';
 import {
   Box, Grid, Paper, Snackbar, Skeleton,
@@ -16,7 +15,7 @@ import Alert from '../components/Utilities/Alert';
 import ChartContainer from '../components/Chart';
 import DisplayTableContainer from '../components/DisplayTable/DisplayTableContainer';
 import RatingTrends from '../components/Summary/RatingTrends';
-import ColorMapping from '../components/Utilities/ColorMapping';
+import colorMapping from '../components/Utilities/ColorMapping';
 import { headerData } from '../components/Utilities/MeasureTable';
 import MemberTable from '../components/Utilities/MemberTable';
 import Notification from '../components/Common/Notification';
@@ -41,7 +40,6 @@ import {
 
 export default function Dashboard() {
   const { datastore, datastoreActions } = useContext(DatastoreContext);
-  const [startTransition] = useTransition();
   const [filterDrawerOpen, toggleFilterDrawer] = useState(false);
   const [filterActivated, setFilterActivated] = useState(false);
   const [noResultsFound, setNoResultsFound] = useState(false);
@@ -97,7 +95,7 @@ export default function Dashboard() {
         setDisplayData(datastore.results.map((result) => ({ ...result })));
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(Object.keys(datastore.info));
-        setColorMap(ColorMapping(datastore.currentResults));
+        setColorMap(colorMapping(datastore.currentResults));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -121,7 +119,7 @@ export default function Dashboard() {
         setSelectedMeasures(subMeasureCurrentResults
           .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
-          ColorMapping(datastore.currentResults, subMeasureCurrentResults),
+          colorMapping(datastore.currentResults, subMeasureCurrentResults),
         );
         setFilterDisabled(false);
         setTableFilter([]);
@@ -146,7 +144,7 @@ export default function Dashboard() {
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
-        setColorMap(ColorMapping(filterInfo.currentResults));
+        setColorMap(colorMapping(filterInfo.currentResults));
         setHeaderInfo(headerData(true, datastore.comparisonMode));
         scrolly(navigate, '/');
       } else {
@@ -208,7 +206,7 @@ export default function Dashboard() {
         setCurrentResults(datastore.currentResults);
         setSelectedMeasures(datastore.currentResults
           .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
-        setColorMap(ColorMapping(datastore.currentResults, undefined, datastore.comparisonMode !== 'default'));
+        setColorMap(colorMapping(datastore.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -232,7 +230,7 @@ export default function Dashboard() {
         setSelectedMeasures(subMeasureCurrentResults
           .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
-          ColorMapping(datastore.currentResults, subMeasureCurrentResults, datastore.comparisonMode !== 'default'),
+          colorMapping(datastore.currentResults, subMeasureCurrentResults, datastore.comparisonMode !== 'default'),
         );
         setFilterDisabled(false);
         setTableFilter([]);
@@ -272,7 +270,7 @@ export default function Dashboard() {
           setDisplayData(filterInfo.results.map((result) => ({ ...result })));
         }
         setIsComposite(true);
-        setColorMap(ColorMapping(filterInfo.currentResults, undefined, datastore.comparisonMode !== 'default'));
+        setColorMap(colorMapping(filterInfo.currentResults, undefined, datastore.comparisonMode !== 'default'));
         setFilterDisabled(false);
         setTableFilter([]);
         setRowEntries([]);
@@ -289,7 +287,7 @@ export default function Dashboard() {
         setSelectedMeasures(subMeasureCurrentResults
           .map((result) => (datastore.comparisonMode === 'default' ? result.measure : result.comparisonItem)));
         setColorMap(
-          ColorMapping(filterInfo.currentResults, subMeasureCurrentResults),
+          colorMapping(filterInfo.currentResults, subMeasureCurrentResults),
         );
         setFilterDisabled(false);
         setTableFilter([]);
@@ -394,14 +392,10 @@ export default function Dashboard() {
 
   // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
-    if (typeof startTransition === 'function') {
-      startTransition(() => {
-        chartDataGenerator();
-      });
-    } else {
+    if (datastore.datastoreLoading === false) {
       chartDataGenerator();
     }
-  }, [chartDataGenerator]);
+  }, [currentResults, selectedMeasures, datastore, displayData, chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {

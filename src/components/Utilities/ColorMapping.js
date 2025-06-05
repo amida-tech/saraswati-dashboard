@@ -1,6 +1,6 @@
 import tinycolor from 'tinycolor2';
 
-const ColorMapping = (allResults, displayData, isComparisonMode = false) => {
+const colorMapping = (allResults, displayData, isComparisonMode = false) => {
   const chartColorArray = [
     '#88CCEE',
     '#CC6677',
@@ -73,4 +73,4 @@ const ColorMapping = (allResults, displayData, isComparisonMode = false) => {
   return byMeasureColorMap;
 };
 
-export default ColorMapping;
+export default colorMapping;

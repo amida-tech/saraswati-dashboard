@@ -7,10 +7,15 @@ import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
 
 function Banner({
-  headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading, filterActivated,
+  headerText,
+  lastUpdated,
+  handleResetData,
+  activeMeasure,
+  setIsLoading,
+  filterActivated,
 }) {
   const { pathname } = useLocation();
-  const isMeasure = !pathname.endsWith('/reports');
+  const isMeasure = !pathname.endsWith('/reports') && !pathname.includes('/member/');
 
   return (
     <Box className="banner">
@@ -24,19 +29,21 @@ function Banner({
         </Typography>
 
         {isMeasure && (
-          <Box className="banner__comparison-selector">
-            <ComparisonSelector
-              activeMeasure={activeMeasure}
-              handleResetData={handleResetData}
-              setIsLoading={setIsLoading}
-              filterActivated={filterActivated}
-            />
-          </Box>
-        )}
+          <>
+            <Box className="banner__comparison-selector">
+              <ComparisonSelector
+                activeMeasure={activeMeasure}
+                handleResetData={handleResetData}
+                setIsLoading={setIsLoading}
+                filterActivated={filterActivated}
+              />
+            </Box>
 
-        <Box className="banner__year-selector">
-          <MeasurementYearSelector />
-        </Box>
+            <Box className="banner__year-selector">
+              <MeasurementYearSelector />
+            </Box>
+          </>
+        )}
       </Box>
 
       {lastUpdated && (
@@ -74,9 +81,9 @@ Banner.propTypes = {
 Banner.defaultProps = {
   headerText: '',
   lastUpdated: '',
-  handleResetData: () => { },
-  activeMeasure: '',
-  setIsLoading: false,
+  handleResetData: () => {},
+  activeMeasure: { measure: '' },
+  setIsLoading: () => {},
   filterActivated: false,
 };
 

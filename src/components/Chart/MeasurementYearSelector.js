@@ -11,9 +11,7 @@ function MeasurementYearSelector() {
 
   const handleYearChange = (event) => {
     const newYear = event.target.value;
-
     datastoreActions.setMeasurementYear(newYear);
-
     // Save to localStorage for persistence across pages and sessions
     localStorage.setItem('selectedYear', newYear);
   };
