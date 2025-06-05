@@ -41,7 +41,7 @@ export const comparisonModeLabels = [
 ]
 
 function ComparisonSelector({
-  activeMeasure, handleResetData, setIsLoading,
+  activeMeasure, handleResetData, setIsLoading, filterActivated,
 }) {
   const {
     datastore: {
@@ -52,6 +52,8 @@ function ComparisonSelector({
     },
   } = useContext(DatastoreContext);
   const [error, setError] = useState(undefined);
+  // todo: not this
+  const comparisonDisabled = filterActivated;
 
   const handleChange = async (e) => {
     const mode = e.target.value;
@@ -65,7 +67,6 @@ function ComparisonSelector({
       const comparisonBody = {
         measurementYear,
         measurementType: activeMeasure.measure,
-        // compareOption: Object.keys(aliasObj).find((k) => aliasObj[k] === mode),
         compareOption: mode,
       }
 
@@ -95,6 +96,7 @@ function ComparisonSelector({
           id="comparison-select"
           value={comparisonMode || 'default'}
           onChange={handleChange}
+          disabled={comparisonDisabled}
           label="Comparison Mode"
           data-testid="comparison-selector"
         >
@@ -115,12 +117,14 @@ ComparisonSelector.propTypes = {
     measure: PropTypes.string,
   }),
   setIsLoading: PropTypes.func,
+  filterActivated: PropTypes.bool,
 };
 
 ComparisonSelector.defaultProps = {
   handleResetData: () => {},
   activeMeasure: '',
   setIsLoading: false,
+  filterActivated: false,
 };
 
 export default ComparisonSelector;

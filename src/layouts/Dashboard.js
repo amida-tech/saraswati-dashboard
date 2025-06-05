@@ -562,6 +562,7 @@ export default function Dashboard() {
                 lastUpdated={datastore.lastUpdated}
                 activeMeasure={activeMeasure}
                 setIsLoading={setIsLoading}
+                filterActivated={filterActivated}
                 handleResetData={handleResetData}
               />
             </Grid>
@@ -639,28 +640,24 @@ export default function Dashboard() {
               </Grid>
             )}
             <Grid item xs={12}>
-              {isLoading
-                ? <Skeleton variant="rectangular" height={500} />
-                : (
-                  <div className="chart-container">
-                    <DisplayTableContainer
-                      activeMeasure={activeMeasure}
-                      store={datastore}
-                      tabValue={tabValue}
-                      isComposite={isComposite}
-                      headerInfo={headerInfo}
-                      handleSelectedMeasureChange={handleSelectedMeasureChange}
-                      selectedMeasures={selectedMeasures}
-                      currentResults={currentResults}
-                      colorMap={colorMap}
-                      tableFilter={tableFilter}
-                      handleTableFilterChange={handleTableFilterChange}
-                      rowEntries={rowEntries}
-                      handleTabChange={handleTabChange}
-                      handleResetData={handleResetData}
-                    />
-                  </div>
-                )}
+              <div className="chart-container">
+                <DisplayTableContainer
+                  activeMeasure={activeMeasure}
+                  store={datastore}
+                  tabValue={tabValue}
+                  isComposite={isComposite}
+                  headerInfo={headerInfo}
+                  handleSelectedMeasureChange={handleSelectedMeasureChange}
+                  selectedMeasures={selectedMeasures}
+                  currentResults={currentResults}
+                  colorMap={colorMap}
+                  tableFilter={tableFilter}
+                  handleTableFilterChange={handleTableFilterChange}
+                  rowEntries={rowEntries}
+                  handleTabChange={handleTabChange}
+                  handleResetData={handleResetData}
+                />
+              </div>
             </Grid>
           </Grid>
         </Box>

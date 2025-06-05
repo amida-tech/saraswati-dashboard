@@ -564,7 +564,7 @@ export const lineChartOptions = (
     align: 'center',
     verticalAlign: 'middle',
     offsetX: 0,
-    offsetY: -75,
+    offsetY: -50,
     style: {
       color: undefined,
       fontSize: '25px',
@@ -573,6 +573,7 @@ export const lineChartOptions = (
   };
   return {
     chart: chartOptions,
+    colors,
     dataLabels,
     stroke,
     xaxis,

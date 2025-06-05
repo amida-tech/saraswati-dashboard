@@ -2,12 +2,12 @@ import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
-import MeasurementYearSelector from '../Chart/MeasurmentYearSelector';
+import MeasurementYearSelector from '../Chart/MeasurementYearSelector';
 import ComparisonSelector from '../Chart/ComparisonSelector';
 import theme from '../../assets/styles/AppTheme';
 
 function Banner({
-  headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading,
+  headerText, lastUpdated, handleResetData, activeMeasure, setIsLoading, filterActivated,
 }) {
   const { pathname } = useLocation();
   const isMeasure = !pathname.endsWith('/reports');
@@ -29,6 +29,7 @@ function Banner({
               activeMeasure={activeMeasure}
               handleResetData={handleResetData}
               setIsLoading={setIsLoading}
+              filterActivated={filterActivated}
             />
           </Box>
         )}
@@ -67,6 +68,7 @@ Banner.propTypes = {
     measure: PropTypes.string,
   }),
   setIsLoading: PropTypes.func,
+  filterActivated: PropTypes.bool,
 };
 
 Banner.defaultProps = {
@@ -75,6 +77,7 @@ Banner.defaultProps = {
   handleResetData: () => { },
   activeMeasure: '',
   setIsLoading: false,
+  filterActivated: false,
 };
 
 export default Banner;

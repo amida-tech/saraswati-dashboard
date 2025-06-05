@@ -46,6 +46,14 @@ export const initialState = {
         type: 'percentage',
         measure: 'composite',
       },
+      2: {
+        type: 'percentage',
+        measure: 'aise-4',
+      },
+      3: {
+        type: 'star',
+        measure: 'bcse',
+      },
     },
     theme: 'light',
   },

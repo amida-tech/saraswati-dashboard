@@ -95,10 +95,9 @@ export function Footer({ preferences }) {
 
 // we need to return star, percentage, high, low
 export const submeasureResults = (activeMeasure, trends = []) => {
-  const trendObj = trends.find(
-    (t) => t.measure === activeMeasure.measure,
-  ) || {};
-
+  const trendObj = Array.isArray(trends)
+    ? trends.find((t) => t.measure === activeMeasure.measure) || {}
+    : {};
   const subScoreTrends = Array.isArray(trendObj.subScoreTrends)
     ? trendObj.subScoreTrends
     : [];
@@ -108,12 +107,14 @@ export const submeasureResults = (activeMeasure, trends = []) => {
     1: { type: 'percentage', measure: activeMeasure.measure },
   };
 
-  if (subScoreTrends.length > 1) {
-    const sorted = subScoreTrends.slice().sort(
+  const manySubscores = subScoreTrends.length > 1;
+
+  if (manySubscores) {
+    const sorted = [...subScoreTrends].sort(
       (a, b) => a.percentChange - b.percentChange,
     );
-    const highLow = [sorted[sorted.length - 1], sorted[0]];
-    highLow.forEach((trend, idx) => {
+    const highLows = [sorted.at(-1), sorted[0]];
+    highLows.forEach((trend, idx) => {
       values[idx + 2] = {
         type: 'percentage',
         measure: trend.measure,
