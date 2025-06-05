@@ -61,7 +61,13 @@ export const initialState = {
     healthcareCoverages: [],
     healthcarePractitioners: [],
   },
-  measurementYear: 2022,
+  measurementYear: (() => {
+    const stored = parseInt(localStorage.getItem('selectedYear'), 10);
+    return [2022, 2025].includes(stored) ? stored : 2025;
+  })(),
+  comparisonMode: 'default',
+  refresh: 0,
+  measureAvgValue: 71.05,
 };
 
 export const DatastoreReducer = (state, action) => {

@@ -382,7 +382,7 @@ export default function Dashboard() {
     if (datastore.datastoreLoading === false) {
       ChartDataGenerator();
     }
-  }, [currentResults, selectedMeasures, datastore, displayData, ChartDataGenerator]);
+  }, [chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
