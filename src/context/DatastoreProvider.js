@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
-  resultList, trendList, infoObject, userPreferences, widgetPrefs,
+  resultList, trendList, infoObject, userPreferences, widgetPrefs2025, widgetPrefs,
 } from '../test/data/DemoData';
 import { DatastoreReducer, initialState } from './DatastoreReducer';
 import env from '../env';
@@ -114,7 +114,7 @@ export default function DatastoreProvider({ children }) {
       const practitionersPromise = axios.get(practitionersUrl);
       // this is placeholder preferences
       const newUserPreferences = {
-        ratingTrends: widgetPrefs,
+        ratingTrends: measurementYear === 2025 ? widgetPrefs2025 : widgetPrefs,
         theme: 'light',
       };
 

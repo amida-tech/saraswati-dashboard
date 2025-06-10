@@ -4735,3 +4735,22 @@ export const widgetPrefs = {
     measure: 'composite',
   },
 };
+
+export const widgetPrefs2025 = {
+  0: {
+    type: 'star',
+    measure: 'bcse',
+  },
+  1: {
+    type: 'percentage',
+    measure: 'bcse',
+  },
+  2: {
+    type: 'star',
+    measure: 'aise',
+  },
+  3: {
+    type: 'percentage',
+    measure: 'composite',
+  },
+};
