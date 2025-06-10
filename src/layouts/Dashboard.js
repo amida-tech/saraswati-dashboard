@@ -395,7 +395,7 @@ export default function Dashboard() {
     if (datastore.datastoreLoading === false) {
       chartDataGenerator();
     }
-  }, [currentResults, selectedMeasures, datastore, displayData, chartDataGenerator]);
+  }, [chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {

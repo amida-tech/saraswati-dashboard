@@ -71,7 +71,7 @@ export const initialState = {
   },
   measurementYear: (() => {
     const stored = parseInt(localStorage.getItem('selectedYear'), 10);
-    return [2022, 2025].includes(stored) ? stored : 2022;
+    return [2022, 2025].includes(stored) ? stored : 2025;
   })(),
   comparisonMode: 'default',
   refresh: 0,

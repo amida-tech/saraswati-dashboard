@@ -504,10 +504,12 @@ export const lineChartOptions = (
     custom({
       series, seriesIndex, dataPointIndex, w,
     }) {
+      const finalChartHeader = w.config.series[seriesIndex].name !== 'MY2024 Composite Average'
+        ? `${chartHeader}: ` : ''
       const foundDate = w.globals.categoryLabels[dataPointIndex + 1];
       const foundColor = w.globals.initialSeries[seriesIndex]?.color;
       return `<div class="chart-container__tooltip" style="background-color:${foundColor}; text-shadow: 1px 1px ${theme.palette?.bluegray.main}; color:${theme.palette?.background.main};">`
-        + `<span> ${chartHeader}: ${w.config.series[seriesIndex].name.toUpperCase()}</span>`
+        + `<span> ${finalChartHeader}${w.config.series[seriesIndex].name.toUpperCase()}</span>`
         + '<br/>'
         + `<span> Value: ${series[seriesIndex][dataPointIndex].toFixed(2)}%</span>`
         + '<br/>'
