@@ -4724,11 +4724,11 @@ export const widgetPrefs = {
   },
   1: {
     type: 'percentage',
-    measure: 'asfe',
+    measure: 'aab',
   },
   2: {
     type: 'star',
-    measure: 'uri',
+    measure: 'aise',
   },
   3: {
     type: 'percentage',

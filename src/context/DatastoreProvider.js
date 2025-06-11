@@ -101,7 +101,7 @@ export default function DatastoreProvider({ children }) {
       datastoreActions.setResults(resultList, infoObject);
       datastoreActions.setTrends(trendList);
       datastoreActions.setPreferences(userPreferences);
-      datastoreActions.setIsLoading(false);
+      datastoreActions.setIsLoading(true);
       datastoreActions.setStatus('200')
     } else if (measurementYear) {
       datastoreActions.setIsLoading(true);
@@ -137,7 +137,6 @@ export default function DatastoreProvider({ children }) {
         datastoreActions.setTrends(values[6].data);
         // currently only front end default preferences
         datastoreActions.setPreferences(newUserPreferences);
-        datastoreActions.setIsLoading(false);
         datastoreActions.setStatus(values[0].request.status)
       }).catch((error) => {
         datastoreActions.setStatus(error.request.status)

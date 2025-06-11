@@ -39,7 +39,7 @@ function Banner({
           </Box>
         )}
         <Box className="banner__year-selector">
-          <MeasurementYearSelector />
+          <MeasurementYearSelector setIsLoading={setIsLoading} />
         </Box>
       </Box>
 

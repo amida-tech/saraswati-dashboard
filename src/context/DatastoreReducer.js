@@ -52,7 +52,7 @@ export const initialState = {
       },
       3: {
         type: 'star',
-        measure: 'bcse',
+        measure: 'aab',
       },
     },
     theme: 'light',

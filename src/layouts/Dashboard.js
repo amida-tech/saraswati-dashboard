@@ -74,11 +74,34 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState([]);
   const { measure } = useParams();
 
+  // Centralized loading state effect
+  useEffect(() => {
+    console.log('use effect 0')
+    console.log('Datastore status:', datastore.status);
+    console.log('Display data length:', displayData.length);
+    console.log('Row entries length:', rowEntries.length);
+    console.log('Tab value:', tabValue);
+    console.log('No results found:', noResultsFound);
+    console.log('isLoading:', isLoading);
+    console.log('Current results length:', currentResults.length);
+    console.log('Chart data length:', chartData.length);
+    if (
+      (datastore.status === 'loading')
+      || (displayData.length === 0 && !noResultsFound)
+      || (tabValue === 'members' && rowEntries.length === 0 && !noResultsFound)
+    ) {
+      console.log('Setting isLoading to true in dashboard');
+      setIsLoading(true);
+    } else {
+      console.log('Setting isLoading to false in dashboard');
+      setIsLoading(false);
+    }
+  }, [datastore.status, displayData, rowEntries, tabValue, noResultsFound, chartData]);
+
   // CLEANS SLATE FUNCTION
   const handleResetData = (router) => {
     scrollTop();
     if (router === undefined) {
-      setIsLoading(true);
       setCurrentTimeline(datastore.defaultTimelineState);
       setCurrentFilters(datastore.defaultFilterState);
       setAdditionalFilterOptions(datastore.filterOptions);
@@ -128,7 +151,6 @@ export default function Dashboard() {
       }
       setFilterActivated(false);
       setNoResultsFound(false);
-      setIsLoading(false);
     } else if (router === 'all') {
       const otherMeasureFinder = filterInfo.results.filter(
         (res) => !res.measure.includes(measure),
@@ -154,7 +176,6 @@ export default function Dashboard() {
           setCurrentFilters(datastore.defaultFilterState);
           scrolly(navigate, '/');
         } else {
-          setIsLoading(true);
           handleFilteredDataUpdate(currentFilters, filterInfo.timeline, 'GO BACK');
           scrolly(navigate, '/');
         }
@@ -164,19 +185,20 @@ export default function Dashboard() {
 
   // SETS ACTIVE MEASURE OBJECT
   useEffect(() => {
+    console.log('use effect 1')
     // CURRENT RESULTS EXIST
     if (datastore.currentResults.length > 0) {
       const currentMeasure = measure || 'composite';
       setActiveMeasure(datastore.currentResults.find(
         (result) => result.measure === currentMeasure,
       ) || defaultActiveMeasure);
-      setIsLoading(datastore.datastoreLoading);
       handleFilteredDataUpdate(filterInfo.filters, filterInfo.timeline);
     }
-  }, [datastore.currentResults, datastore.isLoading, datastore.status, measure]);
+  }, [datastore.currentResults, datastore.status, measure]);
 
   // CHART WINDOW RESIZING
   useEffect(() => {
+    console.log('use effect 2')
     function handleResize() {
       setGraphWidth(window.innerWidth);
     }
@@ -184,10 +206,11 @@ export default function Dashboard() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  });
+  }, []);
 
   // HANDLES FILTERING
   useEffect(() => {
+    console.log('use effect 3')
     if (!filterActivated) {
       setCurrentTimeline(datastore.defaultTimelineState);
       setCurrentFilters(datastore.defaultFilterState);
@@ -243,6 +266,7 @@ export default function Dashboard() {
 
   // HANDLES ROW ENTRIES FOR COMPOSITE OR MEASURE VIEW
   useEffect(() => {
+    console.log('use effect 4')
     if (tabValue === 'members') {
       setHeaderInfo(MemberTable.headerData(selectedMeasures, datastore.info));
       setRowEntries(MemberTable.formatData(
@@ -257,6 +281,7 @@ export default function Dashboard() {
 
   // HANDLES FILTERING
   useEffect(() => {
+    console.log('use effect 5')
     if (filterActivated) {
       setCurrentTimeline(filterInfo.timeline);
       setCurrentFilters(filterInfo.filters);
@@ -305,6 +330,7 @@ export default function Dashboard() {
 
   // INITIAL FETCH DATA AND SET MEMBER RESULTS
   useEffect(() => {
+    console.log('use effect 6')
     async function fetchData() {
       const records = await measureDataFetch(activeMeasure.measure);
       datastoreActions.setMemberResults(records);
@@ -332,6 +358,7 @@ export default function Dashboard() {
 
   // INITIAL SETTING OF ROW ENTRIES
   useEffect(() => {
+    console.log('use effect 7')
     setRowEntries(MemberTable.formatData(
       datastore.memberResults,
       activeMeasure.measure,
@@ -342,6 +369,7 @@ export default function Dashboard() {
 
   // HANDLES FILTERING ALSO BUT AGAIN
   useEffect(() => {
+    console.log('use effect 8')
     const path = window.location.pathname;
     if (filterInfo.members.length > 0) {
       datastoreActions.setMemberResults(filterInfo.members);
@@ -372,10 +400,9 @@ export default function Dashboard() {
     tableFilter,
   ]);
 
-  // FORMATS DATA FOR CHART COMPONENT
+  // GENERATES CHART DATA AFTER PAGE LOAD
   const chartDataGenerator = useCallback(() => {
-    setIsLoading(true);
-    const ChartData = displayDataFormatter(
+    const newChartData = displayDataFormatter(
       currentResults,
       selectedMeasures,
       displayData,
@@ -384,25 +411,31 @@ export default function Dashboard() {
       datastore.comparisonMode !== 'default',
       datastore.measureAvgValue,
     );
-    if (ChartData.length > 0) {
-      setChartData(ChartData);
+    console.log('newChartData:', newChartData);
+    if (newChartData.length > 0) {
+      setChartData(newChartData);
     }
-    setIsLoading(false);
-  }, [currentResults, displayData, selectedMeasures, colorMap]);
+  }, [currentResults, selectedMeasures, datastore.comparisonMode, displayData]);
 
-  // GENERATES CHART DATA AFTER PAGE LOAD
   useEffect(() => {
-    if (datastore.datastoreLoading === false) {
+    setChartData([]);
+    setIsLoading(true);
+  }, [
+    datastore.comparisonMode,
+    datastore.measurementYear,
+  ]);
+
+  useEffect(() => {
+    if (isLoading === false) {
       chartDataGenerator();
     }
-  }, [chartDataGenerator]);
+  }, [isLoading, chartDataGenerator]);
 
   // HANDLES FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
     if (Object.keys(filters).length === 0 && !timeline) {
       return;
     }
-    setIsLoading(true);
     const isComparisonMode = datastore.comparisonMode !== 'default';
     // Only set filter as activated if search panel criteria is selected
     const activateFilter = filterActivated
@@ -499,10 +532,8 @@ export default function Dashboard() {
       }
       setFilterActivated(activateFilter);
     } else {
-      setIsLoading(true);
       setNoResultsFound(true);
     }
-    setIsLoading(false);
   };
 
   // MEASURE CHANGE FUNCTION
@@ -593,39 +624,35 @@ export default function Dashboard() {
               No results found. Please click button to reset the data to the initial results.
             </Alert>
             <Grid item xs={12}>
-              {isLoading || noResultsFound || chartData.length === 0
-                ? <Skeleton variant="rectangular" height={300} />
-                : (
-                  <ChartContainer
-                    additionalFilterOptions={additionalFilterOptions}
-                    setCurrentFilters={setCurrentFilters}
-                    selectedMeasures={selectedMeasures}
-                    currentTimeline={currentTimeline}
-                    currentFilters={currentFilters}
-                    handleFilteredDataUpdate={handleFilteredDataUpdate}
-                    setCurrentTimeline={setCurrentTimeline}
-                    filterDrawerOpen={filterDrawerOpen}
-                    toggleFilterDrawer={toggleFilterDrawer}
-                    isComposite={isComposite}
-                    setIsComposite={setIsComposite}
-                    setTableFilter={setTableFilter}
-                    isLoading={isLoading}
-                    currentResults={currentResults}
-                    setTabValue={setTabValue}
-                    activeMeasure={activeMeasure}
-                    filterDisabled={filterDisabled}
-                    displayData={displayData}
-                    colorMap={colorMap}
-                    store={datastore}
-                    graphWidth={graphWidth}
-                    setFilterActivated={setFilterActivated}
-                    setIsLoading={setIsLoading}
-                    setRowEntries={setRowEntries}
-                    handleResetData={handleResetData}
-                    filterCurrentResultsLength={filterInfo.currentResults.length}
-                    chartData={chartData}
-                  />
-                )}
+              <ChartContainer
+                additionalFilterOptions={additionalFilterOptions}
+                setCurrentFilters={setCurrentFilters}
+                selectedMeasures={selectedMeasures}
+                currentTimeline={currentTimeline}
+                currentFilters={currentFilters}
+                handleFilteredDataUpdate={handleFilteredDataUpdate}
+                setCurrentTimeline={setCurrentTimeline}
+                filterDrawerOpen={filterDrawerOpen}
+                toggleFilterDrawer={toggleFilterDrawer}
+                isComposite={isComposite}
+                setIsComposite={setIsComposite}
+                setTableFilter={setTableFilter}
+                isLoading={isLoading}
+                currentResults={currentResults}
+                setTabValue={setTabValue}
+                activeMeasure={activeMeasure}
+                filterDisabled={filterDisabled}
+                displayData={displayData}
+                colorMap={colorMap}
+                store={datastore}
+                graphWidth={graphWidth}
+                setFilterActivated={setFilterActivated}
+                setIsLoading={setIsLoading}
+                setRowEntries={setRowEntries}
+                handleResetData={handleResetData}
+                filterCurrentResultsLength={filterInfo.currentResults.length}
+                chartData={chartData}
+              />
             </Grid>
             {datastore.comparisonMode === 'default' && (
               <Grid item xs={12} className="rating-trends__container">

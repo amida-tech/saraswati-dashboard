@@ -56,11 +56,11 @@ function ComparisonSelector({
   const comparisonDisabled = filterActivated;
 
   const handleChange = async (e) => {
+    setIsLoading(true);
     const mode = e.target.value;
     setComparisonMode(mode);
 
     if (mode === 'default') {
-      setIsLoading(true);
       handleResetData();
       updateRefresh();
     } else {
