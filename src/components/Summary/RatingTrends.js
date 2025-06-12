@@ -5,7 +5,7 @@
 import { useState, useContext } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import {
-  Typography, Box,
+  Typography, Box, Skeleton,
 } from '@mui/material';
 import {
   activeMeasureProps, currentResultsProps, trendsProps, widgetPrefsProps,
@@ -31,6 +31,10 @@ function RatingTrends({
     setBoxOrder(items);
     delete datastore.preferences.ratingTrends;
     datastoreActions?.setPreferences({ ratingTrends: items, ...datastore.preferences });
+  }
+
+  if (trends === undefined || trends.length === 0 || activeMeasure.measure === '') {
+    return <Skeleton variant="rectangular" height={200} />
   }
 
   // MEASURE VIEW

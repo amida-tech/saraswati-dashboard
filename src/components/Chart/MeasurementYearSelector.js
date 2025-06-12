@@ -1,17 +1,16 @@
 import { useContext } from 'react';
-import PropTypes from 'prop-types';
 import {
   FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
 import { DatastoreContext } from '../../context/DatastoreProvider';
 
-function MeasurementYearSelector({ setIsLoading }) {
+function MeasurementYearSelector() {
   const { datastore, datastoreActions } = useContext(DatastoreContext);
   const { measurementYear } = datastore;
   const availableYears = [2022, 2025];
 
   const handleYearChange = (event) => {
-    setIsLoading(true);
+    datastoreActions.setIsLoading(true);
     const newYear = event.target.value;
     datastoreActions.setMeasurementYear(newYear);
     // Save to localStorage for persistence across pages and sessions
@@ -56,8 +55,5 @@ function MeasurementYearSelector({ setIsLoading }) {
     </FormControl>
   );
 }
-MeasurementYearSelector.propTypes = {
-  setIsLoading: PropTypes.func.isRequired,
-};
 
 export default MeasurementYearSelector;

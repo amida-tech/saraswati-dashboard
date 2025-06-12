@@ -17,7 +17,6 @@ import {
   defaultActiveMeasure,
   filterDrawerOpenProps,
   toggleFilterDrawerProps,
-  isLoadingProps,
   handleFilteredDataUpdateProps,
   setCurrentFiltersProps,
   currentTimelineProps,
@@ -33,7 +32,6 @@ import {
   setRowEntriesProps,
   setTabValueProps,
   setFilterActivatedProps,
-  setIsLoadingProps,
   additionalFilterOptionsProps,
   chartDataProps,
 } from '../Utilities/PropTypes';
@@ -56,7 +54,6 @@ function labelGenerator(measure) {
 
 function ChartContainer({
   // basic data props
-  isLoading,
   isComposite,
   activeMeasure,
   currentResults,
@@ -79,11 +76,10 @@ function ChartContainer({
   setRowEntries,
   setCurrentFilters,
   setFilterActivated,
-  setIsLoading,
   setCurrentTimeline,
 }) {
   const {
-    datastore: { comparisonMode, comparisonYear },
+    datastore: { comparisonMode, comparisonYear, isLoading },
   } = useContext(DatastoreContext)
 
   // there's a few considerations for this component
@@ -127,20 +123,11 @@ function ChartContainer({
   // or if the chartData has only one entry and that entry is 'MY2024 Composite Average'
   // but also prune out any weird multiple 'composite' entries from the chartData from mishandled loading state
   // todo: figure out why this happens
-  const showNoData = ((isLoading && currentResults.length === 0 && chartData.length <= 1)
-    || (chartData.slice(1).every((o) => o.name === 'composite') || chartData.filter((o) => o.name === 'composite').length > 1))
-    && (chartData.length !== 1 && chartData[0]?.name === 'MY2024 Composite Average');
-  // console.log('show no data:', showNoData, 'isLoading:', isLoading, 'currentResults:', currentResults.length, 'chartData:', chartData.length);
-
-  // this handles the message for the chart depending on why the chart is empty
-  // if a user has selected a measure and there is no data for that measure, we show a message
-  // I still cannot even get this to consistently to work
-  // const showChartWithNoDataMessage = currentResults.length === chartData.length + 1
-  //   || (chartData.length > 0 && chartData[0]?.name === 'MY2024 Composite Average');
-  // console.log('selectedMeasures:', selectedMeasures, 'currentResults: ', currentResults, 'chartData:', chartData);
-
-  const showChartWithNoDataMessage = false;
-  if (showNoData) {
+  if (isLoading
+    || chartData === undefined
+    || (chartData.slice(1).every((o) => o.name === 'composite')
+    || chartData.filter((o) => o.name === 'composite').length > 1)
+    || (chartData.length === 1 && chartData[0]?.name === 'MY2024 Composite Average')) {
     return (<Skeleton variant="rectangular" height={500} />);
   }
 
@@ -153,7 +140,6 @@ function ChartContainer({
         handleFilterChange={handleFilterChange}
         additionalFilterOptions={additionalFilterOptions}
         setFilterActivated={setFilterActivated}
-        setIsLoading={setIsLoading}
         setIsComposite={setIsComposite}
         setTableFilter={setTableFilter}
         setRowEntries={setRowEntries}
@@ -191,7 +177,7 @@ function ChartContainer({
                 chartData,
                 theme,
                 chartHeader,
-                showChartWithNoDataMessage,
+                showChartWithNoDataMessage: (!isLoading && !chartData),
               },
             )}
             series={chartData}
@@ -210,7 +196,6 @@ function ChartContainer({
 ChartContainer.propTypes = {
   activeMeasure: activeMeasureProps,
   filterDrawerOpen: filterDrawerOpenProps,
-  isLoading: isLoadingProps,
   toggleFilterDrawer: toggleFilterDrawerProps,
   handleFilteredDataUpdate: handleFilteredDataUpdateProps,
   setCurrentFilters: setCurrentFiltersProps,
@@ -224,7 +209,6 @@ ChartContainer.propTypes = {
   filterDisabled: filterDisabledProps,
   colorMap: colorMapProps,
   setFilterActivated: setFilterActivatedProps,
-  setIsLoading: setIsLoadingProps,
   additionalFilterOptions: additionalFilterOptionsProps,
   setRowEntries: setRowEntriesProps,
   handleResetData: handleResetDataProps,
@@ -235,7 +219,6 @@ ChartContainer.propTypes = {
 ChartContainer.defaultProps = {
   activeMeasure: defaultActiveMeasure,
   filterDrawerOpen: false,
-  isLoading: true,
   toggleFilterDrawer: false,
   handleFilteredDataUpdate: () => undefined,
   setCurrentFilters: () => undefined,
@@ -249,7 +232,6 @@ ChartContainer.defaultProps = {
   filterDisabled: true,
   colorMap: [],
   setFilterActivated: () => undefined,
-  setIsLoading: () => undefined,
   additionalFilterOptions: {},
   setRowEntries: () => undefined,
   handleResetData: () => undefined,

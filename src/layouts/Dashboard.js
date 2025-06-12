@@ -51,7 +51,6 @@ export default function Dashboard() {
     results: [],
     filters: {},
   });
-  const [isLoading, setIsLoading] = useState(true);
   const [activeMeasure, setActiveMeasure] = useState(defaultActiveMeasure);
   const navigate = useNavigate();
   const [displayData, setDisplayData] = useState(
@@ -73,21 +72,6 @@ export default function Dashboard() {
   const [tabValue, setTabValue] = useState('overview');
   const [chartData, setChartData] = useState([]);
   const { measure } = useParams();
-
-  // centralized loading state effect
-  useEffect(() => {
-    if (
-      (datastore.status === 'loading')
-      || (displayData.length === 0 && !noResultsFound)
-      || (tabValue === 'members' && rowEntries.length === 0 && !noResultsFound)
-    ) {
-      setIsLoading(true);
-    } else if (chartData.length + 1 === currentResults.length
-        || (chartData.slice(1).every((o) => o.name === 'composite')
-        || chartData.filter((o) => o.name === 'composite').length > 1)) {
-      setIsLoading(false);
-    }
-  }, [datastore.status, displayData, rowEntries, tabValue, noResultsFound, chartData]);
 
   // CLEANS SLATE FUNCTION
   const handleResetData = (router) => {
@@ -396,7 +380,6 @@ export default function Dashboard() {
     setColorMap(colorMapping(datastore.currentResults));
 
     setChartData([]);
-    setIsLoading(true);
   }, [
     datastore.comparisonMode,
     datastore.measurementYear,
@@ -406,10 +389,10 @@ export default function Dashboard() {
 
   // KICKSTARTS CHART DATA GENERATION
   useEffect(() => {
-    if (isLoading === false) {
+    if (datastore.isLoading === false) {
       chartDataGenerator();
     }
-  }, [isLoading, tabValue, selectedMeasures, datastore.comparisonMode, datastore.measurementYear]);
+  }, [datastore.isLoading, tabValue, selectedMeasures, datastore.comparisonMode, datastore.measurementYear]);
 
   // HANDLER SPECIFICALLY USED FOR FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
@@ -604,7 +587,6 @@ export default function Dashboard() {
             </Alert>
             <Grid item xs={12}>
               <ChartContainer
-                isLoading={isLoading}
                 isComposite={isComposite}
                 activeMeasure={activeMeasure}
                 currentResults={currentResults}
@@ -624,13 +606,12 @@ export default function Dashboard() {
                 setRowEntries={setRowEntries}
                 setCurrentFilters={setCurrentFilters}
                 setFilterActivated={setFilterActivated}
-                setIsLoading={setIsLoading}
                 setCurrentTimeline={setCurrentTimeline}
               />
             </Grid>
             {datastore.comparisonMode === 'default' && (
               <Grid item xs={12} className="rating-trends__container">
-                {isLoading
+                {datastore.isLoading
                   ? <Skeleton variant="rectangular" height={200} />
                   : (
                     <RatingTrends

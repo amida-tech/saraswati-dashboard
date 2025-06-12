@@ -11,7 +11,6 @@ function Banner({
   lastUpdated,
   handleResetData,
   activeMeasure,
-  setIsLoading,
   filterActivated,
 }) {
   const { pathname } = useLocation();
@@ -33,13 +32,12 @@ function Banner({
             <ComparisonSelector
               activeMeasure={activeMeasure}
               handleResetData={handleResetData}
-              setIsLoading={setIsLoading}
               filterActivated={filterActivated}
             />
           </Box>
         )}
         <Box className="banner__year-selector">
-          <MeasurementYearSelector setIsLoading={setIsLoading} />
+          <MeasurementYearSelector />
         </Box>
       </Box>
 
@@ -71,7 +69,6 @@ Banner.propTypes = {
   activeMeasure: PropTypes.shape({
     measure: PropTypes.string,
   }),
-  setIsLoading: PropTypes.func,
   filterActivated: PropTypes.bool,
 };
 
@@ -80,7 +77,6 @@ Banner.defaultProps = {
   lastUpdated: '',
   handleResetData: () => { },
   activeMeasure: { measure: '' },
-  setIsLoading: () => { },
   filterActivated: false,
 };
 
