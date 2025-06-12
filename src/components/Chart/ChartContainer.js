@@ -123,11 +123,10 @@ function ChartContainer({
   // or if the chartData has only one entry and that entry is 'MY2024 Composite Average'
   // but also prune out any weird multiple 'composite' entries from the chartData from mishandled loading state
   // todo: figure out why this happens
-  if (isLoading
-    || chartData === undefined
+  if (((isLoading && currentResults.length === 0 && chartData.length <= 1)
     || (chartData.slice(1).every((o) => o.name === 'composite')
-    || chartData.filter((o) => o.name === 'composite').length > 1)
-    || (chartData.length === 1 && chartData[0]?.name === 'MY2024 Composite Average')) {
+    || chartData.filter((o) => o.name === 'composite').length > 1))
+    && (chartData.length !== 1 && chartData[0]?.name === 'MY2024 Composite Average')) {
     return (<Skeleton variant="rectangular" height={500} />);
   }
 
