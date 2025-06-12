@@ -34,7 +34,7 @@ function RatingTrends({
   }
 
   // MEASURE VIEW
-  if (activeMeasure.measure !== 'composite') {
+  if (activeMeasure.measure !== 'composite' && activeMeasure.measure !== '') {
     const measurePreferences = submeasureResults(activeMeasure, trends);
     return (
       <Box sx={{ m: '0 1rem' }}>

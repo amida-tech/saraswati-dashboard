@@ -48,11 +48,11 @@ export const initialState = {
       },
       2: {
         type: 'percentage',
-        measure: 'aise-4',
+        measure: 'aise',
       },
       3: {
         type: 'star',
-        measure: 'aab',
+        measure: 'bcse',
       },
     },
     theme: 'light',

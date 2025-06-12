@@ -214,12 +214,12 @@ export const lineChartOptions = (
     chartData,
     theme,
     chartHeader,
+    showChartWithNoDataMessage = true,
   },
 ) => {
-  const colors = Array.isArray(chartData)
+  const colors = Array.isArray(chartData) && colorMap.length > 0
     ? chartData.map(
       (s) => (colorMap.find((c) => c.value === s.name)?.color)
-        || s.color
         || theme.palette?.primary.main,
     )
     : [];
@@ -246,7 +246,7 @@ export const lineChartOptions = (
 
   const chartOptions = {
     chart: {
-      animations: {
+      animation: {
         enabled: false,
         initialAnimation: { enabled: false, speed: 0 },
         dynamicAnimation: { enabled: false, speed: 0 },
@@ -538,7 +538,7 @@ export const lineChartOptions = (
     colors: [theme.palette?.bluegray.D1],
   };
   const noData = {
-    text: 'No measures selected, please use the checkboxes next to the measures below to view results.',
+    text: showChartWithNoDataMessage ? 'No measures selected, please use the checkboxes next to the measures below to view results.' : '',
     showOnInit: false,
     align: 'center',
     verticalAlign: 'middle',

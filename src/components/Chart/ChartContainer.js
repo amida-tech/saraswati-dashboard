@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-nested-ternary */
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { createContext, useContext } from 'react';
@@ -82,17 +83,27 @@ function ChartContainer({
   setCurrentTimeline,
 }) {
   const {
-    datastore: { comparisonMode },
+    datastore: { comparisonMode, comparisonYear },
   } = useContext(DatastoreContext)
 
-  console.log('chart props:', [isLoading,
-    isComposite,
-    activeMeasure,
-    currentResults,
-    currentTimeline,
-    currentFilters,
-    chartData,
-    colorMap])
+  // there's a few considerations for this component
+  // ideally, dashboard is broken up a bit more, state is simplified, useeffects are simplified
+  // but a full blown refactor doesn't seem like a great idea right now... yet we need the data to fit
+  // nicely in this apex chart... I have settled on leet coding conditionals in here for now
+
+  // the chart has the following states for consideration:
+  // loading (initial page loading)
+  // loading (between default/comparison/year modes)
+  // default composite data
+  // default measure data
+  // comparison composite data
+  // comparison measure data
+  // partial data for the above four states (when a user makes selections)
+  // no measures are selected AND yet we are not in a loading state (either initial load or between modes)
+
+  // feel free to argue any of this is bad practice, but I am trying to keep the logic in one place
+  // and maybe some explanation of what is going on here
+
   const labelObj = comparisonModeLabels.find(
     (c) => c.value.toLowerCase() === comparisonMode.toLowerCase(),
   )
@@ -112,10 +123,27 @@ function ChartContainer({
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
-  const showNoData = (isLoading && currentResults.length === 0 && chartData.length <= 1)
-    || (chartData.slice(1).every((o) => o.name === 'composite') || chartData.filter((o) => o.name === 'composite').length > 1);
-  console.log('show no data:', showNoData, 'isLoading:', isLoading, 'currentResults:', currentResults.length, 'chartData:', chartData.length);
-  if (showNoData) return (<Skeleton variant="rectangular" height={500} />)
+  // If the chartData is empty, we want to show a loading skeleton
+  // or if the chartData has only one entry and that entry is 'MY2024 Composite Average'
+  // but also prune out any weird multiple 'composite' entries from the chartData from mishandled loading state
+  // todo: figure out why this happens
+  const showNoData = ((isLoading && currentResults.length === 0 && chartData.length <= 1)
+    || (chartData.slice(1).every((o) => o.name === 'composite') || chartData.filter((o) => o.name === 'composite').length > 1))
+    && (chartData.length !== 1 && chartData[0]?.name === 'MY2024 Composite Average');
+  // console.log('show no data:', showNoData, 'isLoading:', isLoading, 'currentResults:', currentResults.length, 'chartData:', chartData.length);
+
+  // this handles the message for the chart depending on why the chart is empty
+  // if a user has selected a measure and there is no data for that measure, we show a message
+  // I still cannot even get this to consistently to work
+  // const showChartWithNoDataMessage = currentResults.length === chartData.length + 1
+  //   || (chartData.length > 0 && chartData[0]?.name === 'MY2024 Composite Average');
+  // console.log('selectedMeasures:', selectedMeasures, 'currentResults: ', currentResults, 'chartData:', chartData);
+
+  const showChartWithNoDataMessage = false;
+  if (showNoData) {
+    return (<Skeleton variant="rectangular" height={500} />);
+  }
+
   return (
     <div className="chart-container">
       <FilterDrawer
@@ -155,7 +183,7 @@ function ChartContainer({
         </Grid>
         <Grid item className="chart-container__chart">
           <ReactApexChart
-            key={comparisonMode.toLowerCase()}
+            key={`${comparisonMode}-${comparisonYear}`}
             options={lineChartOptions(
               {
                 colorMap,
@@ -163,9 +191,10 @@ function ChartContainer({
                 chartData,
                 theme,
                 chartHeader,
+                showChartWithNoDataMessage,
               },
             )}
-            series={showNoData ? [] : chartData}
+            series={chartData}
             type="line"
             width="100%"
             height="100%"

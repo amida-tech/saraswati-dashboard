@@ -59,7 +59,6 @@ function FilterDrawer({
     toggleFilterDrawer(open);
   };
   const handleResetFilter = () => {
-    console.log('loading on 7')
     setStarChoices([]);
     setDomainOfCareChoices([]);
     setPercentSliderValue([0, 100]);
@@ -121,7 +120,6 @@ function FilterDrawer({
     setPercentSliderValue(newValue);
   };
   const handleCancel = () => {
-    console.log('loading on 8')
     setPercentSliderValue(Array.from(currentFilters.percentRange));
     setStarChoices(Array.from(currentFilters.stars));
     setDomainOfCareChoices(Array.from(currentFilters.domainsOfCare));
@@ -135,7 +133,6 @@ function FilterDrawer({
     setTableFilter([]);
     setRowEntries([]);
     setIsComposite(true);
-    console.log('loading off 8')
   };
 
   const handleApplyFilter = () => {

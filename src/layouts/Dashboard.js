@@ -66,7 +66,6 @@ export default function Dashboard() {
   const [currentFilters, setCurrentFilters] = useState(datastore.defaultFilterState);
   const [additionalFilterOptions, setAdditionalFilterOptions] = useState({});
   const [currentTimeline, setCurrentTimeline] = useState(datastore.defaultTimelineState);
-  const [graphWidth, setGraphWidth] = useState(window.innerWidth);
   const [filterDisabled, setFilterDisabled] = useState(true);
   const [tableFilter, setTableFilter] = useState([]);
   const [headerInfo, setHeaderInfo] = useState([]);
@@ -75,26 +74,17 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState([]);
   const { measure } = useParams();
 
-  // Centralized loading state effect
+  // centralized loading state effect
   useEffect(() => {
-    console.log('use effect 0')
-    console.log('Datastore status:', datastore.status);
-    console.log('Display data length:', displayData.length);
-    console.log('Row entries length:', rowEntries.length);
-    console.log('Tab value:', tabValue);
-    console.log('No results found:', noResultsFound);
-    console.log('isLoading:', isLoading);
-    console.log('Current results length:', currentResults.length);
-    console.log('Chart data before setting isloading:', chartData);
     if (
       (datastore.status === 'loading')
       || (displayData.length === 0 && !noResultsFound)
       || (tabValue === 'members' && rowEntries.length === 0 && !noResultsFound)
     ) {
-      console.log('Setting isLoading to true in dashboard');
       setIsLoading(true);
-    } else {
-      console.log('Setting isLoading to false in dashboard');
+    } else if (chartData.length + 1 === currentResults.length
+        || (chartData.slice(1).every((o) => o.name === 'composite')
+        || chartData.filter((o) => o.name === 'composite').length > 1)) {
       setIsLoading(false);
     }
   }, [datastore.status, displayData, rowEntries, tabValue, noResultsFound, chartData]);
@@ -106,8 +96,8 @@ export default function Dashboard() {
       setCurrentTimeline(datastore.defaultTimelineState);
       setCurrentFilters(datastore.defaultFilterState);
       setAdditionalFilterOptions(datastore.filterOptions);
-      const ActiveMeasureTest = activeMeasure.measure === 'composite' || activeMeasure.measure === '';
-      if (ActiveMeasureTest) {
+      const activeMeasureIsComposite = activeMeasure.measure === 'composite' || activeMeasure.measure === '';
+      if (activeMeasureIsComposite) {
         setFilterInfo({
           members: [],
           currentResults: [],
@@ -186,7 +176,6 @@ export default function Dashboard() {
 
   // SETS ACTIVE MEASURE OBJECT
   useEffect(() => {
-    console.log('use effect 1')
     // CURRENT RESULTS EXIST
     if (datastore.currentResults.length > 0) {
       const currentMeasure = measure || 'composite';
@@ -197,21 +186,8 @@ export default function Dashboard() {
     }
   }, [datastore.currentResults, datastore.status, measure]);
 
-  // CHART WINDOW RESIZING
+  // HANDLES FILTERING IF NOT ACTIVATED
   useEffect(() => {
-    console.log('use effect 2')
-    function handleResize() {
-      setGraphWidth(window.innerWidth);
-    }
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // HANDLES FILTERING
-  useEffect(() => {
-    console.log('use effect 3')
     if (!filterActivated) {
       setCurrentTimeline(datastore.defaultTimelineState);
       setCurrentFilters(datastore.defaultFilterState);
@@ -267,7 +243,6 @@ export default function Dashboard() {
 
   // HANDLES ROW ENTRIES FOR COMPOSITE OR MEASURE VIEW
   useEffect(() => {
-    console.log('use effect 4')
     if (tabValue === 'members') {
       setHeaderInfo(MemberTable.headerData(selectedMeasures, datastore.info));
       setRowEntries(MemberTable.formatData(
@@ -280,9 +255,8 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datastore.memberResults]);
 
-  // HANDLES FILTERING
+  // HANDLES FILTERING IF IS ACTIVATED
   useEffect(() => {
-    console.log('use effect 5')
     if (filterActivated) {
       setCurrentTimeline(filterInfo.timeline);
       setCurrentFilters(filterInfo.filters);
@@ -331,7 +305,6 @@ export default function Dashboard() {
 
   // INITIAL FETCH DATA AND SET MEMBER RESULTS
   useEffect(() => {
-    console.log('use effect 6')
     async function fetchData() {
       const records = await measureDataFetch(activeMeasure.measure);
       datastoreActions.setMemberResults(records);
@@ -359,7 +332,6 @@ export default function Dashboard() {
 
   // INITIAL SETTING OF ROW ENTRIES
   useEffect(() => {
-    console.log('use effect 7')
     setRowEntries(MemberTable.formatData(
       datastore.memberResults,
       activeMeasure.measure,
@@ -368,9 +340,8 @@ export default function Dashboard() {
     ));
   }, [tableFilter, filterInfo, datastore.memberResults, activeMeasure.measure, datastore.info]);
 
-  // HANDLES FILTERING ALSO BUT AGAIN
+  // HANDLES FILTERING TAKING INTO CONSIDERATION THE MEMBER TABLE
   useEffect(() => {
-    console.log('use effect 8')
     const path = window.location.pathname;
     if (filterInfo.members.length > 0) {
       datastoreActions.setMemberResults(filterInfo.members);
@@ -412,27 +383,35 @@ export default function Dashboard() {
       datastore.comparisonMode !== 'default',
       datastore.measureAvgValue,
     );
-    console.log('newChartData:', newChartData);
-    if (newChartData.length > 1) {
-      setChartData(newChartData);
-    }
-  }, [currentResults, selectedMeasures, datastore.comparisonMode, displayData]);
+    setChartData(newChartData);
+  }, [currentResults, selectedMeasures, datastore.comparisonMode, datastore.comparisonYear, displayData]);
 
+  // INITIALIZES DATA ON PAGE LOAD AND BETWEEN MODES
   useEffect(() => {
+    setCurrentResults(datastore.currentResults);
+    setDisplayData(datastore.results.map((r) => ({ ...r })));
+    setSelectedMeasures(
+      datastore.currentResults.map((r) => (datastore.comparisonMode === 'default' ? r.measure : r.comparisonItem)),
+    );
+    setColorMap(colorMapping(datastore.currentResults));
+
     setChartData([]);
     setIsLoading(true);
   }, [
     datastore.comparisonMode,
     datastore.measurementYear,
+    datastore.results,
+    datastore.currentResults,
   ]);
 
+  // KICKSTARTS CHART DATA GENERATION
   useEffect(() => {
     if (isLoading === false) {
       chartDataGenerator();
     }
-  }, [isLoading, chartDataGenerator]);
+  }, [isLoading, tabValue, selectedMeasures, datastore.comparisonMode, datastore.measurementYear]);
 
-  // HANDLES FILTERING
+  // HANDLER SPECIFICALLY USED FOR FILTERING
   const handleFilteredDataUpdate = async (filters, timeline, direction) => {
     if (Object.keys(filters).length === 0 && !timeline) {
       return;
@@ -543,7 +522,6 @@ export default function Dashboard() {
       setTableFilter([]);
     }
     if (selections.target?.name) {
-      console.log('selections.target:', selections.target);
       navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`);
     } else if (selectedMeasures.length !== selections.length) {
       setSelectedMeasures(selections);
@@ -579,7 +557,6 @@ export default function Dashboard() {
         tableFilter,
       ));
     } else {
-      console.log('activeMeasure:', activeMeasure);
       navigate(`/${activeMeasure.measure !== 'composite' ? activeMeasure.measure : ''}`);
       setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
     }
@@ -598,7 +575,6 @@ export default function Dashboard() {
                 headerText="HEDIS Dashboard"
                 lastUpdated={datastore.lastUpdated}
                 activeMeasure={activeMeasure}
-                setIsLoading={setIsLoading}
                 filterActivated={filterActivated}
                 handleResetData={handleResetData}
               />
@@ -628,33 +604,28 @@ export default function Dashboard() {
             </Alert>
             <Grid item xs={12}>
               <ChartContainer
-                additionalFilterOptions={additionalFilterOptions}
-                setCurrentFilters={setCurrentFilters}
-                selectedMeasures={selectedMeasures}
+                isLoading={isLoading}
+                isComposite={isComposite}
+                activeMeasure={activeMeasure}
+                currentResults={currentResults}
                 currentTimeline={currentTimeline}
                 currentFilters={currentFilters}
-                handleFilteredDataUpdate={handleFilteredDataUpdate}
-                setCurrentTimeline={setCurrentTimeline}
+                chartData={chartData}
+                colorMap={colorMap}
                 filterDrawerOpen={filterDrawerOpen}
+                filterDisabled={filterDisabled}
+                additionalFilterOptions={additionalFilterOptions}
                 toggleFilterDrawer={toggleFilterDrawer}
-                isComposite={isComposite}
+                handleFilteredDataUpdate={handleFilteredDataUpdate}
+                handleResetData={handleResetData}
                 setIsComposite={setIsComposite}
                 setTableFilter={setTableFilter}
-                isLoading={isLoading}
-                currentResults={currentResults}
                 setTabValue={setTabValue}
-                activeMeasure={activeMeasure}
-                filterDisabled={filterDisabled}
-                displayData={displayData}
-                colorMap={colorMap}
-                store={datastore}
-                graphWidth={graphWidth}
+                setRowEntries={setRowEntries}
+                setCurrentFilters={setCurrentFilters}
                 setFilterActivated={setFilterActivated}
                 setIsLoading={setIsLoading}
-                setRowEntries={setRowEntries}
-                handleResetData={handleResetData}
-                filterCurrentResultsLength={filterInfo.currentResults.length}
-                chartData={chartData}
+                setCurrentTimeline={setCurrentTimeline}
               />
             </Grid>
             {datastore.comparisonMode === 'default' && (
