@@ -214,12 +214,12 @@ export const lineChartOptions = (
     chartData,
     theme,
     chartHeader,
+    showChartWithNoDataMessage = true,
   },
 ) => {
-  const colors = Array.isArray(chartData)
+  const colors = Array.isArray(chartData) && colorMap.length > 0
     ? chartData.map(
       (s) => (colorMap.find((c) => c.value === s.name)?.color)
-        || s.color
         || theme.palette?.primary.main,
     )
     : [];
@@ -245,24 +245,20 @@ export const lineChartOptions = (
   };
 
   const chartOptions = {
+    chart: {
+      animation: {
+        enabled: false,
+        initialAnimation: { enabled: false, speed: 0 },
+        dynamicAnimation: { enabled: false, speed: 0 },
+        animateGradually: { enabled: false, delay: 0 },
+      },
+      redrawOnParentResize: true,
+    },
     height: 100,
     type: 'line',
     redrawOnParentResize: true,
     zoom: {
       enabled: true,
-    },
-    animations: {
-      enabled: true,
-      easing: 'easein',
-      speed: 1,
-      animateGradually: {
-        enabled: false,
-        delay: 50,
-      },
-      dynamicAnimation: {
-        enabled: true,
-        speed: 600,
-      },
     },
     toolbar: {
       show: true,
@@ -359,7 +355,7 @@ export const lineChartOptions = (
     show: true,
     showAlways: true,
     type: 'category',
-    categories: chartData[0].date.length > 0 ? chartData[0].date : [],
+    categories: chartData[0]?.date.length > 0 ? chartData[0]?.date : [],
     tickAmount: 20,
     tickPlacement: 'on',
     min: undefined,
@@ -389,7 +385,7 @@ export const lineChartOptions = (
       offsetY: 10,
       format: undefined,
       formatter(value) {
-        if (chartData[0].date.length > 0) {
+        if (chartData[0]?.date.length > 0) {
           if (value !== undefined) {
             if (typeof value === 'string') {
               return value.split('T')[0];
@@ -443,7 +439,7 @@ export const lineChartOptions = (
   const yaxis = {
     show: true,
     showAlways: true,
-    max: chartData[0].data.length > 0 ? 100 : undefined,
+    max: chartData[0]?.data.length > 0 ? 100 : undefined,
     min: 0,
     tickAmount: 5,
     labels: {
@@ -542,7 +538,8 @@ export const lineChartOptions = (
     colors: [theme.palette?.bluegray.D1],
   };
   const noData = {
-    text: 'No measures selected, please use the checkboxes next to the measures below to view results.',
+    text: showChartWithNoDataMessage ? 'No measures selected, please use the checkboxes next to the measures below to view results.' : '',
+    showOnInit: false,
     align: 'center',
     verticalAlign: 'middle',
     offsetX: 0,

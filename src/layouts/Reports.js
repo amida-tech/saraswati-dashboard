@@ -11,7 +11,6 @@ export default function Reports() {
 
   useEffect(() => {
     datastoreActions.setComparisonMode('default');
-    datastoreActions.updateRefresh();
   }, [])
 
   return (

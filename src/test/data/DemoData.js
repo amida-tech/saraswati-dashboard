@@ -2842,14 +2842,22 @@ export const mockStatusFailure = 404;
 
 export const userPreferences = {
   ratingTrends: {
-    // 0: {
-    //   type: 'star',
-    //   measure: 'composite',
-    // },
-    // 1: {
-    //   type: 'percentage',
-    //   measure: 'aab',
-    // },
+    0: {
+      type: 'star',
+      measure: 'composite',
+    },
+    1: {
+      type: 'percentage',
+      measure: 'composite',
+    },
+    2: {
+      type: 'percentage',
+      measure: 'aise',
+    },
+    3: {
+      type: 'star',
+      measure: 'bcse',
+    },
   },
   theme: 'light',
 };
@@ -4720,18 +4728,18 @@ export const activeSubmeasure = {
 export const widgetPrefs = {
   0: {
     type: 'star',
-    measure: 'aab',
+    measure: 'composite',
   },
   1: {
     type: 'percentage',
-    measure: 'asfe',
+    measure: 'composite',
   },
   2: {
     type: 'star',
-    measure: 'uri',
+    measure: 'aise',
   },
   3: {
     type: 'percentage',
-    measure: 'composite',
+    measure: 'bcse',
   },
 };

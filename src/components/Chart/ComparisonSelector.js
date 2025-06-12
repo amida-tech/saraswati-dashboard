@@ -41,14 +41,14 @@ export const comparisonModeLabels = [
 ]
 
 function ComparisonSelector({
-  activeMeasure, handleResetData, setIsLoading, filterActivated,
+  activeMeasure, handleResetData, filterActivated,
 }) {
   const {
     datastore: {
       measurementYear, comparisonMode,
     },
     datastoreActions: {
-      setComparisonMode, setResults, updateRefresh,
+      setComparisonMode, setResults, updateRefresh, setIsLoading,
     },
   } = useContext(DatastoreContext);
   const [error, setError] = useState(undefined);
@@ -56,11 +56,11 @@ function ComparisonSelector({
   const comparisonDisabled = filterActivated;
 
   const handleChange = async (e) => {
+    setIsLoading(true);
     const mode = e.target.value;
     setComparisonMode(mode);
 
     if (mode === 'default') {
-      setIsLoading(true);
       handleResetData();
       updateRefresh();
     } else {
@@ -74,7 +74,8 @@ function ComparisonSelector({
       const comparisonPromise = await axios.post(comparisonURL, { ...comparisonBody });
 
       if (comparisonPromise.status === 200) {
-        setResults(comparisonPromise.data.results, comparisonPromise.data.info)
+        setResults(comparisonPromise.data.results, comparisonPromise.data.info);
+        setIsLoading(false);
       } else {
         setError(comparisonPromise.status)
       }
@@ -116,14 +117,12 @@ ComparisonSelector.propTypes = {
   activeMeasure: PropTypes.shape({
     measure: PropTypes.string,
   }),
-  setIsLoading: PropTypes.func,
   filterActivated: PropTypes.bool,
 };
 
 ComparisonSelector.defaultProps = {
   handleResetData: () => {},
   activeMeasure: '',
-  setIsLoading: false,
   filterActivated: false,
 };
 

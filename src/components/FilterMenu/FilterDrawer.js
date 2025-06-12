@@ -11,7 +11,7 @@ import { DatastoreContext } from '../../context/DatastoreProvider';
 import {
   additionalFilterOptionsProps, currentFiltersProps, filterDrawerOpenProps,
   handleFilterChangeProps, handleResetDataProps, setIsCompositeProps,
-  setFilterActivatedProps, setIsLoadingProps, setRowEntriesProps,
+  setFilterActivatedProps, setRowEntriesProps,
   setTableFilterProps, toggleFilterDrawerProps,
 } from '../Utilities/PropTypes';
 import FilterDrawerItem from './FilterDrawerItem';
@@ -26,7 +26,6 @@ function FilterDrawer({
   toggleFilterDrawer,
   setFilterActivated,
   additionalFilterOptions,
-  setIsLoading,
   setIsComposite,
   setTableFilter,
   setRowEntries,
@@ -60,7 +59,6 @@ function FilterDrawer({
     toggleFilterDrawer(open);
   };
   const handleResetFilter = () => {
-    setIsLoading(true);
     setStarChoices([]);
     setDomainOfCareChoices([]);
     setPercentSliderValue([0, 100]);
@@ -122,7 +120,6 @@ function FilterDrawer({
     setPercentSliderValue(newValue);
   };
   const handleCancel = () => {
-    setIsLoading(true);
     setPercentSliderValue(Array.from(currentFilters.percentRange));
     setStarChoices(Array.from(currentFilters.stars));
     setDomainOfCareChoices(Array.from(currentFilters.domainsOfCare));
@@ -136,11 +133,9 @@ function FilterDrawer({
     setTableFilter([]);
     setRowEntries([]);
     setIsComposite(true);
-    setIsLoading(false);
   };
 
   const handleApplyFilter = () => {
-    setIsLoading(true);
     const filterOptions = {
       domainsOfCare: domainOfCareChoices,
       stars: starChoices,
@@ -314,7 +309,6 @@ FilterDrawer.propTypes = {
   handleFilterChange: handleFilterChangeProps,
   setFilterActivated: setFilterActivatedProps,
   additionalFilterOptions: additionalFilterOptionsProps,
-  setIsLoading: setIsLoadingProps,
   setIsComposite: setIsCompositeProps,
   setTableFilter: setTableFilterProps,
   setRowEntries: setRowEntriesProps,
@@ -337,7 +331,6 @@ FilterDrawer.defaultProps = {
   handleFilterChange: undefined,
   setFilterActivated: () => undefined,
   additionalFilterOptions: {},
-  setIsLoading: () => undefined,
   setIsComposite: () => undefined,
   setTableFilter: () => undefined,
   setRowEntries: () => undefined,

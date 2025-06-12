@@ -137,8 +137,8 @@ export default function DatastoreProvider({ children }) {
         datastoreActions.setTrends(values[6].data);
         // currently only front end default preferences
         datastoreActions.setPreferences(newUserPreferences);
+        datastoreActions.setStatus(values[0].request.status);
         datastoreActions.setIsLoading(false);
-        datastoreActions.setStatus(values[0].request.status)
       }).catch((error) => {
         datastoreActions.setStatus(error.request.status)
       });

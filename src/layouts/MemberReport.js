@@ -14,9 +14,8 @@ import MemberReportDisplay from '../components/MemberReport/MemberReportDisplay'
 
 const memberInfoQueryUrl = new URL(`${env.REACT_APP_HEDIS_MEASURE_API_URL}members/info/`);
 
-function MemberReport({ id, memberInfoFetch, loading }) {
+function MemberReport({ id, memberInfoFetch }) {
   const { datastore } = useContext(DatastoreContext);
-  const [isLoading, setIsLoading] = useState(loading);
   const [memberInfo, setMemberInfo] = useState();
   const [exportUrl, setExportUrl] = useState('');
   const [rowData, setRowData] = useState([]);
@@ -39,7 +38,6 @@ function MemberReport({ id, memberInfoFetch, loading }) {
         datastore.info,
       );
       setRowData(formattedMemberData);
-      setIsLoading(false);
     }
   }, [datastore, memberInfo]);
 
@@ -77,13 +75,11 @@ function MemberReport({ id, memberInfoFetch, loading }) {
 MemberReport.propTypes = {
   id: PropTypes.string,
   memberInfoFetch: PropTypes.func,
-  loading: PropTypes.bool,
 };
 
 MemberReport.defaultProps = {
   id: '',
   memberInfoFetch: () => undefined,
-  loading: true,
 };
 
 export default MemberReport;
