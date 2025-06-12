@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   useContext, useEffect, useState, useCallback,
 } from 'react';
@@ -84,7 +85,7 @@ export default function Dashboard() {
     console.log('No results found:', noResultsFound);
     console.log('isLoading:', isLoading);
     console.log('Current results length:', currentResults.length);
-    console.log('Chart data length:', chartData.length);
+    console.log('Chart data before setting isloading:', chartData);
     if (
       (datastore.status === 'loading')
       || (displayData.length === 0 && !noResultsFound)
@@ -412,7 +413,7 @@ export default function Dashboard() {
       datastore.measureAvgValue,
     );
     console.log('newChartData:', newChartData);
-    if (newChartData.length > 0) {
+    if (newChartData.length > 1) {
       setChartData(newChartData);
     }
   }, [currentResults, selectedMeasures, datastore.comparisonMode, displayData]);
@@ -542,6 +543,7 @@ export default function Dashboard() {
       setTableFilter([]);
     }
     if (selections.target?.name) {
+      console.log('selections.target:', selections.target);
       navigate(`/${selections.target.name === 'composite' ? '' : selections.target.value}`);
     } else if (selectedMeasures.length !== selections.length) {
       setSelectedMeasures(selections);
@@ -577,7 +579,8 @@ export default function Dashboard() {
         tableFilter,
       ));
     } else {
-      navigate(`/${activeMeasure.measure}`);
+      console.log('activeMeasure:', activeMeasure);
+      navigate(`/${activeMeasure.measure !== 'composite' ? activeMeasure.measure : ''}`);
       setHeaderInfo(headerData(isComposite, datastore.comparisonMode));
     }
   };

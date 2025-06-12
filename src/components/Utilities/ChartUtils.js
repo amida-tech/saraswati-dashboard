@@ -248,8 +248,9 @@ export const lineChartOptions = (
     chart: {
       animations: {
         enabled: false,
-        dynamicAnimation: { enabled: false },
-        animateGradually: { enabled: false },
+        initialAnimation: { enabled: false, speed: 0 },
+        dynamicAnimation: { enabled: false, speed: 0 },
+        animateGradually: { enabled: false, delay: 0 },
       },
       redrawOnParentResize: true,
     },

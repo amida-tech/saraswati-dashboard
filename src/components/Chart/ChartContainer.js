@@ -112,7 +112,8 @@ function ChartContainer({
     handleFilteredDataUpdate(currentFilters, timelineUpdate);
   };
 
-  const showNoData = isLoading && currentResults.length === 0 && chartData.length <= 1;
+  const showNoData = (isLoading && currentResults.length === 0 && chartData.length <= 1)
+    || (chartData.slice(1).every((o) => o.name === 'composite') || chartData.filter((o) => o.name === 'composite').length > 1);
   console.log('show no data:', showNoData, 'isLoading:', isLoading, 'currentResults:', currentResults.length, 'chartData:', chartData.length);
   if (showNoData) return (<Skeleton variant="rectangular" height={500} />)
   return (
