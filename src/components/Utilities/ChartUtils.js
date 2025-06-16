@@ -458,7 +458,7 @@ export const lineChartOptions = (
       offsetY: 0,
       rotate: 0,
       formatter(value) {
-        return `${value.toFixed(0)}%`;
+        return value ? `${value.toFixed(0)}%` : '-';
       },
     },
     axisBorder: {
@@ -504,10 +504,11 @@ export const lineChartOptions = (
         ? `${chartHeader}: ` : ''
       const foundDate = w.globals.categoryLabels[dataPointIndex + 1];
       const foundColor = w.globals.initialSeries[seriesIndex]?.color;
+      const value = series[seriesIndex][dataPointIndex];
       return `<div class="chart-container__tooltip" style="background-color:${foundColor}; text-shadow: 1px 1px ${theme.palette?.bluegray.main}; color:${theme.palette?.background.main};">`
         + `<span> ${finalChartHeader}${w.config.series[seriesIndex].name.toUpperCase()}</span>`
         + '<br/>'
-        + `<span> Value: ${series[seriesIndex][dataPointIndex].toFixed(2)}%</span>`
+        + `<span> Value: ${value ? value.toFixed(2) : '-'}%</span>`
         + '<br/>'
         + `<span> Date: ${new Date(foundDate).toDateString()}</span>`
         + '</div>';

@@ -41,7 +41,9 @@ export default function OverviewTable({
     const mapping = rowData.map((measure) => {
       const measureValue = isComparisonMode ? measure.id : measure.value;
       return colorMap
-        .find((map) => (map?.value.toUpperCase() === measureValue?.toUpperCase()))?.color
+        .find((map) => (map
+          && map.value
+          && map.value.toUpperCase() === measureValue?.toUpperCase()))?.color
         || theme.palette?.primary.main
     });
     const newColorObj = {};
