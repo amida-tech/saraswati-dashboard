@@ -22,6 +22,7 @@ function MemberReport({ id, memberInfoFetch }) {
   const [description, setDescription] = useState({});
   const [coverage, setCoverage] = useState({});
   const [coverageStatus, setCoverageStatus] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (Object.keys(datastore.info).length > 0 && memberInfo) {
@@ -43,11 +44,13 @@ function MemberReport({ id, memberInfoFetch }) {
 
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
       const result = await memberInfoFetch(memberInfoQueryUrl, id);
       setMemberInfo(result);
       setCoverage(result?.coverage);
       setCoverageStatus(result?.coverage[0].status.value);
       setExportUrl(`${env.REACT_APP_HEDIS_MEASURE_API_URL}exports/member/?memberId=${result?.memberId}`);
+      setIsLoading(false);
     }
     fetchData();
   }, [id, memberInfoFetch]);
