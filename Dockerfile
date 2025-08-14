@@ -30,7 +30,7 @@ COPY ./public/index.html /app/public
 RUN yarn build
 
 # Production Installer image
-FROM nginx:1.25.2-bookworm
+FROM nginx:1.29.1-bookworm
 
 WORKDIR /app
 
