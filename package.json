@@ -37,7 +37,7 @@
     "react-router": "6.18.0",
     "react-router-dom": "6.18.0",
     "react-scripts": "^5.0.1",
-    "sass": "^1.69.4",
+    "sass": "^1.79.0",
     "tinycolor2": "^1.6.0"
   },
   "scripts": {
