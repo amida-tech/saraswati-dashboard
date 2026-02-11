@@ -19,7 +19,7 @@
     "@mui/x-data-grid": "^6.16.3",
     "@popperjs/core": "2.11.8",
     "apexcharts": "^3.44.0",
-    "axios": "1.8.3",
+    "axios": "1.13.5",
     "chart.js": "4.4.0",
     "d3": "^7.8.5",
     "gapi-script": "^1.2.0",
